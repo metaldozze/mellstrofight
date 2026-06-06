@@ -1,0 +1,4436 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MellstroFight - Мурино и Новая Эра</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts: Inter & Press Start 2P -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body {
+font-family: 'Inter', sans-serif;
+background-color: #03050a;
+color: #f3f4f6;
+overflow: hidden;
+user-select: none;
+}
+.gaming-font {
+font-family: 'Press Start 2P', monospace;
+}
+/* Анимация тряски */
+@keyframes shake {
+0%, 100% { transform: rotate(0deg); }
+20%, 60% { transform: rotate(-6deg); }
+40%, 80% { transform: rotate(6deg); }
+}
+.shake-element {
+animation: shake 0.4s ease-in-out infinite;
+}
+/* Стилизация скроллбара */
+::-webkit-scrollbar {
+width: 8px;
+}
+::-webkit-scrollbar-track {
+background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+background: #ef4444;
+border-radius: 4px;
+}
+/* VHS Эффект для Хоррор-фазы */
+.vhs-noise {
+position: absolute;
+inset: 0;
+background: repeating-linear-gradient(
+0deg,
+rgba(0, 0, 0, 0.15),
+rgba(0, 0, 0, 0.15) 1px,
+transparent 1px,
+transparent 2px
+);
+pointer-events: none;
+z-index: 15;
+animation: vhs-scroll 12s linear infinite;
+}
+@keyframes vhs-scroll {
+0% { background-position: 0 0; }
+100% { background-position: 0 100%; }
+}
+.vhs-chromatic {
+filter: contrast(1.2) saturate(1.4) hue-rotate(2deg);
+}
+.vhs-darkness {
+background: radial-gradient(circle, transparent 120px, rgba(0,0,0,0.92) 230px);
+position: absolute;
+inset: 0;
+pointer-events: none;
+z-index: 25;
+}
+</style>
+</head>
+<body class="w-screen h-screen flex items-center justify-center relative select-none">
+<audio id="bgMusicMenu" loop src="https://www.image2url.com/r2/default/audio/1780179647396-169283b7-f9b0-4282-898b-084eccec0a81.mp3"></audio>
+<audio id="bgMusicArmy" loop src="https://www.image2url.com/r2/default/files/1780179166383-74227762-5a4f-4955-a06e-b01658622c52.mp3"></audio>
+<audio id="bgMusicMurino1" loop src="https://fine.sunproxy.net/file/dVhoK0hDL2dMOGZlK3o3dVQwNElwRTJkYm1Ba2xNbmNINmh0TDl0M3JINktNVlpIaEQzRjJ3ZzJsTWNUaU5XWnFXbm1YbXJqbGMra2p2Ky9FemdkNW50b0dQTHJCOWplWTJuM1g4djlCTDA9/instupendo_-_six_forty_seven_(SkySound.cc).mp3"></audio>
+<audio id="bgMusicMurino2" loop src="https://muzpab.я.ws/media/music/48/48105_7a4d9b6a436862612c2da65fe6a7ddb2.mp3?The%20Caretaker%20-%20It%27s%20Just%20A%20Burning%20Memory.mp3"></audio>
+<audio id="soundScaryMurino" src="https://www.image2url.com/r2/default/audio/1780178878223-ba13f36c-f6fd-46c5-aca2-9f30a8160dba.mp3"></audio>
+<audio id="soundFogIsComing" src="https://www.myinstants.com/media/sounds/the-fog-is-coming.mp3"></audio>
+<div class="absolute top-4 right-4 z-50 flex gap-2">
+<button id="musicToggleBtn" onclick="toggleMusic()" class="bg-slate-900/90 hover:bg-slate-800 text-white p-3 rounded-full border border-slate-700 transition shadow-lg flex items-center justify-center w-12 h-12">
+<i id="musicIcon" class="fas fa-music text-red-500"></i>
+</button>
+<button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-900/90 hover:bg-slate-800 text-white p-3 rounded-full border border-slate-700 transition shadow-lg flex items-center justify-center w-12 h-12">
+<i id="soundIcon" class="fas fa-volume-up"></i>
+</button>
+</div>
+<!-- ГЛАВНЫЙ КОНТЕЙНЕР ИГРЫ (16:9) -->
+<div id="gameContainer" class="w-full max-w-[1200px] aspect-[16/9] bg-slate-950 relative overflow-hidden rounded-2xl shadow-2xl border-4 border-slate-800 flex flex-col items-center justify-center">
+<!-- СЦЕНА 1: Экран загрузки / Заставка -->
+<div id="splashScene" class="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-black flex flex-col items-center justify-center z-40 transition-opacity duration-1000">
+<div class="text-center p-8 max-w-lg">
+<h1 class="gaming-font text-4xl md:text-5xl text-red-600 mb-8 tracking-widest animate-pulse drop-shadow-[0_5px_15px_rgba(220,38,38,0.6)]">
+MELLSTROY FIGHT
+</h1>
+<div class="flex flex-col gap-4 w-64 mx-auto mt-6">
+<button onclick="startGame()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-red-500/50 transform hover:-translate-y-1 transition text-lg uppercase tracking-wider gaming-font text-[12px]">
+СТАРТ
+</button>
+<button onclick="showCredits()" class="bg-gray-900 hover:bg-gray-800 text-gray-300 font-bold py-3 px-8 rounded-xl shadow border border-gray-700 transform hover:-translate-y-1 transition text-sm uppercase tracking-wider gaming-font text-[10px]">
+CREDITS
+</button>
+</div>
+</div>
+<div class="absolute bottom-4 text-xs text-gray-600">v3.8.1 - Мурино 2: финальные фазы и честный присед</div>
+</div>
+<!-- Окно Credits -->
+<div id="creditsModal" class="hidden absolute inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
+<div class="bg-slate-900 border-2 border-red-600 rounded-2xl p-6 max-w-md w-full text-center relative shadow-[0_0_30px_rgba(220,38,38,0.4)]">
+<button onclick="hideCredits()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
+<i class="fas fa-times text-xl"></i>
+</button>
+<h2 class="gaming-font text-red-500 text-md mb-6">РАЗРАБОТКА</h2>
+<div class="space-y-4 my-6 text-sm text-gray-200">
+<p class="p-3 bg-slate-800/80 rounded-lg">
+Обновленный геймплей Мурино, Скруты, Лут, Тени и Прыгучий Монстр.<br>
+<span class="text-blue-400 font-bold">@abandonedeclipse</span>
+</p>
+<p class="p-3 bg-slate-800/80 rounded-lg">
+Официальный симулятор битвы Мелстроя!<br>
+<span class="text-red-400 font-bold">@mellstrofight</span>
+</p>
+</div>
+<button onclick="hideCredits()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-6 rounded-lg uppercase text-[10px] tracking-widest transition">
+ЗАКРЫТЬ
+</button>
+</div>
+</div>
+<!-- СЦЕНА 2: Главное Меню -->
+<div id="menuScene" class="hidden absolute inset-0 bg-slate-950 flex flex-col justify-between p-6 z-30">
+<!-- Верхняя панель статистики -->
+<div class="flex justify-between items-center bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+<div class="flex items-center gap-4">
+<span class="gaming-font text-[9px] text-gray-400">Игрок: <span id="activeHeroName" class="text-red-400">Mell</span></span>
+</div>
+<div class="flex items-center gap-6">
+<button onclick="exchangePointsForCoins()" class="bg-purple-900/80 hover:bg-purple-800 text-white text-[9px] px-3 py-1.5 rounded-lg border border-purple-600 gaming-font flex items-center gap-1 transition">
+<i class="fas fa-sync-alt"></i> ОБМЕН (2000 ➔ 200)
+</button>
+<div class="flex items-center gap-2">
+<i class="fas fa-star text-yellow-400 text-lg"></i>
+<span id="scoreDisplay" class="gaming-font text-xs text-yellow-400">0</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="fas fa-coins text-amber-500 text-lg"></i>
+<span id="coinsDisplay" class="gaming-font text-xs text-amber-500">0</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="fas fa-gem text-cyan-400 text-lg"></i>
+<span id="crystalsDisplay" class="gaming-font text-xs text-cyan-400">0</span>
+</div>
+</div>
+</div>
+<!-- Центральная область меню -->
+<div class="grid grid-cols-12 gap-4 my-auto h-[65%] items-center">
+<!-- Левые кнопки навигации -->
+<div class="col-span-3 flex flex-col gap-4 h-full justify-center">
+<button onclick="openHeroesScreen()" class="bg-slate-900 hover:bg-red-950/30 border-l-4 border-red-600 hover:border-red-500 text-white text-left p-4 rounded-xl transition shadow flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-red-600/20 flex items-center justify-center text-red-500">
+<i class="fas fa-users text-xl"></i>
+</div>
+<div>
+<div class="font-bold text-sm">Ваши герои</div>
+<div class="text-[10px] text-gray-400">Выбор и прокачка</div>
+</div>
+</button>
+<button onclick="openShopScreen()" class="bg-slate-900 hover:bg-amber-950/30 border-l-4 border-amber-600 hover:border-amber-500 text-white text-left p-4 rounded-xl transition shadow flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-amber-600/20 flex items-center justify-center text-amber-500">
+<i class="fas fa-shopping-cart text-xl"></i>
+</div>
+<div>
+<div class="font-bold text-sm">Магазин</div>
+<div class="text-[10px] text-gray-400">Боксы и Гипер</div>
+</div>
+</button>
+</div>
+<!-- Отображение выбранного героя -->
+<div class="col-span-6 flex flex-col items-center justify-center relative h-full bg-slate-900/40 rounded-2xl border border-slate-800/80 p-4">
+<div class="absolute top-4 text-center">
+<p id="heroPowerTitle" class="text-red-500 text-xs tracking-wider font-semibold uppercase">СИЛА: КУЛАКИ (УРОВЕНЬ 1)</p>
+<h2 id="selectedHeroNameLabel" class="text-2xl font-bold tracking-wide mt-1">Mell</h2>
+</div>
+<!-- Картинка героя -->
+<div class="w-44 h-44 rounded-full overflow-hidden border-4 border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.4)] my-6 relative bg-slate-800 flex items-center justify-center">
+<img id="selectedHeroImg" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeYnkXnb1ypzbGzYabcpPt7hWLDHUktc_BIQ&s" alt="Mell" class="w-full h-full object-cover">
+</div>
+<div id="heroSpecialsLabel" class="text-xs text-gray-400 text-center px-4">
+Супер-способность: <span class="text-red-500 font-bold">Прыжок Смерти (X)</span> - разблокируется на 9 ур.
+</div>
+</div>
+<!-- Правая часть: Старт боя и Информация -->
+<div class="col-span-3 flex flex-col justify-center items-center h-full">
+<button onclick="startFight()" class="w-full h-32 bg-gradient-to-br from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white rounded-2xl shadow-[0_10px_25px_rgba(220,38,38,0.4)] flex flex-col items-center justify-center gap-2 transition transform hover:-translate-y-1">
+<i class="fas fa-skull text-3xl animate-bounce"></i>
+<span class="gaming-font text-sm tracking-widest">В БОЙ</span>
+</button>
+<div class="text-[10px] text-gray-400 mt-4 text-center bg-slate-900/90 p-2 rounded-lg border border-slate-800 w-full">
+Выбранная локация:<br>
+<span id="selectedLocDisplay" class="text-emerald-400 font-bold">Армия (0 очков)</span>
+</div>
+</div>
+</div>
+<!-- Выбор локации -->
+<div class="w-full">
+<button onclick="openLocationSelect()" class="w-full h-16 rounded-xl overflow-hidden relative group border-2 border-slate-700 hover:border-red-500 transition">
+<div id="locationBtnBg" class="absolute inset-0 bg-cover bg-center filter grayscale opacity-40 contrast-125" style="background-image: url('https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg')"></div>
+<div class="absolute inset-0 bg-slate-950/70 group-hover:bg-red-950/40 transition"></div>
+<div class="absolute inset-0 flex items-center justify-center gap-3">
+<i class="fas fa-map-marked-alt text-xl text-red-500"></i>
+<span id="locationBtnLabel" class="gaming-font text-xs text-white tracking-widest">ВЫБРАТЬ ЛОКАЦИЮ (АРМИЯ)</span>
+</div>
+</button>
+</div>
+</div>
+<!-- СЦЕНА 3: Экран выбора локаций -->
+<div id="locationScene" class="hidden absolute inset-0 bg-slate-950 flex flex-col justify-between p-6 z-35">
+<div class="flex justify-between items-center border-b border-slate-800 pb-3">
+<h2 class="gaming-font text-xs text-red-500">ВЫБЕРИТЕ ДОСТУПНУЮ ЛОКАЦИЮ</h2>
+<button onclick="backToMenu()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold transition">
+<i class="fas fa-arrow-left mr-1"></i> НАЗАД
+</button>
+</div>
+<!-- Сетка локаций -->
+<div class="grid grid-cols-4 gap-4 my-auto">
+<button onclick="selectLocation('Army', 0, true)" class="h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group">
+<div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg')"></div>
+<div class="absolute inset-0 bg-slate-950/50"></div>
+<div class="relative z-10 flex flex-col justify-between h-full w-full">
+<span class="bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">СТАРТОВАЯ</span>
+<div class="text-left mt-auto">
+<h3 class="font-bold text-lg text-white">Армия</h3>
+<p class="text-[10px] text-emerald-400">Доступно (0 очк.)</p>
+</div>
+</div>
+</button>
+<button id="locMurinoBtn" onclick="openMurinoSubparts()" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-60">
+<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('https://avatars.mds.yandex.net/i?id=368eca4c07965278b14cd8e894bac250_l-5642274-images-thumbs&n=13')"></div>
+<div class="absolute inset-0 bg-slate-950/85"></div>
+<div class="relative z-10 flex flex-col justify-between h-full w-full">
+<span id="locMurinoBadge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font"><i class="fas fa-lock mr-1"></i> ЗАКРЫТО</span>
+<div class="text-left mt-auto">
+<h3 class="font-bold text-lg text-gray-400">Мурино</h3>
+<p id="locMurinoPoints" class="text-[10px] text-gray-500">Пройти Армию</p>
+</div>
+</div>
+</button>
+<button id="locMolochnoeBtn" onclick="selectLocation('Molochnoe', 0, false)" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-60">
+<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('https://placehold.co/300x200/111827/ffffff?text=Selo')"></div>
+<div class="absolute inset-0 bg-slate-950/85"></div>
+<div class="relative z-10 flex flex-col justify-between h-full w-full">
+<span id="locMolochnoeBadge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font"><i class="fas fa-lock mr-1"></i> ЗАКРЫТО</span>
+<div class="text-left mt-auto">
+<h3 class="font-bold text-lg text-gray-400">Село Молочное</h3>
+<p id="locMolochnoePoints" class="text-[10px] text-gray-500">Пройти Мурино 1-2</p>
+</div>
+</div>
+</button>
+<button id="locMytishchiBtn" onclick="selectLocation('Mytishchi', 0, false)" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-60">
+<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('https://placehold.co/300x200/111827/ffffff?text=Mytishchi')"></div>
+<div class="absolute inset-0 bg-slate-950/85"></div>
+<div class="relative z-10 flex flex-col justify-between h-full w-full">
+<span id="locMytishchiBadge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font"><i class="fas fa-lock mr-1"></i> ЗАКРЫТО</span>
+<div class="text-left mt-auto">
+<h3 class="font-bold text-lg text-gray-400">Мытищи</h3>
+<p id="locMytishchiPoints" class="text-[10px] text-gray-500">Пройти Молочное</p>
+</div>
+</div>
+</button>
+</div>
+<div class="text-xs text-gray-500 bg-slate-900/60 p-3 rounded-lg border border-slate-800 text-center">
+Побждайте боссов на текущих локациях, чтобы полностью открыть сюжетную цепочку территорий!
+</div>
+</div>
+<!-- СЦЕНА 3.5: Выбор Частей Мурино -->
+<div id="murinoPartsModal" class="hidden absolute inset-0 bg-black/95 flex flex-col justify-between p-6 z-40">
+<div class="flex justify-between items-center border-b border-slate-800 pb-3">
+<h2 class="gaming-font text-xs text-red-500">ВЫБЕРИТЕ ЧАСТЬ МУРИНО</h2>
+<button onclick="closeMurinoSubparts()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold transition">
+НАЗАД
+</button>
+</div>
+<div class="grid grid-cols-3 gap-6 my-auto max-w-4xl mx-auto w-full">
+<!-- Часть 1: Улица -->
+<button onclick="selectMurinoPart('Murino_1', true)" class="h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group">
+<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://static.wikia.nocookie.net/fantasticbeings/images/1/13/IMG_9765.JPG/revision/latest/scale-to-width-down/536?cb=20170913095609&path-prefix=ru')"></div>
+<div class="absolute inset-0 bg-slate-950/50"></div>
+<div class="relative z-10 flex flex-col justify-between h-full w-full">
+<span class="bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ДОСТУПНО</span>
+<div class="text-left mt-auto">
+<h3 class="font-bold text-lg text-white">Часть 1: Улица</h3>
+<p class="text-[10px] text-emerald-400">Скромник и Мимик</p>
+</div>
+</div>
+</button>
+<!-- Часть 2: Дом и Подвал -->
+<button id="murinoPart2Btn" onclick="selectMurinoPart('Murino_2', false)" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-50">
+<div class="absolute inset-0 bg-cover bg-center opacity-15" style="background-image: url('https://cdnb.artstation.com/p/assets/images/images/053/848/533/large/infinity-vision-dark-cooridoor-preview01.jpg?1663165516')"></div>
+<div class="absolute inset-0 bg-slate-950/85"></div>
+<div class="relative z-10 flex flex-col justify-between h-full w-full">
+<span id="murinoPart2Badge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ЗАКРЫТО</span>
+<div class="text-left mt-auto">
+<h3 id="murinoPart2Title" class="font-bold text-lg text-white">Часть 2: Дом и Подвал</h3>
+<p id="murinoPart2Desc" class="text-[10px] text-gray-500">Пройдите Часть 1</p>
+</div>
+</div>
+</button>
+<!-- Часть 3: Туман (FOG) - Заблокировано -->
+<button onclick="showFloatingMessage('Локация временно закрыта согласно сюжету!')" class="h-48 rounded-xl bg-slate-900 border-2 border-red-900/60 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-30 cursor-not-allowed">
+<div class="absolute inset-0 bg-cover bg-center opacity-5 filter blur-[1px]" style="background-image: url('https://cs6.pikabu.ru/video/2017/09/01/4/og_og_1504239048317731297.jpg')"></div>
+<div class="absolute inset-0 bg-slate-950/90"></div>
+<div class="relative z-10 flex flex-col justify-between h-full w-full">
+<span class="bg-red-900 text-red-200 font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ЗАБЛОКИРОВАНО</span>
+<div class="text-left mt-auto">
+<h3 class="font-bold text-lg text-red-700/80">Часть 3: Туман</h3>
+<p class="text-[10px] text-gray-600">Заблокировано разработчиком</p>
+</div>
+</div>
+</button>
+</div>
+<div class="text-center text-xs text-gray-500">Мурино — город вечного тумана и бесконечных человейников.</div>
+</div>
+<!-- СЦЕНА 4: Экран Героев -->
+<div id="heroesScene" class="hidden absolute inset-0 bg-slate-950 flex flex-col justify-between p-6 z-35">
+<div class="flex justify-between items-center border-b border-slate-800 pb-3">
+<h2 class="gaming-font text-xs text-red-500">ВАШИ ГЕРОИ</h2>
+<div class="flex gap-2">
+<button onclick="exchangePointsForCoins()" class="bg-purple-900/80 hover:bg-purple-800 text-white text-xs px-4 py-2 rounded-lg border border-purple-600 font-bold flex items-center gap-1 transition">
+<i class="fas fa-sync-alt"></i> ОБМЕНЯТЬ 2000 ОЧКОВ НА 200 МОНЕТ
+</button>
+<button onclick="backToMenu()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold transition">
+<i class="fas fa-arrow-left mr-1"></i> НАЗАД
+</button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-6 my-auto h-[80%] items-center">
+<!-- Сетка героев (Слева) -->
+<div id="heroesGridContainer" class="col-span-6 grid grid-cols-3 gap-3 h-full overflow-y-auto pr-2">
+<!-- Заполняется динамически -->
+</div>
+<!-- Характеристики и Прокачка (Справа) -->
+<div class="col-span-6 bg-slate-900 rounded-2xl border border-slate-800 p-4 h-full flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-xl font-bold text-white"><span id="detailHeroName">Mell</span> <span class="text-sm text-red-500" id="detailHeroLevel">Ур. 1</span></h3>
+<p class="text-[11px] text-gray-400">Редкость: <span id="detailHeroRarity" class="text-emerald-400">Стартовый</span></p>
+</div>
+<div class="text-right">
+<span class="text-[10px] text-gray-400 block">Урон / Здоровье</span>
+<span class="font-bold text-sm text-emerald-400" id="detailDamage">100</span>
+<span class="text-gray-400 text-xs"> / </span>
+<span class="font-bold text-sm text-blue-400" id="detailHp">1500</span>
+</div>
+</div>
+<!-- Прогресс прокачки -->
+<div class="mt-4 bg-slate-950 p-3 rounded-xl border border-slate-800">
+<div class="flex justify-between text-xs text-gray-400 mb-1">
+<span>Прогресс силы</span>
+<span id="damageNextLv">Следующий ур: +100 урон</span>
+</div>
+<div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+<div class="bg-red-600 h-full w-1/12" id="heroLevelProgress"></div>
+</div>
+</div>
+<div class="mt-4 space-y-2 text-xs text-gray-300 overflow-y-auto max-h-[140px] pr-1">
+<div class="bg-slate-950 p-2 rounded-lg border border-slate-800/60">
+<strong class="text-red-500">Атака:</strong> <span id="detailAttackDesc">Базовый удар.</span>
+</div>
+<div class="bg-slate-950 p-2 rounded-lg border border-slate-800/60">
+<strong class="text-yellow-500">Суперсила [Кнопка X]:</strong> <span id="superUnlockText">Доступно.</span>
+</div>
+</div>
+</div>
+<!-- Кнопка прокачки -->
+<button id="upgradeHeroBtn" onclick="upgradeHero()" class="w-full bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-between">
+<span class="text-xs uppercase gaming-font">ПОВЫСИТЬ УРОВЕНЬ</span>
+<span class="bg-black/30 px-3 py-1 rounded text-xs text-amber-500 flex items-center gap-1 font-bold">
+<i class="fas fa-coins text-amber-500"></i> <span id="upgradeCostDisplay">262</span>
+</span>
+</button>
+</div>
+</div>
+</div>
+<!-- СЦЕНА 5: Магазин -->
+<div id="shopScene" class="hidden absolute inset-0 bg-slate-950 flex flex-col justify-between p-6 z-35">
+<div class="flex justify-between items-center border-b border-slate-800 pb-3">
+<div class="flex items-center gap-4">
+<h2 class="gaming-font text-xs text-amber-500">МАГАЗИН БОКСОВ И ГИПЕРСИЛЫ</h2>
+<div class="bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 text-xs text-cyan-400 font-bold flex items-center gap-1">
+<i class="fas fa-gem"></i> <span id="shopCrystalsDisplay">0</span>
+</div>
+</div>
+<button onclick="backToMenu()" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold transition">
+<i class="fas fa-arrow-left mr-1"></i> НАЗАД
+</button>
+</div>
+<!-- Товары в магазине -->
+<div class="grid grid-cols-5 gap-3 my-auto">
+<!-- Бокс 1 -->
+<div class="bg-slate-900 border-2 border-slate-800 rounded-2xl p-4 flex flex-col justify-between items-center text-center relative hover:border-slate-700 transition">
+<span class="bg-gray-500 text-white font-bold text-[8px] px-2 py-1 rounded gaming-font absolute top-3">ОБЫЧНЫЙ</span>
+<div class="w-16 h-16 my-4 flex items-center justify-center text-slate-400">
+<i id="boxIcon1" class="fas fa-box text-5xl text-slate-500"></i>
+</div>
+<div>
+<h3 class="font-bold text-white text-xs">Обычный бокс</h3>
+<p class="text-[9px] text-gray-400 mt-1">1-3 Кристалла</p>
+</div>
+<button onclick="buyBox('common', 300)" class="w-full mt-3 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded-lg transition text-[11px] flex items-center justify-center gap-1">
+<span>300</span> <i class="fas fa-coins text-amber-500"></i>
+</button>
+</div>
+<!-- Бокс 2 -->
+<div class="bg-slate-900 border-2 border-blue-900 rounded-2xl p-4 flex flex-col justify-between items-center text-center relative hover:border-blue-800 transition">
+<span class="bg-blue-600 text-white font-bold text-[8px] px-2 py-1 rounded gaming-font absolute top-3">РЕДКИЙ</span>
+<div class="w-16 h-16 my-4 flex items-center justify-center text-blue-500">
+<i id="boxIcon2" class="fas fa-box-open text-5xl text-blue-400"></i>
+</div>
+<div>
+<h3 class="font-bold text-white text-xs">Редкий бокс</h3>
+<p class="text-[9px] text-gray-400 mt-1">Кристаллы / Обычный / Редкий герой</p>
+</div>
+<button onclick="buyBox('rare', 800)" class="w-full mt-3 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-lg transition text-[11px] flex items-center justify-center gap-1">
+<span>800</span> <i class="fas fa-coins text-amber-500"></i>
+</button>
+</div>
+<!-- Бокс 3 -->
+<div class="bg-slate-900 border-2 border-yellow-700 rounded-2xl p-4 flex flex-col justify-between items-center text-center relative hover:border-yellow-600 transition">
+<span class="bg-yellow-500 text-black font-bold text-[8px] px-2 py-1 rounded gaming-font absolute top-3">СУПЕР</span>
+<div class="w-16 h-16 my-4 flex items-center justify-center text-yellow-500">
+<i id="boxIcon3" class="fas fa-gift text-5xl text-yellow-500"></i>
+</div>
+<div>
+<h3 class="font-bold text-white text-xs">Супер бокс</h3>
+<p class="text-[9px] text-gray-400 mt-1">Кристаллы / Мифический / Легендарный герой</p>
+</div>
+<button onclick="buyBox('super', 1500)" class="w-full mt-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-2 rounded-lg transition text-[11px] flex items-center justify-center gap-1">
+<span>1500</span> <i class="fas fa-coins text-slate-950"></i>
+</button>
+</div>
+<!-- Алмазный Сундук -->
+<div class="bg-slate-900 border-2 border-cyan-800 rounded-2xl p-4 flex flex-col justify-between items-center text-center relative hover:border-cyan-600 transition">
+<span class="bg-cyan-500 text-black font-bold text-[8px] px-2 py-1 rounded gaming-font absolute top-3">АЛМАЗНЫЙ</span>
+<div class="w-16 h-16 my-4 flex items-center justify-center text-cyan-400">
+<i id="boxIcon4" class="fas fa-gem text-5xl text-cyan-400"></i>
+</div>
+<div>
+<h3 class="font-bold text-white text-xs">Алмазный сундук</h3>
+<p class="text-[8px] text-gray-400 mt-1">200-900 монет / Мифический герой</p>
+</div>
+<button onclick="buyDiamondChest()" class="w-full mt-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-2 rounded-lg transition text-[11px] flex items-center justify-center gap-1">
+<span>90</span> <i class="fas fa-gem text-black"></i>
+</button>
+</div>
+<!-- Товар 4: Навсегда Гиперсила -->
+<div id="hyperCard" class="bg-slate-900 border-2 border-pink-700 rounded-2xl p-4 flex flex-col justify-between items-center text-center relative hover:border-pink-600 transition">
+<span class="bg-pink-600 text-white font-bold text-[8px] px-2 py-1 rounded gaming-font absolute top-3">АКЦИЯ</span>
+<div class="w-16 h-16 my-4 flex items-center justify-center text-pink-500">
+<i class="fas fa-bolt text-5xl animate-pulse text-pink-500"></i>
+</div>
+<div>
+<h3 class="font-bold text-white text-xs">Гиперсила Mell</h3>
+<p id="hyperDescText" class="text-[8px] text-gray-400 mt-1">2 кулака по сторонам и х2 урон в бою на 3 секунды [Z]. Действует 3 боя.</p>
+</div>
+<button id="buyHyperBtn" onclick="buyHyperAbility()" class="w-full mt-3 bg-pink-600 hover:bg-pink-500 text-white font-bold py-2 rounded-lg transition text-[11px] flex items-center justify-center gap-1">
+<span id="hyperPriceLabel">Купить за 3</span> <i class="fas fa-gem text-cyan-300"></i>
+</button>
+</div>
+</div>
+<div class="text-xs text-gray-500 bg-slate-900/60 p-2 rounded-lg border border-slate-800 text-center">
+Улучшайте команду и открывайте сокрушительные гиперспособности!
+</div>
+</div>
+<!-- Модалка выпадения наград -->
+<div id="rewardModal" class="hidden absolute inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+<div class="bg-slate-900 border-4 border-yellow-500 rounded-2xl p-8 max-w-sm w-full text-center relative shadow-[0_0_50px_rgba(234,179,8,0.5)]">
+<div class="text-yellow-500 text-5xl mb-4">
+<i id="revealIcon" class="fas fa-gem animate-bounce"></i>
+</div>
+<h3 class="gaming-font text-white text-xs mb-4">ВЫ ПОЛУЧИЛИ:</h3>
+<div id="rewardText" class="text-xl font-black text-amber-400 my-6">10 КРИСТАЛЛОВ</div>
+<button onclick="closeRewardModal()" class="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3 px-8 rounded-xl uppercase text-[10px] tracking-wider gaming-font transition">
+ОТЛИЧНО
+</button>
+</div>
+</div>
+<!-- СЦЕНА 6: Сцена сражения -->
+<div id="battleScene" class="hidden absolute inset-0 bg-black z-20 flex flex-col items-center justify-center">
+<!-- Хоррор-эффекты: Тьма, Потеря Рассудка, VHS Шум -->
+<div id="horrorVhsOverlay" class="hidden absolute inset-0 pointer-events-none z-20">
+<div class="vhs-noise"></div>
+<div class="vhs-darkness"></div>
+</div>
+<!-- Интро затемнение перед боем -->
+<div id="battleIntroOverlay" class="absolute inset-0 bg-black/95 flex flex-col items-center justify-center z-50 transition-all duration-500">
+<div class="text-center">
+<h2 class="gaming-font text-red-500 text-lg mb-2">ЛОКАЦИЯ: <span id="introLocName">АРМИЯ</span></h2>
+<p class="text-gray-400 text-xs mb-8">Приготовьтесь к сражению!</p>
+<div id="battleCountdown" class="gaming-font text-6xl text-white">3</div>
+</div>
+<div class="absolute bottom-12 text-center text-xs text-gray-500">
+WASD - Движение, Пробел - Прыжок, Мышь - Удар.<br>
+Суперудар: X. Гиперсила: Z. Пригнуться: Shift.<br>
+Новые слоты быстрого использования Q / R для собранного лута!
+</div>
+</div>
+<!-- Интерфейс здоровья боя (HUD) + СЛОТЫ ЛУТА -->
+<div class="absolute top-4 left-4 right-4 z-40 flex justify-between items-center pointer-events-none">
+<!-- HP Игрока -->
+<div class="bg-slate-900/95 p-3 rounded-xl border border-slate-800 w-1/3 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-800 overflow-hidden border border-red-500 shrink-0">
+<img id="battlePlayerImg" src="" class="w-full h-full object-cover">
+</div>
+<div class="w-full">
+<div class="flex justify-between text-[10px] text-white font-bold mb-1">
+<span id="battlePlayerName">MELL</span>
+<span id="playerHpText">1500 / 1500</span>
+</div>
+<div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden border border-slate-700 mb-1">
+<div id="playerHpBar" class="bg-gradient-to-r from-red-600 to-amber-500 h-full w-full transition-all duration-100"></div>
+</div>
+<!-- Шкала заряда Омайгад (Видна только Омайгаду!) -->
+<div id="omaygadChargeHUD" class="hidden w-full bg-slate-950 h-2 rounded overflow-hidden border border-slate-800 mb-1">
+<div id="omaygadChargeBar" class="bg-gradient-to-r from-amber-400 to-yellow-300 h-full w-0"></div>
+</div>
+<!-- Индикатор гиперзаряда -->
+<div id="hyperHUD" class="hidden text-[8px] font-bold text-pink-400 flex justify-between items-center">
+<span>ГИПЕРСИЛА [Z]: <span id="hyperChargeLabel">3/3</span></span>
+<span id="hyperStatusText" class="text-gray-400">ГОТОВО</span>
+</div>
+</div>
+</div>
+<!-- Центральное уведомление о волне + Парирование + Инвентарь боя -->
+<div class="flex flex-col items-center gap-2">
+<div id="battleStatusMsg" class="gaming-font text-[9px] text-red-500 uppercase tracking-widest bg-slate-900/90 py-2 px-6 rounded-full border border-slate-800 text-center">
+ВОЛНА 1: ПОМОЩНИКИ
+</div>
+<!-- Панель Быстрых Слотов для Лута -->
+<div id="battleLootHUD" class="hidden flex gap-4 pointer-events-auto bg-slate-900/90 p-2 rounded-xl border border-slate-800">
+<div id="lootSlotQ" class="w-14 h-14 bg-slate-950 rounded-lg border border-slate-700 flex flex-col items-center justify-center relative">
+<span class="text-[9px] text-gray-500 absolute top-0.5 left-1">Q</span>
+<div id="lootIconQ" class="text-xl"></div>
+<span id="lootLabelQ" class="text-[8px] text-gray-400 font-semibold text-center mt-1">Пусто</span>
+</div>
+<div id="lootSlotR" class="w-14 h-14 bg-slate-950 rounded-lg border border-slate-700 flex flex-col items-center justify-center relative">
+<span class="text-[9px] text-gray-500 absolute top-0.5 left-1">R</span>
+<div id="lootIconR" class="text-xl"></div>
+<span id="lootLabelR" class="text-[8px] text-gray-400 font-semibold text-center mt-1">Пусто</span>
+</div>
+</div>
+<!-- Кнопка Парирования -->
+<div id="parryPromptContainer" class="hidden pointer-events-auto">
+<button onclick="handleParrySuccess()" class="bg-yellow-500 hover:bg-yellow-400 border-4 border-yellow-300 text-black font-extrabold px-6 py-2 rounded-xl text-xs uppercase animate-pulse gaming-font">
+ПАРИРОВАТЬ! [КЛИК]
+</button>
+</div>
+</div>
+<!-- HP Врага/Босса -->
+<div class="bg-slate-900/95 p-3 rounded-xl border border-slate-800 w-1/3 flex items-center gap-3">
+<div class="w-full text-right">
+<div class="flex justify-between text-[10px] text-white font-bold mb-1">
+<span id="enemyHpText">1500 / 1500</span>
+<span id="enemyNameText">ПОДЧИНЕННЫЕ</span>
+</div>
+<div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden border border-slate-700">
+<div id="enemyHpBar" class="bg-gradient-to-r from-red-600 to-orange-500 h-full w-full transition-all duration-100"></div>
+</div>
+</div>
+<div class="w-10 h-10 rounded-full bg-slate-800 overflow-hidden border border-red-500 shrink-0 flex items-center justify-center text-white text-lg">
+<i class="fas fa-skull"></i>
+</div>
+</div>
+</div>
+<!-- Реплики босса -->
+<div id="bossSpeechBubble" class="hidden absolute top-24 left-1/2 -translate-x-1/2 bg-white text-black font-semibold text-xs md:text-sm py-2 px-6 rounded-2xl border-2 border-red-600 shadow-xl z-45 max-w-md text-center pointer-events-none">
+<p id="bossSpeechText">Хаха! Вам не победить!</p>
+</div>
+<!-- Фильтр ядовитого пола -->
+<div id="toxicFloorOverlay" class="hidden absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-green-500/50 to-transparent z-10 pointer-events-none animate-pulse">
+<div class="absolute bottom-2 left-1/2 -translate-x-1/2 gaming-font text-[9px] text-green-400 tracking-wider">ЯДОВИТЫЙ ПОЛ! ПРЫГАЙТЕ НА КРОВАТИ!</div>
+</div>
+<!-- Интерактивное Окно Шкафов в Мурино Часть 2 -->
+<div id="murinoWardrobeOverlay" class="hidden absolute inset-0 bg-red-950/20 z-45 flex items-center justify-center gap-12">
+<button onclick="hideInCabinet(0)" class="bg-slate-900 border-4 border-amber-600 hover:border-amber-400 w-40 h-80 rounded-lg flex flex-col justify-between items-center p-6 text-center transform hover:scale-105 transition-all">
+<span class="text-4xl">🚪</span>
+<span class="text-sm font-bold uppercase text-amber-500">Шкаф 1</span>
+<span class="text-xs text-gray-400">[Кликни чтобы спрятаться]</span>
+</button>
+<button onclick="hideInCabinet(1)" class="bg-slate-900 border-4 border-amber-600 hover:border-amber-400 w-40 h-80 rounded-lg flex flex-col justify-between items-center p-6 text-center transform hover:scale-105 transition-all">
+<span class="text-4xl">🚪</span>
+<span class="text-sm font-bold uppercase text-amber-500">Шкаф 2</span>
+<span class="text-xs text-gray-400">[Кликни чтобы спрятаться]</span>
+</button>
+</div>
+<!-- Игровой холст боя -->
+<canvas id="battleCanvas" class="w-full h-full block bg-slate-900"></canvas>
+</div>
+<!-- СЦЕНА 7: Экраны Победы / Поражения -->
+<div id="victoryOverlay" class="hidden absolute inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-6 text-center">
+<h1 class="gaming-font text-yellow-400 text-3xl md:text-5xl animate-bounce mb-4 tracking-widest">НОКАУТ!</h1>
+<p class="text-gray-300 max-w-md text-sm mb-8">Вы успешно зачистили эту локацию!</p>
+<div class="bg-slate-900 border-2 border-yellow-500 rounded-2xl p-6 mb-8 w-64 space-y-4 shadow-[0_0_20px_rgba(234,179,8,0.3)]">
+<div class="flex justify-between items-center text-sm">
+<span class="text-gray-400">Награда монет:</span>
+<span class="text-amber-500 font-bold flex items-center gap-1"><i class="fas fa-coins"></i> <span id="rewardCoinsText">+0</span></span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-gray-400">Награда очков:</span>
+<span class="text-yellow-400 font-bold flex items-center gap-1"><i class="fas fa-star"></i> <span id="rewardPointsText">+0</span></span>
+</div>
+</div>
+<button onclick="exitBattle(true)" class="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3 px-8 rounded-xl uppercase tracking-wider gaming-font text-xs transition">
+ПРОДОЛЖИТЬ
+</button>
+</div>
+<div id="defeatOverlay" class="hidden absolute inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-6 text-center">
+<h1 class="gaming-font text-red-600 text-3xl md:text-5xl animate-pulse mb-4 tracking-widest">ПОРАЖЕНИЕ</h1>
+<p id="defeatTextReason" class="text-gray-300 max-w-md text-sm mb-8">Вы не справились на этот раз. Прокачайте своего героя, купите гиперсилу и попробуйте снова!</p>
+<button onclick="exitBattle(false)" class="bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider gaming-font text-xs transition">
+НАЧАТЬ ЗАНОВО
+</button>
+</div>
+</div>
+<script>
+let isMusicPlaying = false;
+let isSoundEffectsMuted = false;
+function toggleMusic() {
+const mMenu = document.getElementById('bgMusicMenu');
+const mArmy = document.getElementById('bgMusicArmy');
+const mMur1 = document.getElementById('bgMusicMurino1');
+const mMur2 = document.getElementById('bgMusicMurino2');
+isMusicPlaying = !isMusicPlaying;
+const icon = document.getElementById('musicIcon');
+if (!isMusicPlaying) {
+mMenu.pause();
+mArmy.pause();
+mMur1.pause();
+mMur2.pause();
+icon.className = 'fas fa-music text-gray-500';
+} else {
+icon.className = 'fas fa-music text-red-500 animate-pulse';
+playCurrentStageMusic();
+}
+}
+function playCurrentStageMusic() {
+if (!isMusicPlaying) return;
+const mMenu = document.getElementById('bgMusicMenu');
+const mArmy = document.getElementById('bgMusicArmy');
+const mMur1 = document.getElementById('bgMusicMurino1');
+const mMur2 = document.getElementById('bgMusicMurino2');
+mMenu.pause();
+mArmy.pause();
+mMur1.pause();
+mMur2.pause();
+if (!battleState.active) {
+mMenu.currentTime = 0;
+mMenu.play().catch(e => console.log('Audio init blocked.'));
+} else {
+if (gameState.currentLocation === 'Army') {
+mArmy.currentTime = 0;
+mArmy.play().catch(e => {});
+} else if (gameState.currentLocation === 'Murino_1') {
+mMur1.currentTime = 0;
+mMur1.play().catch(e => {});
+} else if (gameState.currentLocation === 'Murino_2' || gameState.currentLocation === 'Murino_3') {
+mMur2.currentTime = 0;
+mMur2.play().catch(e => {});
+}
+}
+}
+function toggleSound() {
+isSoundEffectsMuted = !isSoundEffectsMuted;
+const icon = document.getElementById('soundIcon');
+icon.className = isSoundEffectsMuted ? 'fas fa-volume-mute text-gray-500' : 'fas fa-volume-up text-white';
+}
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSynthesizedSound(freq, duration, type = 'sine', decay = true) {
+if (isSoundEffectsMuted) return;
+try {
+if (audioCtx.state === 'suspended') {
+audioCtx.resume();
+}
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+osc.type = type;
+osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+if (decay) {
+gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+}
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+osc.start();
+osc.stop(audioCtx.currentTime + duration);
+} catch (err) {
+console.warn("Ошибка звука: ", err);
+}
+}
+function playPunchSound() { playSynthesizedSound(130, 0.1, 'sawtooth'); }
+function playJumpSound() { playSynthesizedSound(320, 0.12, 'sine'); }
+function playExplosionSound() { playSynthesizedSound(80, 0.5, 'triangle', true); }
+function playLaserSound() { playSynthesizedSound(900, 0.15, 'sawtooth'); }
+function playTickSound() { playSynthesizedSound(1000, 0.05, 'triangle'); }
+function playDialogueSound() { playSynthesizedSound(450, 0.08, 'triangle'); }
+function playLevelUpSound() {
+const notes = [261, 329, 392, 523];
+notes.forEach((note, i) => setTimeout(() => playSynthesizedSound(note, 0.2, 'sine'), i * 100));
+}
+const HEROES_DB = {
+Mell: {
+id: "Mell",
+name: "Mell",
+rarity: "Стартовый",
+img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeYnkXnb1ypzbGzYabcpPt7hWLDHUktc_BIQ&s",
+baseHp: 1500,
+hpPerLevel: 150,
+baseDmg: 100,
+dmgPerLevel: 100,
+desc: "Ближний бой кулаками. Быстрые и разрушительные комбинации.",
+superDesc: "Прыжок Смерти (X): Взмывает в воздух, выбирая область кликом, и приземляется с огромной мощью. Требуется 9 уровень.",
+attackType: "melee_fist"
+},
+Pucheglaz: {
+id: "Pucheglaz",
+name: "Пучеглазость",
+rarity: "Обычный",
+img: "https://s10.iimage.su/s/30/gwwpDxexycPhaWfrfzO9g8aYvWRj1BfKXBfpQmQhv.jpg",
+baseHp: 1500,
+hpPerLevel: 100,
+baseDmg: 90,  
+dmgPerLevel: 40,
+desc: "Атакует своими глазами, которые летят вперед на среднее расстояние.",
+superDesc: "Шоковая Пучеглазость (X): 2 глаза вылетают влево и вправо по 3 раза автоматически. Требуется 9 уровень.",
+attackType: "eyes"
+},
+Smena2: {
+id: "Smena2",
+name: "2 смена",
+rarity: "Обычный",
+img: "https://s10.iimage.su/s/30/th_gNzlEc1x44I93mIjLqiVa9SXRBJ1kXOFdzUSKQP12.jpg",
+baseHp: 1400,
+hpPerLevel: 90,
+baseDmg: 100,
+dmgPerLevel: 25,
+desc: "Атакует длинным носом. При атаке создает щит, который уменьшает получаемый урон до 70%.",
+superDesc: "Ускорение Смены (X): Повышает скорость бега и силу в 2 раза на 3 секунды. Требуется 9 уровень.",
+attackType: "nose"
+},
+Otstalost: {
+id: "Otstalost",
+name: "Отсталость",
+rarity: "Редкий",
+img: "https://s10.iimage.su/s/30/th_gI0sZqkxuzRKyJMQYkwf7km6Q7IIbu6Xnn7Gagb3f.jpg",
+baseHp: 1700,
+hpPerLevel: 50,
+baseDmg: 40,
+dmgPerLevel: 40,
+desc: "Атакует цифрой 67, накладывающей безумие. При безумии враги калечат друг друга.",
+superDesc: "Аура Безумия (X): В течение 5 секунд атаки мгновенно погружают врагов в стопроцентное безумие. Требуется 9 уровень.",
+attackType: "madness"
+},
+Pyramid: {
+id: "Pyramid",
+name: "Пирамида красности",
+rarity: "Редкий",
+img: "https://s10.iimage.su/s/30/th_gvRmx8ex77f78qPLFSpFMpTMsfRQEbTCTctnSkj76.jpg",
+baseHp: 1300,
+hpPerLevel: 100,
+baseDmg: 170,
+dmgPerLevel: 30,
+desc: "Кидает вращающуюся пирамиду. Направление выбирается на 360 градусов!",
+superDesc: "Левитация Пирамиды (X): Герой плавно взмывает в воздух для тактического полета. Требуется 9 уровень.",
+attackType: "pyramid"
+},
+Puglivost: {
+id: "Puglivost",
+name: "Пугливость",
+rarity: "Редкий",
+img: "https://i.ibb.co/jPvLP2CP/photo-2026-05-31-06-46-39.jpg",
+baseHp: 1000,
+hpPerLevel: 60,
+baseDmg: 80,
+dmgPerLevel: 30,
+desc: "Атакует мощным пробивающим красным лазером.",
+superDesc: "Сдвоенный Лазер (X): Удваивает испускаемый пучок лазеров навсегда (до первой смерти!). Требуется 9 уровень.",
+attackType: "laser_pierce"
+},
+Soplya: {
+id: "Soplya",
+name: "Сопля",
+rarity: "Мифический",
+img: "https://s10.iimage.su/s/30/th_gO5pi7lxjPSXKglgKP5Hfca2odIAb5RwQK7HBDIyF.jpg",
+baseHp: 900,
+hpPerLevel: 100,
+baseDmg: 200,
+dmgPerLevel: 100,
+desc: "Базовый урон сопли дамажит на полу. Хил работает ТОЛЬКО при ур == 9 И активной суперсиле.",
+superDesc: "Супер Сопля (X): Прямое попадание отравляет врага. При попадании на пол создает Супер-Лужу, которая хилит Соплю ТОЛЬКО на 9 ур под суперсилой.",
+attackType: "soplya"
+},
+Oglushaemost: {
+id: "Oglushaemost",
+name: "Оглушаемость",
+rarity: "Мифический",
+img: "https://s10.iimage.su/s/30/th_gOr2OsGx78XX3GjaX9attU6B7XwWy5kCOf2gD2bz6.jpg",
+baseHp: 1300,
+hpPerLevel: 100,
+baseDmg: 10,
+dmgPerLevel: 20,
+desc: "Урон возрастает на дистанции. Звуковая волна калечит толпы врагов.",
+superDesc: "Мгновенное Оглушение (X): Выводит 'Обязательно используйте атаку'. Следующая атака станит врага на 1с. Требуется 9 ур.",
+attackType: "wave"
+},
+Syr: {
+id: "Syr",
+name: "Сыр",
+rarity: "Особый",
+img: "https://s10.iimage.su/s/30/th_gZtt9LPxYeyoZczvYNw6UYTbhz7Ez6ozLDQKQwYJi.jpg",
+baseHp: 800,
+hpPerLevel: 300,
+baseDmg: 500,
+dmgPerLevel: 100,
+desc: "Атакует броском бутылок водки. Очень высокая скорость атаки.",
+superDesc: "Водочный Дождь (X): Бутылки водки падают по всей карте в течение 4 секунд. Требуется 9 уровень.",
+attackType: "syr"
+},
+Omaygad: {
+id: "Omaygad",
+name: "Омайгад",
+rarity: "Особый",
+img: "https://i.ibb.co/4wYq62sh/photo-2026-05-31-05-14-58.jpg",
+baseHp: 1600,
+hpPerLevel: 120,
+baseDmg: 120,
+dmgPerLevel: 45,
+desc: "Атакует огромными руками. Шкала «Силы удара» видна только для этого персонажа!",
+superDesc: "Отбрасывание (9+ ур): По заполнению шкалы следующая атака рук отталкивает всех врагов.",
+attackType: "hands"
+}
+};
+let gameState = {
+coins: 1000,
+points: 0,
+crystals: 0,
+currentLocation: 'Army',
+selectedHero: 'Mell',
+completedLocations: [],
+heroLevels: {
+Mell: 1, Pucheglaz: 1, Smena2: 1, Otstalost: 1, Pyramid: 1, Puglivost: 1, Soplya: 1, Oglushaemost: 1, Syr: 1, Omaygad: 1
+},
+unlockedHeroes: ['Mell'],
+hyperUnlocked: false,
+hyperCharges: 0,
+hyperPrice: 3
+};
+function saveGameState() {
+localStorage.setItem('MellstroFight_v3_state_h', JSON.stringify(gameState));
+}
+function loadGameState() {
+const saved = localStorage.getItem('MellstroFight_v3_state_h');
+if (saved) {
+try {
+gameState = JSON.parse(saved);
+} catch (e) {
+console.error(e);
+}
+}
+updateUI();
+}
+function exchangePointsForCoins() {
+if (gameState.points >= 2000) {
+gameState.points -= 2000;
+gameState.coins += 200;
+playLevelUpSound();
+showFloatingMessage("Обмен совершен! -2000 очков -> +200 монет!");
+updateUI();
+renderHeroesScreen();
+} else {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Недостаточно очков! Требуется 2000 очков.");
+}
+}
+function updateUI() {
+saveGameState();
+document.getElementById('scoreDisplay').innerText = gameState.points;
+document.getElementById('coinsDisplay').innerText = gameState.coins;
+document.getElementById('crystalsDisplay').innerText = gameState.crystals;
+document.getElementById('shopCrystalsDisplay').innerText = gameState.crystals;
+const hero = HEROES_DB[gameState.selectedHero] || HEROES_DB.Mell;
+const lv = gameState.heroLevels[hero.id] || 1;
+document.getElementById('activeHeroName').innerText = hero.name;
+document.getElementById('selectedHeroNameLabel').innerText = hero.name;
+document.getElementById('selectedHeroImg').src = hero.img || "https://placehold.co/150";
+const curDmg = hero.baseDmg + (lv - 1) * hero.dmgPerLevel;
+document.getElementById('heroPowerTitle').innerText = `СИЛА: ${hero.rarity.toUpperCase()} (УРОВЕНЬ ${lv}) - Сила: ${curDmg}`;
+if (lv >= 9) {
+document.getElementById('heroSpecialsLabel').innerHTML = `Суперсила: <span class="text-green-400 font-bold">АКТИВИРОВАНА (X)</span>`;
+} else {
+document.getElementById('heroSpecialsLabel').innerHTML = `Суперсила: <span class="text-red-500 font-bold">${hero.name} (X)</span> - откроется на 9 ур.`;
+}
+const locNames = {
+Army: 'Армия (Старт)',
+Murino_1: 'Мурино - Улица',
+Murino_2: 'Мурино - Дом и Подвал',
+Murino_3: 'Мурино - Туман'
+};
+document.getElementById('selectedLocDisplay').innerText = locNames[gameState.currentLocation] || 'Армия';
+const locBtnBg = document.getElementById('locationBtnBg');
+const locBtnLabel = document.getElementById('locationBtnLabel');
+if (gameState.currentLocation.startsWith('Murino')) {
+locBtnBg.style.backgroundImage = "url('https://avatars.mds.yandex.net/i?id=368eca4c07965278b14cd8e894bac250_l-5642274-images-thumbs&n=13')";
+locBtnLabel.innerText = `ВЫБРАТЬ ЛОКАЦИЮ (${locNames[gameState.currentLocation].toUpperCase()})`;
+} else {
+locBtnBg.style.backgroundImage = "url('https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg')";
+locBtnLabel.innerText = "ВЫБРАТЬ ЛОКАЦИЮ (АРМИЯ)";
+}
+const buyHyperBtn = document.getElementById('buyHyperBtn');
+const hyperDescText = document.getElementById('hyperDescText');
+if (gameState.hyperUnlocked && gameState.hyperCharges > 0) {
+buyHyperBtn.disabled = true;
+buyHyperBtn.className = "w-full mt-3 bg-gray-600 text-gray-300 font-bold py-2 rounded-lg cursor-not-allowed text-[11px]";
+buyHyperBtn.innerText = `АКТИВНО (${gameState.hyperCharges} БОЯ)`;
+hyperDescText.innerText = "Гиперсила куплена и готова к использованию в бою на клавишу Z!";
+} else {
+buyHyperBtn.disabled = false;
+buyHyperBtn.className = "w-full mt-3 bg-pink-600 hover:bg-pink-500 text-white font-bold py-2 rounded-lg transition text-[11px] flex items-center justify-center gap-1";
+document.getElementById('hyperPriceLabel').innerText = `Купить за ${gameState.hyperPrice}`;
+hyperDescText.innerText = `2 кулака по сторонам и х2 урон в бою на 3 секунды [Кнопка Z]. Действует 3 боя.`;
+}
+updateLocationButtons();
+}
+function updateLocationButtons() {
+const isArmyPassed = gameState.completedLocations.includes('Army');
+const isMur1Passed = gameState.completedLocations.includes('Murino_1');
+const isMur2Passed = gameState.completedLocations.includes('Murino_2');
+const isMur3Passed = false; 
+const locMurinoBtn = document.getElementById('locMurinoBtn');
+const locMurinoBadge = document.getElementById('locMurinoBadge');
+const locMurinoPoints = document.getElementById('locMurinoPoints');
+if (isArmyPassed) {
+locMurinoBtn.classList.remove('border-slate-800', 'opacity-60');
+locMurinoBtn.classList.add('border-emerald-500');
+locMurinoBadge.className = 'bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font';
+locMurinoBadge.innerHTML = 'ДОСТУПНО';
+locMurinoPoints.className = 'text-[10px] text-emerald-400';
+locMurinoPoints.innerText = 'Доступно!';
+} else {
+locMurinoBtn.classList.add('border-slate-800', 'opacity-60');
+locMurinoBadge.className = 'bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font';
+locMurinoBadge.innerHTML = '<i class="fas fa-lock mr-1"></i> ЗАКРЫТО';
+locMurinoPoints.innerText = 'Пройти Армию';
+}
+const locMolochnoeBtn = document.getElementById('locMolochnoeBtn');
+const locMolochnoeBadge = document.getElementById('locMolochnoeBadge');
+const locMolochnoePoints = document.getElementById('locMolochnoePoints');
+if (isArmyPassed && isMur1Passed && isMur2Passed && isMur3Passed) {
+locMolochnoeBtn.classList.remove('border-slate-800', 'opacity-60');
+locMolochnoeBtn.classList.add('border-emerald-500');
+locMolochnoeBadge.className = 'bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font';
+locMolochnoeBadge.innerHTML = 'ДОСТУПНО';
+locMolochnoePoints.className = 'text-[10px] text-emerald-400';
+locMolochnoePoints.innerText = 'Доступно!';
+} else {
+locMolochnoeBtn.classList.add('border-slate-800', 'opacity-60');
+locMolochnoeBadge.className = 'bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font';
+locMolochnoeBadge.innerHTML = '<i class="fas fa-lock mr-1"></i> ЗАКРЫТО';
+locMolochnoePoints.innerText = 'Пройти все, включая Мурино 3';
+}
+const locMytishchiBtn = document.getElementById('locMytishchiBtn');
+const locMytishchiBadge = document.getElementById('locMytishchiBadge');
+const locMytishchiPoints = document.getElementById('locMytishchiPoints');
+if (gameState.completedLocations.includes('Molochnoe')) {
+locMytishchiBtn.classList.remove('border-slate-800', 'opacity-60');
+locMytishchiBtn.classList.add('border-emerald-500');
+locMytishchiBadge.className = 'bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font';
+locMytishchiBadge.innerHTML = 'ДОСТУПНО';
+locMytishchiPoints.className = 'text-[10px] text-emerald-400';
+locMytishchiPoints.innerText = 'Доступно!';
+} else {
+locMytishchiBtn.classList.add('border-slate-800', 'opacity-60');
+locMytishchiBadge.className = 'bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font';
+locMytishchiBadge.innerHTML = '<i class="fas fa-lock mr-1"></i> ЗАКРЫТО';
+locMytishchiPoints.innerText = 'Пройти Молочное';
+}
+}
+function renderHeroesScreen() {
+const grid = document.getElementById('heroesGridContainer');
+grid.innerHTML = '';
+Object.values(HEROES_DB).forEach(hero => {
+const isUnlocked = gameState.unlockedHeroes.includes(hero.id);
+const lv = gameState.heroLevels[hero.id] || 1;
+const isSelected = gameState.selectedHero === hero.id;
+const card = document.createElement('button');
+card.className = `p-2 rounded-xl flex flex-col items-center justify-center relative transition ${
+isSelected ? 'bg-red-950/40 border-2 border-red-500 shadow-md' : 'bg-slate-900 border border-slate-800 hover:bg-slate-800'
+} ${!isUnlocked ? 'opacity-50' : ''}`;
+card.onclick = () => {
+if (isUnlocked) {
+gameState.selectedHero = hero.id;
+playSynthesizedSound(300, 0.1);
+updateUI();
+renderHeroesScreen();
+showHeroDetail(hero.id);
+} else {
+playSynthesizedSound(120, 0.2, 'sawtooth');
+showFloatingMessage("Этого героя можно получить в боксах!");
+}
+};
+const imgDiv = document.createElement('div');
+imgDiv.className = "w-14 h-14 rounded-full overflow-hidden border border-slate-700 bg-slate-800 relative flex items-center justify-center";
+if (isUnlocked) {
+const img = document.createElement('img');
+img.src = hero.img || "https://placehold.co/150";
+img.className = "w-full h-full object-cover";
+imgDiv.appendChild(img);
+} else {
+const lockIcon = document.createElement('i');
+lockIcon.className = "fas fa-lock text-slate-500 text-lg";
+imgDiv.appendChild(lockIcon);
+}
+card.appendChild(imgDiv);
+const nameSpan = document.createElement('span');
+nameSpan.className = "font-bold text-xs mt-2 text-white block truncate w-full text-center";
+nameSpan.innerText = isUnlocked ? hero.name : "Заблокировано";
+card.appendChild(nameSpan);
+const subSpan = document.createElement('span');
+subSpan.className = `text-[9px] font-bold ${
+hero.rarity === 'Редкий' ? 'text-blue-400' : 'text-gray-400'
+}`;
+subSpan.innerText = isUnlocked ? `Ур. ${lv}` : hero.rarity;
+card.appendChild(subSpan);
+grid.appendChild(card);
+});
+showHeroDetail(gameState.selectedHero);
+}
+function showHeroDetail(heroId) {
+const hero = HEROES_DB[heroId] || HEROES_DB.Mell;
+const lv = gameState.heroLevels[heroId] || 1;
+const curDmg = hero.baseDmg + (lv - 1) * hero.dmgPerLevel;
+const curHp = hero.baseHp + (lv - 1) * hero.hpPerLevel;
+document.getElementById('detailHeroName').innerText = hero.name;
+document.getElementById('detailHeroLevel').innerText = `Ур. ${lv}`;
+document.getElementById('detailHeroRarity').innerText = hero.rarity;
+document.getElementById('detailDamage').innerText = curDmg;
+document.getElementById('detailHp').innerText = curHp;
+document.getElementById('damageNextLv').innerText = `След. уровень: +${hero.dmgPerLevel} Урона / +${hero.hpPerLevel} Здоровья`;
+document.getElementById('detailAttackDesc').innerText = hero.desc;
+
+// ОПТИМИЗИРОВАННОЕ УВЕЛИЧЕНИЕ ЦЕНЫ АПГРЕЙДА (минус 1500 монет на каждый уровень)
+const baseCost = Math.max(200, (lv * 1500) - 1500);
+const upgradeCost = Math.max(50, Math.floor(baseCost * 1.2));
+const upgradeHeroBtn = document.getElementById('upgradeHeroBtn');
+if (lv >= 9) {
+upgradeHeroBtn.disabled = true;
+upgradeHeroBtn.className = "w-full bg-slate-700 text-gray-400 font-bold py-3 px-4 rounded-xl cursor-not-allowed flex items-center justify-between";
+upgradeHeroBtn.innerHTML = `<span class="text-xs uppercase gaming-font">МАКСИМАЛЬНЫЙ УРОВЕНЬ (9) ДОСТИГНУТ</span> <span class="bg-black/30 px-3 py-1 rounded text-xs text-gray-500 font-bold">MAX</span>`;
+} else {
+upgradeHeroBtn.disabled = false;
+upgradeHeroBtn.className = "w-full bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition flex items-center justify-between";
+upgradeHeroBtn.innerHTML = `
+<span class="text-xs uppercase gaming-font">ПОВЫСИТЬ УРОВЕНЬ</span>
+<span class="bg-black/30 px-3 py-1 rounded text-xs text-amber-500 flex items-center gap-1 font-bold">
+<i class="fas fa-coins text-amber-500"></i> <span id="upgradeCostDisplay">${upgradeCost}</span>
+</span>
+`;
+}
+const progressPct = Math.min((lv / 9) * 100, 100);
+document.getElementById('heroLevelProgress').style.width = `${progressPct}%`;
+const superText = document.getElementById('superUnlockText');
+if (lv >= 9) {
+superText.className = "text-green-400 font-bold";
+superText.innerText = hero.superDesc;
+} else {
+superText.className = "text-gray-500";
+superText.innerText = `Разблокируется строго на 9 ур. сил!
+${hero.superDesc}`;
+}
+}
+function upgradeHero() {
+const heroId = gameState.selectedHero;
+const lv = gameState.heroLevels[heroId] || 1;
+if (lv >= 9) {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Максимальный уровень (9) достигнут!");
+return;
+}
+// ОПТИМИЗИРОВАННОЕ УВЕЛИЧЕНИЕ ЦЕНЫ АПГРЕЙДА (минус 1500 монет на каждый уровень)
+const baseCost = Math.max(200, (lv * 1500) - 1500);
+const upgradeCost = Math.max(50, Math.floor(baseCost * 1.2));
+if (gameState.coins >= upgradeCost) {
+gameState.coins -= upgradeCost;
+gameState.heroLevels[heroId] = lv + 1;
+playLevelUpSound();
+showFloatingMessage(`Ваш герой прокачан до уровня ${lv + 1}!`);
+updateUI();
+renderHeroesScreen();
+} else {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Недостаточно монет для улучшения героя!");
+}
+}
+function startGame() {
+playSynthesizedSound(400, 0.15);
+const splash = document.getElementById('splashScene');
+splash.classList.add('opacity-0');
+setTimeout(() => {
+splash.classList.add('hidden');
+const menu = document.getElementById('menuScene');
+menu.classList.remove('hidden');
+menu.classList.add('opacity-0');
+setTimeout(() => {
+menu.classList.remove('opacity-0');
+menu.classList.add('transition-opacity', 'duration-1000');
+playCurrentStageMusic();
+}, 50);
+}, 1000);
+}
+function showCredits() {
+playSynthesizedSound(300, 0.1);
+document.getElementById('creditsModal').classList.remove('hidden');
+}
+function hideCredits() {
+playSynthesizedSound(200, 0.1);
+document.getElementById('creditsModal').classList.add('hidden');
+}
+function backToMenu() {
+playSynthesizedSound(200, 0.1);
+document.getElementById('locationScene').classList.add('hidden');
+document.getElementById('heroesScene').classList.add('hidden');
+document.getElementById('shopScene').classList.add('hidden');
+document.getElementById('menuScene').classList.remove('hidden');
+playCurrentStageMusic();
+updateUI();
+}
+function openLocationSelect() {
+playSynthesizedSound(300, 0.1);
+document.getElementById('menuScene').classList.add('hidden');
+document.getElementById('locationScene').classList.remove('hidden');
+updateUI();
+}
+function openMurinoSubparts() {
+const isArmyPassed = gameState.completedLocations.includes('Army');
+if (isArmyPassed) {
+playSynthesizedSound(300, 0.1);
+document.getElementById('locationScene').classList.add('hidden');
+document.getElementById('murinoPartsModal').classList.remove('hidden');
+const part2Btn = document.getElementById('murinoPart2Btn');
+const part2Badge = document.getElementById('murinoPart2Badge');
+const part2Title = document.getElementById('murinoPart2Title');
+const part2Desc = document.getElementById('murinoPart2Desc');
+const isPart1Passed = gameState.completedLocations.includes('Murino_1');
+if (isPart1Passed) {
+part2Btn.classList.remove('opacity-50', 'border-slate-800');
+part2Btn.classList.add('border-emerald-500');
+part2Badge.className = 'bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font';
+part2Badge.innerHTML = 'ДОСТУПНО';
+part2Title.className = 'font-bold text-lg text-white';
+part2Desc.className = 'text-[10px] text-emerald-400';
+part2Desc.innerText = 'Новый босслайн и фруктовый туман!';
+} else {
+part2Btn.classList.add('opacity-50', 'border-slate-800');
+part2Badge.className = 'bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font';
+part2Badge.innerHTML = 'ЗАКРЫТО';
+part2Title.className = 'font-bold text-lg text-gray-500';
+part2Desc.className = 'text-[10px] text-gray-500';
+part2Desc.innerText = 'Пройдите Часть 1';
+}
+} else {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Требуется пройденная Армия!");
+}
+}
+function closeMurinoSubparts() {
+document.getElementById('murinoPartsModal').classList.add('hidden');
+document.getElementById('locationScene').classList.remove('hidden');
+}
+function selectMurinoPart(partName, isAllowed) {
+if (partName === 'Murino_2') {
+isAllowed = gameState.completedLocations.includes('Murino_1');
+}
+if (isAllowed) {
+playSynthesizedSound(400, 0.15);
+gameState.currentLocation = partName;
+document.getElementById('murinoPartsModal').classList.add('hidden');
+backToMenu();
+} else {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Пройдите предыдущую часть Мурино!");
+}
+}
+function openHeroesScreen() {
+playSynthesizedSound(300, 0.1);
+document.getElementById('menuScene').classList.add('hidden');
+document.getElementById('heroesScene').classList.remove('hidden');
+renderHeroesScreen();
+updateUI();
+}
+function openShopScreen() {
+playSynthesizedSound(300, 0.1);
+document.getElementById('menuScene').classList.add('hidden');
+document.getElementById('shopScene').classList.remove('hidden');
+updateUI();
+}
+function buyHyperAbility() {
+if (gameState.crystals >= gameState.hyperPrice) {
+gameState.crystals -= gameState.hyperPrice;
+gameState.hyperUnlocked = true;
+gameState.hyperCharges = 3;
+playLevelUpSound();
+showFloatingMessage("Гиперсилка Мелла куплена на 3 боя!");
+updateUI();
+} else {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Недостаточно кристаллов для покупки!");
+}
+}
+function selectLocation(locName, minPoints, defaultAllowed) {
+let isAllowed = defaultAllowed;
+const isArmyPassed = gameState.completedLocations.includes('Army');
+const isMur1Passed = gameState.completedLocations.includes('Murino_1');
+const isMur2Passed = gameState.completedLocations.includes('Murino_2');
+const isMur3Passed = false; 
+if (locName === 'Murino' && isArmyPassed) isAllowed = true;
+if (locName === 'Molochnoe' && isArmyPassed && isMur1Passed && isMur2Passed && isMur3Passed) isAllowed = true;
+if (isAllowed) {
+playSynthesizedSound(400, 0.15);
+gameState.currentLocation = locName;
+backToMenu();
+} else {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+let reason = `Локация закрыта! `;
+if (locName === 'Molochnoe') reason += "Требуется пройти Армию, Мурино 1-2 и заблокированный Мурино 3!";
+if (locName === 'Mytishchi') reason += "Требуется пройти Село Молочное!";
+showFloatingMessage(reason);
+}
+}
+function buyBox(type, cost) {
+if (gameState.coins >= cost) {
+gameState.coins -= cost;
+playSynthesizedSound(350, 0.2, 'sawtooth');
+const boxIndex = type === 'common' ? 1 : type === 'rare' ? 2 : 3;
+const icon = document.getElementById(`boxIcon${boxIndex}`);
+icon.classList.add('shake-element');
+setTimeout(() => {
+icon.classList.remove('shake-element');
+revealBoxReward(type);
+}, 1200);
+} else {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Недостаточно монет для покупки этого бокса!");
+}
+}
+function buyDiamondChest() {
+if (gameState.crystals >= 90) {
+gameState.crystals -= 90;
+playSynthesizedSound(350, 0.2, 'sawtooth');
+const icon = document.getElementById('boxIcon4');
+icon.classList.add('shake-element');
+setTimeout(() => {
+icon.classList.remove('shake-element');
+const chestTypes = ['common', 'rare', 'super'];
+const selectedType = chestTypes[Math.floor(Math.random() * chestTypes.length)];
+const labelMap = { common: 'ОБЫЧНЫХ БОКСА', rare: 'РЕДКИХ БОКСА', super: 'СУПЕР БОКСА' };
+
+const revealIcon = document.getElementById('revealIcon');
+revealIcon.className = "fas fa-boxes text-cyan-400 text-5xl animate-bounce";
+document.getElementById('rewardText').innerText = `3 ${labelMap[selectedType]}! СЕЙЧАС ОНИ БУДУТ ОТКРЫТЫ!`;
+document.getElementById('rewardModal').classList.remove('hidden');
+
+// Последовательное открытие полученных коробок по очереди
+setTimeout(() => { revealBoxReward(selectedType); }, 3000);
+setTimeout(() => { revealBoxReward(selectedType); }, 6500);
+setTimeout(() => { revealBoxReward(selectedType); }, 10000);
+
+updateUI();
+}, 1200);
+} else {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Недостаточно алмазов! Нужно 90 штук.");
+}
+}
+function revealBoxReward(type) {
+let rewardMsg = "";
+let rewardVal = 0;
+const revealIcon = document.getElementById('revealIcon');
+if (type === 'common') {
+rewardVal = Math.floor(Math.random() * 3) + 1;
+gameState.crystals += rewardVal;
+rewardMsg = `${rewardVal} КРИСТАЛЛОВ`;
+revealIcon.className = "fas fa-gem text-cyan-400 text-5xl animate-bounce";
+}
+else if (type === 'rare') {
+const luck = Math.random();
+if (luck > 0.5) {
+const pools = ['Pucheglaz', 'Smena2', 'Otstalost', 'Pyramid', 'Puglivost'];
+const chosen = pools[Math.floor(Math.random() * pools.length)];
+if (!gameState.unlockedHeroes.includes(chosen)) {
+gameState.unlockedHeroes.push(chosen);
+rewardMsg = `НОВЫЙ ГЕРОЙ: ${HEROES_DB[chosen].name.toUpperCase()}!`;
+} else {
+gameState.coins += 200;
+rewardMsg = `ДУБЛИКАТ ${HEROES_DB[chosen].name.toUpperCase()}: +200 МОНЕТ`;
+}
+revealIcon.className = "fas fa-user-ninja text-blue-500 text-5xl animate-bounce";
+} else {
+rewardVal = Math.floor(Math.random() * 6) + 5;
+gameState.crystals += rewardVal;
+rewardMsg = `${rewardVal} КРИСТАЛЛОВ`;
+revealIcon.className = "fas fa-gem text-blue-400 text-5xl animate-bounce";
+}
+}
+else if (type === 'super') {
+const luck = Math.random();
+if (luck > 0.6) {
+const pools = ['Soplya', 'Oglushaemost', 'Syr', 'Omaygad'];
+const chosen = pools[Math.floor(Math.random() * pools.length)];
+if (!gameState.unlockedHeroes.includes(chosen)) {
+gameState.unlockedHeroes.push(chosen);
+rewardMsg = `НОВЫЙ ГЕРОЙ: ${HEROES_DB[chosen].name.toUpperCase()}!`;
+} else {
+gameState.coins += 200;
+rewardMsg = `ДУБЛИКАТ ${HEROES_DB[chosen].name.toUpperCase()}: +200 МОНЕТ`;
+}
+revealIcon.className = "fas fa-user-ninja text-purple-500 text-5xl animate-bounce";
+} else {
+gameState.crystals += 25;
+rewardMsg = "25 КРИСТАЛЛОВ";
+revealIcon.className = "fas fa-gem text-yellow-400 text-5xl animate-bounce";
+}
+}
+document.getElementById('rewardText').innerText = rewardMsg;
+document.getElementById('rewardModal').classList.remove('hidden');
+updateUI();
+}
+function closeRewardModal() {
+playSynthesizedSound(250, 0.1);
+document.getElementById('rewardModal').classList.add('hidden');
+}
+function showFloatingMessage(txt) {
+const popup = document.createElement('div');
+popup.className = "absolute top-16 left-1/2 -translate-x-1/2 bg-slate-900 border-2 border-red-600 text-white text-xs px-6 py-3 rounded-xl shadow-2xl z-50 animate-bounce text-center";
+popup.innerText = txt;
+document.body.appendChild(popup);
+setTimeout(() => popup.remove(), 3000);
+}
+const canvas = document.getElementById('battleCanvas');
+const ctx = canvas.getContext('2d');
+const V_WIDTH = 1200;
+const V_HEIGHT = 600;
+let canvasScaleX = 1;
+let canvasScaleY = 1;
+const imgPreload = {
+Mell: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeYnkXnb1ypzbGzYabcpPt7hWLDHUktc_BIQ&s",
+Pucheglaz: "https://s10.iimage.su/s/30/gwwpDxexycPhaWfrfzO9g8aYvWRj1BfKXBfpQmQhv.jpg",
+Smena2: "https://s10.iimage.su/s/30/th_gNzlEc1x44I93mIjLqiVa9SXRBJ1kXOFdzUSKQP12.jpg",
+Otstalost: "https://s10.iimage.su/s/30/th_gI0sZqkxuzRKyJMQYkwf7km6Q7IIbu6Xnn7Gagb3f.jpg",
+Pyramid: "https://s10.iimage.su/s/30/th_gvRmx8ex77f78qPLFSpFMpTMsfRQEbTCTctnSkj76.jpg",
+Puglivost: "https://i.ibb.co/jPvLP2CP/photo-2026-05-31-06-46-39.jpg",
+Soplya: "https://s10.iimage.su/s/30/th_gO5pi7lxjPSXKglgKP5Hfca2odIAb5RwQK7HBDIyF.jpg",
+Oglushaemost: "https://s10.iimage.su/s/30/th_gOr2OsGx78XX3GjaX9attU6B7XwWy5kCOf2gD2bz6.jpg",
+Syr: "https://s10.iimage.su/s/30/th_gZtt9LPxYeyoZczvYNw6UYTbhz7Ez6ozLDQKQwYJi.jpg",
+Omaygad: "https://i.ibb.co/4wYq62sh/photo-2026-05-31-05-14-58.jpg",
+vodka: "https://s10.iimage.su/s/30/th_g6y6qLwxv95nuJcbeYLmjiCEJePIHz5Z8sCIBYIwS.png",
+ArmyBg: 'https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg',
+Murino1Bg: 'https://avatars.mds.yandex.net/i?id=368eca4c07965278b14cd8e894bac250_l-5642274-images-thumbs&n=13',
+Murino2Bg: 'https://cdnb.artstation.com/p/assets/images/images/053/848/533/large/infinity-vision-dark-cooridoor-preview01.jpg?1663165516',
+Murino3Bg: 'https://cs6.pikabu.ru/video/2017/09/01/4/og_og_1504239048317731297.jpg',
+helper: 'https://s10.iimage.su/s/30/th_gYuXKdxxVePCgH7whlrLwbQMgak5jUzcl2G8Mz7BS.png',
+commander: 'https://s10.iimage.su/s/30/th_gNjDNFWxdsGNNl8udIDUXlRbD8ZSkmmMJn1wdywph.png',
+general: 'https://s10.iimage.su/s/30/th_gIQwNyQxtiO2lpCyfdvt9Vh1OjlGcwpbRutAj1lGD.png',
+skromnik: 'https://static.wikia.nocookie.net/fantasticbeings/images/1/13/IMG_9765.JPG/revision/latest/scale-to-width-down/536?cb=20170913095609&path-prefix=ru',
+mimic_true: 'https://i.pinimg.com/originals/d9/62/30/d96230c1b8282a419aaffd6109fb90f4.jpg?nii=t',
+fog_creature: 'https://avatars.mds.yandex.net/i?id=503a24b487f8f83ff015f57a6f8a60ef2e3b9e7a-10150478-images-thumbs&n=13',
+drun: 'https://i.ibb.co/pD5wY3B/channels4-profile.jpg',
+corridor_monster: 'https://i.pinimg.com/1200x/04/22/22/042222bf7b945078bfb6a5bfbfe3b96d.jpg',
+skrut: 'https://i.pinimg.com/736x/c3/fe/8a/c3fe8a0d6bcbcdeeb4d310e4f5e598e4.jpg',
+red_beast: 'https://i.pinimg.com/originals/2f/ea/d2/2fead28a9cd651e86988518cb8de60bb.png',
+spring_monster: 'https://i.ibb.co/tThrkDCF/i.jpg',
+shadow_creature: 'https://i.ibb.co/5m1VNkJ/7188eedc53c4bde8686236bbafa539f2-no-bg-preview-carve-photos.png',
+trap_item: 'https://i.ibb.co/HT9trWzs/istockphoto-483767002-612x612-no-bg-preview-carve-photos.png',
+flashlight_item: 'https://i.ibb.co/p6wDyCTk/orig-1-no-bg-preview-carve-photos.png',
+knife_asset: 'https://i.ibb.co/8T9p91x/Gemini-Generated-Image-u6ltxau6ltxau6lt-no-bg-preview-carve-photos.png'
+};
+const cachedImages = {};
+Object.entries(imgPreload).forEach(([k, url]) => {
+const img = new Image();
+img.src = url;
+cachedImages[k] = img;
+});
+const keys = {
+KeyW: false, KeyA: false, KeyS: false, KeyD: false,
+Space: false, KeyX: false, KeyZ: false, KeyB: false, KeyV: false,
+ShiftLeft: false, ShiftRight: false,
+KeyE: false, KeyQ: false, KeyR: false
+};
+let mouseX = 0, mouseY = 0;
+let isMouseDown = false;
+window.addEventListener('keydown', (e) => {
+if (e.code in keys) keys[e.code] = true;
+if (e.code === 'KeyX') triggerSuperActivation();
+if (e.code === 'KeyZ') triggerHyperActivation();
+if (e.code === 'KeyQ') useLootItem('Q');
+if (e.code === 'KeyR') useLootItem('R');
+if (e.code === 'KeyE') handlePickupLoot();
+});
+window.addEventListener('keyup', (e) => {
+if (e.code in keys) keys[e.code] = false;
+});
+canvas.addEventListener('mousemove', (e) => {
+const rect = canvas.getBoundingClientRect();
+mouseX = (e.clientX - rect.left) / canvasScaleX;
+mouseY = (e.clientY - rect.top) / canvasScaleY;
+});
+canvas.addEventListener('mousedown', () => {
+isMouseDown = true;
+if (battleState.superAimMode) {
+executeSuperJumpSlam(mouseX, mouseY);
+} else if (battleState.throwAimActive) {
+executePoisonBottleThrow(mouseX, mouseY);
+} else {
+executeNormalAttack();
+}
+});
+canvas.addEventListener('mouseup', () => { isMouseDown = false; });
+function resizeCanvas() {
+const container = document.getElementById('gameContainer');
+if (!container) return;
+canvas.width = container.clientWidth;
+canvas.height = container.clientHeight;
+canvasScaleX = container.clientWidth / V_WIDTH;
+canvasScaleY = container.clientHeight / V_HEIGHT;
+}
+window.addEventListener('resize', resizeCanvas);
+let battleState = {
+active: false,
+phase: 'helpers',
+countdown: 3,
+gameTime: 0,
+superAimMode: false,
+superAimDuration: 1.0,
+toxicFloorActive: false,
+player: null,
+enemies: [],
+projectiles: [],
+puddles: [],
+particles: [],
+beds: [],
+puglivostUpgraded: false,
+puglivostPermDeathUpgrade: false, 
+dialogueTimer: 0,
+customPromptText: '',
+promptTimer: 0,
+playerMoved: false,
+fogRadius: 9999,
+stunningSuperReady: false,
+drunLootContainers: [], 
+battleInventory: {
+Q: null, 
+R: null
+},
+playerShieldTimer: 0,
+playerRegenTimer: 0,
+throwAimActive: false,
+parryActive: false,
+parryTimer: 0,
+parryRegistered: false,
+mimicContamination: 0, 
+dizzinessTimer: 0,     
+keysCollected: 0,      
+shadowsInsideCount: 0, 
+superPressSequence: 0,  
+springJumpTimer: 0,    
+springState: 'idle',
+springTargetX: 0,
+springTargetY: 0,
+fallingFruits: [],      
+goldenKeys: [],         
+introDrunAnimTimer: 0,  
+drunsBled: false,
+lootSpawned: false,
+spikes: [],
+spikePhase: 'cooldown',
+spikeTimer: 3.0,
+hyperActive: false,
+hyperTime: 0,
+hyperCooldown: 0,
+hyperUsedThisGame: false,
+fogPhaseTimer: 0,
+shadowDotTimer: 1.0,
+// Новые таймеры и переменные для фаз
+lightningTimer: 2.0, 
+shadowSpawnTimer: 0
+};
+function resetAllPhaseEffects() {
+battleState.toxicFloorActive = false;
+document.getElementById('toxicFloorOverlay').classList.add('hidden');
+document.getElementById('horrorVhsOverlay').classList.add('hidden');
+document.getElementById('parryPromptContainer').classList.add('hidden');
+battleState.spikes = [];
+battleState.spikePhase = 'cooldown';
+battleState.spikeTimer = 3.0;
+battleState.customPromptText = '';
+battleState.promptTimer = 0;
+battleState.parryActive = false;
+battleState.throwAimActive = false;
+}
+function transitionBattlePhase(newPhase, statusMsg) {
+battleState.phase = newPhase;
+document.getElementById('battleStatusMsg').innerText = statusMsg;
+resetAllPhaseEffects();
+if (battleState.player) {
+battleState.player.lightningDebuff = false;
+}
+}
+function checkCircleRectCollision(circle, rect) {
+let closestX = Math.max(rect.x, Math.min(circle.x, rect.x + rect.w));
+let closestY = Math.max(rect.y, Math.min(circle.y, rect.y + rect.h));
+let distanceX = circle.x - closestX;
+let distanceY = circle.y - closestY;
+let distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
+return distanceSquared < (circle.r * circle.r);
+}
+class Player {
+constructor() {
+const heroId = gameState.selectedHero;
+this.heroInfo = HEROES_DB[heroId] || HEROES_DB.Mell;
+this.level = gameState.heroLevels[heroId] || 1;
+this.x = 150;
+this.y = 400;
+this.vx = 0;
+this.vy = 0;
+// КРУПНЫЙ РАЗМЕР ИГРОКА (+15%)
+this.width = 86;
+this.height = 109;
+this.baseHeight = 109;
+this.maxHp = this.heroInfo.baseHp + (this.level - 1) * this.heroInfo.hpPerLevel;
+this.hp = this.maxHp;
+this.dmg = this.heroInfo.baseDmg + (this.level - 1) * this.heroInfo.dmgPerLevel;
+this.grounded = false;
+this.facingLeft = false;
+this.attackCooldown = 0;
+this.fistExtension = 0;
+this.fistTargetX = 0;
+this.fistTargetY = 0;
+this.frozenTimer = 0;
+this.isSuperJumping = false;
+this.superJumpPhase = 'normal';
+this.superFlightTimer = 0;
+this.smena2RageTimer = 0;
+this.invulnTimer = 0;
+this.speedFactor = this.heroInfo.id === 'Syr' ? 1.4 : 1.0;
+this.syrRageTimer = 0;
+this.omaygadCharge = 0;
+this.lightningDebuff = false;
+this.lightningDmgFactor = 1.0;
+this.blackCircleDebuff = 0;
+this.blackCircleTarget = null;
+}
+update() {
+if (this.invulnTimer > 0) this.invulnTimer -= 0.016;
+if (this.frozenTimer > 0) {
+this.frozenTimer -= 0.016;
+this.vx = 0;
+// При заморозке гравитация и базовая физика все еще действуют на y, но движения по оси x нет
+this.vy += 0.8;
+this.y += this.vy;
+if (this.y + this.height >= 450) {
+this.y = 450 - this.height;
+this.vy = 0;
+this.grounded = true;
+}
+return;
+}
+// Логика Черного Кружка (Автопилот к Скруту)
+if (this.blackCircleDebuff > 0) {
+this.blackCircleDebuff -= 0.016;
+if (this.blackCircleTarget && this.blackCircleTarget.hp > 0) {
+const targetX = this.blackCircleTarget.x + this.blackCircleTarget.width/2;
+const dx = targetX - (this.x + this.width/2);
+const moveSpeed = 7; 
+if (Math.abs(dx) < 50) {
+this.takeDamage(3200);
+this.blackCircleDebuff = 0;
+this.blackCircleTarget = null;
+showFloatingMessage("Скрут схватил вас! -3200 HP");
+playExplosionSound();
+} else {
+this.vx = dx > 0 ? moveSpeed : -moveSpeed;
+this.facingLeft = dx < 0;
+this.x += this.vx;
+this.vy += 0.8;
+this.y += this.vy;
+if (this.y + this.height >= 450) {
+this.y = 450 - this.height;
+this.vy = 0;
+this.grounded = true;
+}
+// Ограничение игрока у краев во время дебаффа
+if (this.x < 0) this.x = 0;
+if (this.x + this.width > V_WIDTH) this.x = V_WIDTH - this.width;
+return; 
+}
+} else {
+this.blackCircleDebuff = 0;
+this.blackCircleTarget = null;
+}
+}
+const isCrouching = keys.ShiftLeft || keys.ShiftRight;
+// ИСПРАВЛЕНИЕ: Изменяем и физическую высоту (height), и позицию по Y (y), 
+// чтобы хитбокс действительно опускался ниже
+if (isCrouching) {
+if (this.height === this.baseHeight) {
+this.height = this.baseHeight * 0.55;
+this.y += (this.baseHeight - this.height); // опускаем вниз при усадке
+}
+} else {
+if (this.height !== this.baseHeight) {
+this.y -= (this.baseHeight - this.height); // поднимаем обратно
+this.height = this.baseHeight;
+}
+}
+if (battleState.dizzinessTimer > 0) {
+battleState.dizzinessTimer -= 0.016;
+if (Math.floor(Date.now() / 80) % 2 === 0) {
+this.x += (Math.random() - 0.5) * 35; 
+this.y += (Math.random() - 0.5) * 15;
+}
+}
+let currentSpeed = 7 * this.speedFactor;
+if (this.smena2RageTimer > 0) {
+this.smena2RageTimer -= 0.016;
+currentSpeed = 14;
+}
+if (this.syrRageTimer > 0) {
+this.syrRageTimer -= 0.016;
+currentSpeed = 14 * this.speedFactor;
+}
+if (this.lightningDebuff) {
+currentSpeed *= 0.2;
+}
+if (this.heroInfo.id === 'Soplya') {
+let maxHealThisTick = 0;
+if (this.level >= 9 && battleState.soplyaSuperCharged) {
+for (let p of battleState.puddles) {
+const dist = Math.abs((this.x + this.width/2) - p.x);
+if (dist < p.radius) {
+const puddleHeal = p.isSuper ? 150 : 20;
+if (puddleHeal > maxHealThisTick) {
+maxHealThisTick = puddleHeal;
+}
+}
+}
+}
+if (maxHealThisTick > 0) {
+this.hp = Math.min(this.maxHp, this.hp + maxHealThisTick * 0.016);
+}
+}
+if (this.superFlightTimer > 0) {
+this.superFlightTimer -= 0.016;
+this.vy = -3;
+this.vx = 0;
+if (keys.KeyA) { this.vx = -currentSpeed; this.facingLeft = true; }
+if (keys.KeyD) { this.vx = currentSpeed; this.facingLeft = false; }
+this.x += this.vx;
+this.y += this.vy;
+if (this.x < 0) this.x = 0;
+if (this.x + this.width > V_WIDTH) this.x = V_WIDTH - this.width;
+if (this.y < 50) this.y = 50;
+return;
+}
+if (this.isSuperJumping) {
+if (this.superJumpPhase === 'soaring') {
+this.vy = -35;
+this.vx = (this.fistTargetX - this.x) * 0.08;
+if (this.y < -150) {
+this.superJumpPhase = 'smashing';
+}
+} else if (this.superJumpPhase === 'smashing') {
+this.vy = 45;
+this.x = this.fistTargetX;
+if (this.y >= 450) {
+this.y = 450;
+this.isSuperJumping = false;
+this.grounded = true;
+executeSlamImpact(this.x, this.y + this.height);
+}
+}
+this.x += this.vx;
+this.y += this.vy;
+return;
+}
+this.vx = 0;
+let moveDirLeft = keys.KeyA;
+let moveDirRight = keys.KeyD;
+if (battleState.dizzinessTimer > 0 && Math.random() < 0.2) {
+moveDirLeft = keys.KeyD;
+moveDirRight = keys.KeyA;
+}
+if (moveDirLeft) {
+this.vx = -currentSpeed;
+this.facingLeft = true;
+battleState.playerMoved = true;
+} else if (moveDirRight) {
+this.vx = currentSpeed;
+this.facingLeft = false;
+battleState.playerMoved = true;
+}
+if (keys.Space && this.grounded) {
+this.vy = -18;
+this.grounded = false;
+playJumpSound();
+}
+this.vy += 0.8;
+let isOnBed = false;
+for (let bed of battleState.beds) {
+if (this.x + this.width/2 > bed.x && this.x + this.width/2 < bed.x + bed.width) {
+if (this.y + this.height <= bed.y && this.y + this.height + this.vy >= bed.y) {
+this.y = bed.y - this.height;
+this.vy = 0;
+this.grounded = true;
+isOnBed = true;
+}
+}
+}
+this.x += this.vx;
+this.y += this.vy;
+const floorY = 450;
+if (this.y + this.height >= floorY) {
+this.y = floorY - this.height;
+this.vy = 0;
+this.grounded = true;
+if (!isOnBed && battleState.toxicFloorActive) {
+this.takeDamage(1000 * 0.016);
+}
+}
+// ИСПРАВЛЕНИЕ: во время фазы спасения в Мурино 1 игроку РАЗРЕШЕНО уходить за правый край экрана
+if (battleState.phase !== 'drun_rescue') {
+if (this.x < 0) this.x = 0;
+if (this.x + this.width > V_WIDTH) this.x = V_WIDTH - this.width;
+}
+if (this.attackCooldown > 0) this.attackCooldown--;
+if (this.fistExtension > 0) this.fistExtension -= 7;
+}
+takeDamage(amt) {
+if (this.invulnTimer > 0 && amt < 999) return;
+if (battleState.playerShieldTimer > 0) {
+amt *= 0.5;
+}
+if (this.heroInfo.id === 'Smena2' && this.attackCooldown > 0) {
+amt *= 0.7;
+}
+if (this.lightningDebuff) {
+amt *= 1.5;
+}
+this.hp -= amt;
+this.invulnTimer = 0.4;
+playSynthesizedSound(160, 0.1, 'sawtooth');
+if (this.hp <= 0) {
+this.hp = 0;
+endBattleSequence(false);
+}
+}
+draw() {
+if (this.invulnTimer > 0 && Math.floor(Date.now() / 50) % 2 === 0) return;
+ctx.save();
+if (this.frozenTimer > 0) {
+ctx.shadowColor = '#60a5fa';
+ctx.shadowBlur = 15;
+} else if (this.smena2RageTimer > 0 || battleState.hyperActive) {
+ctx.shadowColor = '#f59e0b';
+ctx.shadowBlur = 20;
+} else if (battleState.playerShieldTimer > 0) {
+ctx.shadowColor = '#3b82f6';
+ctx.shadowBlur = 25; 
+} else if (this.blackCircleDebuff > 0) {
+ctx.shadowColor = '#4b0082';
+ctx.shadowBlur = 25;
+}
+if (this.heroInfo.id === 'Smena2' && this.attackCooldown > 0) {
+ctx.strokeStyle = 'rgba(59, 130, 246, 0.6)';
+ctx.lineWidth = 4;
+ctx.beginPath();
+ctx.arc(this.x + this.width/2, this.y + this.height/2, 60, 0, Math.PI * 2);
+ctx.stroke();
+}
+let img = cachedImages[this.heroInfo.id] || cachedImages.Mell;
+if (gameState.currentLocation === 'Murino_2' && battleState.mimicContamination > 0) {
+ctx.filter = `hue-rotate(${battleState.mimicContamination * 60}deg) saturate(1.8) invert(0.2)`;
+}
+// Рисуем героя строго по реальному хитбоксу: при приседе картинка и коллизия опускаются вместе.
+if (this.facingLeft) {
+ctx.translate(this.x + this.width, this.y);
+ctx.scale(-1, 1);
+ctx.drawImage(img, 0, 0, this.width, this.height);
+} else {
+ctx.drawImage(img, this.x, this.y, this.width, this.height);
+}
+ctx.restore();
+if (this.heroInfo.attackType === 'melee_fist' && this.fistExtension > 0) {
+ctx.strokeStyle = '#ef4444';
+ctx.lineWidth = 14;
+ctx.lineCap = 'round';
+ctx.beginPath();
+const startX = this.x + this.width/2;
+const startY = this.y + this.height/2;
+const angle = Math.atan2(this.fistTargetY - startY, this.fistTargetX - startX);
+const fx = startX + Math.cos(angle) * this.fistExtension;
+const fy = startY + Math.sin(angle) * this.fistExtension;
+ctx.moveTo(startX, startY);
+ctx.lineTo(fx, fy);
+ctx.stroke();
+ctx.fillStyle = '#f87171';
+ctx.beginPath();
+ctx.arc(fx, fy, 16, 0, Math.PI * 2);
+ctx.fill();
+if (battleState.hyperActive) {
+ctx.strokeStyle = '#f59e0b';
+ctx.beginPath();
+const angleOpposite = angle + Math.PI;
+const fx2 = startX + Math.cos(angleOpposite) * this.fistExtension;
+const fy2 = startY + Math.sin(angleOpposite) * this.fistExtension;
+ctx.moveTo(startX, startY);
+ctx.lineTo(fx2, fy2);
+ctx.stroke();
+ctx.fillStyle = '#fbbf24';
+ctx.beginPath();
+ctx.arc(fx2, fy2, 16, 0, Math.PI * 2);
+ctx.fill();
+}
+}
+if (this.heroInfo.id === 'Omaygad' && this.attackCooldown > 0) {
+ctx.fillStyle = 'rgba(249, 115, 22, 0.8)';
+ctx.beginPath();
+ctx.arc(this.x - 30, this.y + 40, 15, 0, Math.PI * 2);
+ctx.arc(this.x + this.width + 30, this.y + 40, 15, 0, Math.PI * 2);
+ctx.fill();
+}
+if (this.frozenTimer > 0) {
+ctx.fillStyle = '#60a5fa';
+ctx.font = 'bold 11px sans-serif';
+ctx.fillText('ЗАМОРОЖЕН!', this.x + 10, this.y - 15);
+}
+if (this.blackCircleDebuff > 0) {
+ctx.fillStyle = '#4b0082';
+ctx.font = 'bold 11px sans-serif';
+ctx.fillText('АВТОПИЛОТ!', this.x + 10, this.y - 25);
+}
+if (battleState.playerShieldTimer > 0) {
+ctx.strokeStyle = '#3b82f6';
+ctx.lineWidth = 3;
+ctx.beginPath();
+ctx.arc(this.x + this.width/2, this.y + this.height/2, 55, 0, Math.PI * 2);
+ctx.stroke();
+}
+if (battleState.playerRegenTimer > 0) {
+ctx.fillStyle = '#22c55e';
+ctx.font = 'bold 16px sans-serif';
+ctx.fillText('✚', this.x + this.width/2 - 8, this.y - 5);
+}
+}
+}
+class Enemy {
+constructor(type, x = 1000, y = 350) {
+this.type = type;
+this.x = x;
+this.y = y;
+// УВЕЛИЧЕННЫЕ РАЗМЕРЫ ВРАГОВ НА CANVAS (+15%)
+const mult = 1.15;
+this.width = type === 'mine' ? 52 : (type === 'skromnik' ? 92 : (type === 'shadow_creature' ? 80 : (type === 'small_skrut' ? 54 : 98)));
+this.height = type === 'mine' ? 52 : (type === 'skromnik' ? 138 : (type === 'shadow_creature' ? 109 : (type === 'small_skrut' ? 67 : 121)));
+// БАЛАНС HP И УРОНА ДЛЯ МУРИНО 2
+let hpMap = {
+helper: 1500, commander: 2500, commander_rage: 1200, general: 4000, mine: 200,
+skromnik: 7000, mimic: 7000, mimic_rage: 4000, knife: 100, corridor_monster: 8000,
+skrut: 10000, red_beast: 8000, drun: 999999,
+small_skrut: 5000, spring_monster: 12000, shadow_creature: 1000
+};
+this.maxHp = hpMap[type] || 1500;
+this.hp = this.maxHp;
+this.attackTimer = 0;
+this.facingLeft = true;
+this.mineTimer = 3.0;
+this.state = 'walk';
+this.warningX = 0;
+this.warningY = 0;
+this.warningRadius = 0;
+this.slowTimer = 0;
+this.damageReductionTimer = 0;
+this.damageReductionFactor = 1.0;
+this.soplyaPoisonTimer = 0;
+this.madness = 0;
+this.madnessTimer = 0;
+this.grounded = false;
+this.vy = 0;
+this.vx = 0;
+this.mimicHeroCopied = 'Mell';
+this.scruPauseTimer = 0;
+this.blindTimer = 0;
+this.trappedTimer = 0;
+// Таймеры для Скрутов
+this.blackCircleTimer = 3.0;
+this.trapPlaceTimer = 5.0 + Math.random() * 3.0;
+}
+update(player) {
+if (this.slowTimer > 0) this.slowTimer -= 0.016;
+if (this.blindTimer > 0) this.blindTimer -= 0.016;
+if (this.trappedTimer > 0) {
+this.trappedTimer -= 0.016;
+this.vx = 0;
+this.vy = 0;
+return; 
+}
+if (this.damageReductionTimer > 0) {
+this.damageReductionTimer -= 0.016;
+if (this.damageReductionTimer <= 0) {
+this.damageReductionFactor = 1.0;
+}
+}
+if (this.soplyaPoisonTimer > 0) {
+const elapsed = 5.0 - this.soplyaPoisonTimer;
+this.soplyaPoisonTimer -= 0.016;
+const sec = Math.floor(elapsed);
+const prevSec = Math.floor(elapsed - 0.016);
+if (sec > prevSec) {
+let poisonDmg = 20;
+if (sec === 1) poisonDmg = 500;
+else if (sec === 2) poisonDmg = 250;
+else if (sec === 3) poisonDmg = 100;
+else if (sec === 4) poisonDmg = 50;
+else if (sec === 5) poisonDmg = 20;
+this.takeDamage(poisonDmg);
+}
+}
+if (this.madnessTimer > 0) {
+this.madnessTimer -= 0.016;
+if (this.madnessTimer <= 0) {
+this.madness = 0;
+}
+}
+let targetEntity = player;
+let inMadState = false;
+if (this.madness >= 80) {
+inMadState = true;
+const nearEnemy = battleState.enemies.find(e => e !== this && e.hp > 0);
+if (nearEnemy) {
+targetEntity = nearEnemy;
+const currentSpeed = (this.slowTimer > 0) ? 1.5 : 3;
+this.vx = targetEntity.x > this.x ? currentSpeed : -currentSpeed;
+const distToAlly = Math.abs(this.x - targetEntity.x);
+if (distToAlly < 60) {
+this.vx = 0;
+if (Math.random() < 0.05) {
+targetEntity.takeDamage(10);
+this.takeDamage(5);
+}
+}
+} else {
+this.vx = 0;
+this.takeDamage(100 * 0.016);
+}
+}
+if (inMadState) {
+this.x += this.vx;
+this.vy += 0.8;
+this.y += this.vy;
+if (this.y + this.height >= 450) {
+this.y = 450 - this.height;
+this.vy = 0;
+}
+return;
+}
+if (this.type === 'drun') {
+if (battleState.introDrunAnimTimer > 0 && battleState.phase === 'drun_intro_bleed') {
+this.vy = 4;
+this.y += this.vy;
+if (this.y >= 430) this.y = 430;
+}
+return;
+}
+if (this.type === 'shadow_creature') {
+this.facingLeft = player.x < this.x;
+// ЗАМЕДЛЕНЫ: скорость теней снижена с 4.0 до 1.8
+const shadowSpeed = 1.8;
+this.vx = player.x > this.x ? shadowSpeed : -shadowSpeed;
+this.x += this.vx;
+const distToPlayer = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
+if (distToPlayer < 45 && Math.abs(player.y - this.y) < 60) {
+this.hp = 0; 
+battleState.shadowsInsideCount++; 
+battleState.shadowDotTimer = 1.0;
+showFloatingMessage(`Тень вселилась! Текущих стаков: ${battleState.shadowsInsideCount}`);
+playSynthesizedSound(190, 0.25, 'sawtooth');
+}
+for (let other of battleState.enemies) {
+if (other !== this && other.type === 'shadow_creature' && other.hp > 0) {
+const distToOther = Math.abs(other.x - this.x);
+if (distToOther < 40) {
+this.hp = 0;
+other.hp = 0;
+createSlamImpact(this.x + 20, this.y + 20, '#a855f7');
+showFloatingMessage("Тени столкнулись и аннигилировали!");
+playExplosionSound();
+}
+}
+}
+return;
+}
+if (this.type === 'spring_monster') {
+this.attackTimer += 0.016;
+if (battleState.springState === 'idle') {
+this.facingLeft = player.x < this.x; 
+if (this.attackTimer >= 2.0) {
+this.attackTimer = 0;
+if (Math.random() < 0.5) {
+battleState.springState = 'prep_jump';
+triggerBossDialogue("ПРИГНУТЬСЯ ИЛИ УБЕГАТЬ!");
+playSynthesizedSound(800, 0.5, 'sine');
+} else {
+battleState.springState = 'taran';
+this.taranDirectionLeft = this.facingLeft;
+triggerBossDialogue("ПОПРОБУЙ УКЛОНИТЬСЯ!");
+}
+}
+}
+else if (battleState.springState === 'prep_jump') {
+this.facingLeft = player.x < this.x; 
+this.vx = 0;
+if (this.attackTimer >= 1.0) { 
+this.attackTimer = 0;
+battleState.springState = 'jumping';
+this.vy = -28;
+battleState.springTargetX = player.x + player.width/2;
+}
+}
+else if (battleState.springState === 'jumping') {
+this.vy += 0.8;
+this.y += this.vy;
+this.x += (battleState.springTargetX - (this.x + this.width/2)) * 0.05;
+if (this.y + this.height >= 450) {
+this.y = 450 - this.height;
+this.vy = 0;
+battleState.springState = 'idle';
+this.attackTimer = 0; 
+playExplosionSound();
+createSlamImpact(this.x + this.width/2, 450, '#3b82f6');
+const dist = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
+if (dist < 120) {
+// ИСПРАВЛЕННЫЙ ХИТБОКС: Урон наносится только если игрок действительно пересекается по высоте
+const playerBottom = player.y + player.height;
+if (playerBottom >= 410) {
+player.takeDamage(2500); // УРОН ПРЫГАЮЩЕГО МОНСТРА: 2500
+}
+}
+}
+}
+else if (battleState.springState === 'taran') {
+const taranSpeed = 12.0;
+this.vx = this.taranDirectionLeft ? -taranSpeed : taranSpeed;
+this.facingLeft = this.taranDirectionLeft; 
+this.x += this.vx;
+const dist = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
+if (dist < 60) {
+// ИСПРАВЛЕННЫЙ ХИТБОКС: Таран прыгающего монстра проходит по высоте головы/тела (y от 330 до 450).
+// Если игрок нажал Shift и присел, его высота стала 60 вместо 109, а верхняя координата Y сдвинулась вниз.
+// Будем наносить урон только если Y игрока пересекается с высотой атаки тарана (с высоты 380 до 450)
+const attackMinY = 380;
+const attackMaxY = 450;
+const playerTop = player.y;
+const playerBottom = player.y + player.height;
+if (!(playerBottom < attackMinY || playerTop > attackMaxY)) {
+player.takeDamage(2500); // УРОН ПРЫГАЮЩЕГО МОНСТРА: 2500
+player.vx = this.taranDirectionLeft ? -15 : 15; 
+}
+}
+if (this.taranDirectionLeft) {
+if (this.x <= 15) {
+this.x = 15;
+battleState.springState = 'idle';
+this.attackTimer = 0;
+}
+} else {
+if (this.x >= V_WIDTH - this.width - 15) {
+this.x = V_WIDTH - this.width - 15;
+battleState.springState = 'idle';
+this.attackTimer = 0;
+}
+}
+}
+return;
+}
+if (this.type === 'skrut' || this.type === 'small_skrut') {
+this.scruPauseTimer -= 0.016;
+if (this.scruPauseTimer <= 0) {
+if (Math.random() < 0.02) {
+this.scruPauseTimer = Math.random() * 1.5 + 0.5; 
+}
+}
+if (this.scruPauseTimer > 0) {
+this.vx = 0;
+} else {
+// Маленькие скруты идут в 2 раза быстрее большого скрута (было 1.8 -> стало 2.4, а у большого 1.2)
+const skrutSpeed = this.type === 'small_skrut' ? 2.4 : 1.2;
+this.vx = player.x > this.x ? skrutSpeed : -skrutSpeed;
+this.x += this.vx;
+}
+const margin = 15;
+if (this.x < margin) this.x = margin;
+if (this.x > V_WIDTH - this.width - margin) this.x = V_WIDTH - this.width - margin;
+this.facingLeft = player.x < this.x;
+this.attackTimer += 0.016;
+if (this.type === 'skrut' && this.attackTimer >= 4.0 && !battleState.parryActive) {
+this.attackTimer = 0;
+battleState.parryActive = true;
+battleState.parryTimer = 2.0; 
+battleState.parryRegistered = false;
+document.getElementById('parryPromptContainer').classList.remove('hidden');
+triggerBossDialogue("СЕЙЧАС ПОЛУЧИШЬ!");
+playSynthesizedSound(600, 0.2, 'sawtooth');
+}
+// МЕХАНИКА ЧЕРНОГО КРУЖКА (БОЛЬШОЙ СКРУТ)
+if (this.type === 'skrut') {
+this.blackCircleTimer -= 0.016;
+if (this.blackCircleTimer <= 0) {
+this.blackCircleTimer = 4.0;
+const angle = Math.atan2(player.y + player.height/2 - (this.y + this.height/2), player.x + player.width/2 - (this.x + this.width/2));
+const vx = Math.cos(angle) * 6;
+const vy = Math.sin(angle) * 6;
+battleState.projectiles.push(new Projectile(this.x + this.width/2, this.y + this.height/2, vx, vy, 'black_circle', this));
+}
+}
+// ВНИМАНИЕ: Маленькие скруты больше ничем не стреляют (включая капканы), только идут вперед на игрока!
+
+const distToPlayer = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
+if (distToPlayer < 50 && Math.abs(player.y - this.y) < 85) {
+handleMimicContamination();
+this.x += this.facingLeft ? 150 : -150;
+}
+this.vy += 0.8;
+this.y += this.vy;
+if (this.y + this.height >= 450) {
+this.y = 450 - this.height;
+this.vy = 0;
+}
+return;
+}
+if (this.type === 'skromnik') {
+this.facingLeft = player.x < this.x;
+const spd = 4;
+this.vx = player.x > this.x ? spd : -spd;
+this.x += this.vx;
+this.vy += 0.8;
+this.y += this.vy;
+if (this.y + this.height >= 450) {
+this.y = 450 - this.height;
+this.vy = 0;
+}
+const pDist = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
+const pDistY = Math.abs((player.y + player.height/2) - (this.y + this.height/2));
+if (pDist < 55 && pDistY < 60) {
+player.takeDamage(1000); // УРОН СКРОМНИКА: 1000
+this.x += this.facingLeft ? 150 : -150;
+}
+return;
+}
+if (this.type === 'knife') {
+const angle = Math.atan2(player.y + player.height/2 - this.y, player.x + player.width/2 - this.x);
+this.x += Math.cos(angle) * 3.5;
+this.y += Math.sin(angle) * 3.5;
+const pDist = Math.abs((player.x + player.width/2) - this.x);
+if (pDist < 40 && Math.abs(player.y + player.height/2 - this.y) < 40) {
+player.takeDamage(450);
+this.hp = 0;
+}
+return;
+}
+if (this.type === 'mimic' || this.type === 'mimic_rage') {
+this.facingLeft = player.x < this.x;
+this.attackTimer += 0.016;
+if (this.type === 'mimic') {
+const chaseSpd = 3.5;
+if (Math.abs(player.x - this.x) > 120) {
+this.vx = player.x > this.x ? chaseSpd : -chaseSpd;
+} else {
+this.vx = 0;
+if (this.attackTimer > 1.2) {
+this.attackTimer = 0;
+playPunchSound();
+if (Math.abs(player.x - this.x) < 140) {
+player.takeDamage(200);
+}
+}
+}
+this.x += this.vx;
+if (Math.random() < 0.01 && this.y >= 350) {
+this.vy = -12;
+}
+this.vy += 0.8;
+this.y += this.vy;
+if (this.y + this.height >= 450) {
+this.y = 450 - this.height;
+this.vy = 0;
+}
+} else {
+this.vx = this.facingLeft ? -8 : 8;
+this.x += this.vx;
+if (this.x < 10) { this.x = 10; this.facingLeft = false; }
+if (this.x > V_WIDTH - 90) { this.x = V_WIDTH - 90; this.facingLeft = true; }
+if (Math.abs(player.x - this.x) < 80) {
+player.takeDamage(1000 * 0.016);
+}
+}
+return;
+}
+if (this.type === 'mine') {
+const runDir = targetEntity.x > this.x ? 1 : -1;
+const currentSpeed = (this.slowTimer > 0) ? 2.1 : 4.2;
+this.vx = runDir * currentSpeed;
+this.x += this.vx;
+this.mineTimer -= 0.016;
+this.facingLeft = runDir < 0;
+this.vy += 0.8;
+this.y += this.vy;
+if (this.y + this.height >= 450) {
+this.y = 450 - this.height;
+this.vy = 0;
+}
+const distToPlayer = Math.sqrt(Math.pow(player.x + player.width/2 - (this.x + this.width/2), 2) + Math.pow(player.y + player.height/2 - (this.y + this.height/2), 2));
+if (distToPlayer < 55) {
+this.explode();
+} else if (this.mineTimer <= 0) {
+this.explode();
+}
+return;
+}
+if (this.type === 'helper') {
+this.attackTimer += 0.016;
+this.facingLeft = targetEntity.x < this.x;
+if (this.state === 'walk') {
+const dist = Math.abs(targetEntity.x - this.x);
+if (dist > 160) {
+const currentSpeed = (this.slowTimer > 0) ? 1.5 : 3;
+this.vx = targetEntity.x > this.x ? currentSpeed : -currentSpeed;
+} else {
+this.vx = 0;
+this.state = 'warning';
+this.attackTimer = 0;
+this.warningX = targetEntity.x + targetEntity.width/2;
+this.warningY = 450;
+this.warningRadius = 70;
+}
+} else if (this.state === 'warning') {
+this.vx = 0;
+if (this.attackTimer >= 0.8) {
+this.state = 'hit';
+this.attackTimer = 0;
+playPunchSound();
+const pDist = Math.abs(player.x + player.width/2 - this.warningX);
+if (pDist < this.warningRadius && player.y + player.height >= 410) {
+player.takeDamage(130 * this.damageReductionFactor);
+}
+}
+} else if (this.state === 'hit') {
+const currentSpeed = (this.slowTimer > 0) ? 1.25 : 2.5;
+this.vx = targetEntity.x > this.x ? -currentSpeed : currentSpeed;
+if (this.attackTimer >= 0.7) {
+if (Math.random() > 0.4) {
+this.state = 'throw';
+this.attackTimer = 0;
+} else {
+this.state = 'walk';
+}
+}
+} else if (this.state === 'throw') {
+this.vx = 0;
+if (this.attackTimer >= 0.4) {
+const stickVx = targetEntity.x > this.x ? 11 : -11;
+battleState.projectiles.push(new Projectile(this.x + this.width/2, this.y + 35, stickVx, 0, 'stick', this));
+playSynthesizedSound(400, 0.1, 'sawtooth');
+this.state = 'walk';
+}
+}
+this.x += this.vx;
+}
+if (this.type === 'commander') {
+this.facingLeft = targetEntity.x < this.x;
+this.attackTimer += 0.016;
+if (!this.grounded) {
+this.vx = 0;
+} else {
+if (this.state === 'walk') {
+const currentSpeed = (this.slowTimer > 0) ? 1.75 : 3.5;
+this.vx = this.facingLeft ? -currentSpeed : currentSpeed;
+if (this.attackTimer >= 2.5) {
+this.state = 'throw';
+this.attackTimer = 0;
+}
+} else if (this.state === 'throw') {
+this.vx = 0;
+if (this.attackTimer >= 0.5) {
+const capVx = this.facingLeft ? -9 : 9;
+battleState.projectiles.push(new Projectile(this.x + this.width/2, this.y + 35, capVx, 0, 'cap_green', this));
+this.state = 'walk';
+this.attackTimer = 0;
+}
+}
+this.x += this.vx;
+if (this.x < 50) this.x = 50;
+if (this.x > V_WIDTH - 150) this.x = V_WIDTH - 150;
+}
+}
+if (this.type === 'commander_rage') {
+this.facingLeft = player.x < this.x;
+this.attackTimer += 0.016;
+this.x = V_WIDTH/2 + Math.cos(this.attackTimer * 0.7) * 280;
+this.y = 130 + Math.sin(this.attackTimer * 1.0) * 30;
+if (this.state === 'walk') {
+if (this.attackTimer >= 10.0) {
+this.state = 'laser';
+this.attackTimer = 0;
+playLaserSound();
+}
+if (Math.random() < 0.001) {
+this.state = 'pull';
+this.attackTimer = 0;
+triggerBossDialogue("ПОДНИМИСЬ!");
+}
+} else if (this.state === 'laser') {
+if (this.attackTimer >= 0.4) {
+const angle = Math.atan2(player.y - this.y, player.x - this.x);
+const projVx = Math.cos(angle) * 11;
+const projVy = Math.sin(angle) * 11;
+battleState.projectiles.push(new Projectile(this.x + this.width/2, this.y + 30, projVx, projVy, 'laser', this));
+this.state = 'walk';
+this.attackTimer = 0;
+}
+} else if (this.state === 'pull') {
+if (this.attackTimer < 1.0) {
+player.y += (this.y + 60 - player.y) * 0.15;
+player.x += (this.x - player.x) * 0.05;
+player.vy = 0;
+player.grounded = false;
+}
+if (this.attackTimer >= 1.5) {
+this.state = 'walk';
+this.attackTimer = 0;
+}
+}
+}
+if (this.type === 'general') {
+this.facingLeft = targetEntity.x < this.x;
+this.attackTimer += 0.016;
+if (battleState.phase === 'general_6a' || battleState.phase === 'general_6b') {
+if (this.grounded) {
+this.vy = -14;
+const currentSpeed = (this.slowTimer > 0) ? 2.5 : 5.0;
+this.vx = targetEntity.x > this.x ? currentSpeed : -currentSpeed;
+this.grounded = false;
+}
+this.vy += 0.8;
+this.x += this.vx;
+this.y += this.vy;
+if (this.y + this.height >= 450) {
+this.y = 450 - this.height;
+this.vy = 0;
+this.grounded = true;
+this.vx = 0;
+const distToPlayer = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
+if (distToPlayer < 180 && player.y + player.height >= 420) {
+player.takeDamage(300 * this.damageReductionFactor);
+createSlamImpact(this.x + this.width/2, 450, '#ef4444');
+}
+}
+if (player.x < this.x + this.width && player.x + player.width > this.x &&
+player.y < this.y + this.height && player.y + player.height > this.y) {
+player.takeDamage(300 * this.damageReductionFactor * 0.016);
+}
+} else if (battleState.phase === 'general_6d' || battleState.phase === 'general_fury') {
+const dist = Math.abs(targetEntity.x - this.x);
+if (dist > 75) {
+const currentSpeed = (this.slowTimer > 0) ? 2.25 : 4.5;
+this.vx = targetEntity.x > this.x ? currentSpeed : -currentSpeed;
+} else {
+this.vx = 0;
+if (this.attackTimer >= 0.5) {
+playPunchSound();
+if (Math.random() > 0.5 && targetEntity === player) {
+player.takeDamage(100 * this.damageReductionFactor);
+}
+this.attackTimer = 0;
+}
+}
+this.x += this.vx;
+this.vy += 0.8;
+this.y += this.vy;
+if (this.y + this.height >= 450) {
+this.y = 450 - this.height;
+this.vy = 0;
+}
+}
+}
+if (this.type === 'corridor_monster') {
+this.x += 12;
+if (this.x > V_WIDTH + 100) {
+this.hp = 0;
+}
+}
+if (this.type !== 'commander_rage' && this.type !== 'knife' && this.type !== 'corridor_monster' && this.type !== 'red_beast') {
+this.vy += 0.8;
+this.y += this.vy;
+if (this.y + this.height >= 450) {
+this.y = 450 - this.height;
+this.vy = 0;
+this.grounded = true;
+}
+}
+}
+explode() {
+playExplosionSound();
+createSlamImpact(this.x + this.width/2, this.y + this.height/2, '#ef4444');
+const dist = Math.sqrt(Math.pow(battleState.player.x - this.x, 2) + Math.pow(battleState.player.y - this.y, 2));
+if (dist < 110) {
+battleState.player.takeDamage(170);
+}
+this.hp = 0;
+}
+takeDamage(amt) {
+if (this.type === 'drun') return;
+if (this.type === 'shadow_creature') return; 
+this.hp -= amt;
+if (this.hp < 0) this.hp = 0;
+for (let i = 0; i < 6; i++) {
+battleState.particles.push(new Particle(this.x + this.width/2, this.y + this.height/2, (Math.random() - 0.5) * 7, (Math.random() - 0.5) * 7, '#ef4444'));
+}
+playSynthesizedSound(260, 0.08, 'triangle');
+}
+draw() {
+ctx.save();
+if (this.madness > 0) {
+ctx.fillStyle = 'rgba(168, 85, 247, 0.8)';
+ctx.font = 'bold 11px sans-serif';
+ctx.fillText(`БЕЗУМИЕ: ${Math.floor(this.madness)}%`, this.x, this.y - 12);
+}
+if (this.state === 'warning') {
+ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
+ctx.strokeStyle = '#ef4444';
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.arc(this.warningX, this.warningY, this.warningRadius, 0, Math.PI * 2);
+ctx.fill();
+ctx.stroke();
+}
+if (this.trappedTimer > 0) {
+ctx.shadowColor = '#f59e0b';
+ctx.shadowBlur = 15;
+ctx.drawImage(cachedImages.trap_item, this.x + this.width/2 - 25, this.y + this.height - 25, 50, 30);
+}
+if (this.blindTimer > 0) {
+ctx.fillStyle = '#fef08a';
+ctx.font = 'bold 12px "Press Start 2P", monospace';
+ctx.fillText("✨ ОЛЕПЛЕН", this.x, this.y - 15);
+}
+let useImg = cachedImages.helper;
+if (this.type === 'commander' || this.type === 'commander_rage') {
+useImg = cachedImages.commander;
+} else if (this.type === 'general') {
+useImg = cachedImages.general;
+} else if (this.type === 'skromnik') {
+useImg = cachedImages.skromnik;
+} else if (this.type === 'mimic') {
+useImg = cachedImages[this.mimicHeroCopied];
+} else if (this.type === 'mimic_rage') {
+useImg = cachedImages.mimic_true;
+} else if (this.type === 'corridor_monster') {
+useImg = cachedImages.corridor_monster;
+} else if (this.type === 'skrut' || this.type === 'small_skrut') {
+useImg = cachedImages.skrut;
+} else if (this.type === 'red_beast') {
+useImg = cachedImages.red_beast;
+} else if (this.type === 'drun') {
+useImg = cachedImages.drun;
+} else if (this.type === 'spring_monster') {
+useImg = cachedImages.spring_monster;
+} else if (this.type === 'shadow_creature') {
+useImg = cachedImages.shadow_creature;
+}
+let renderW = this.width;
+let renderH = this.height;
+if (this.type === 'small_skrut') {
+renderW = this.width;
+renderH = this.height;
+}
+if (!this.facingLeft) {
+ctx.translate(this.x + renderW, this.y);
+ctx.scale(-1, 1);
+ctx.drawImage(useImg, 0, 0, renderW, renderH);
+} else {
+ctx.drawImage(useImg, this.x, this.y, renderW, renderH);
+}
+ctx.restore();
+}
+}
+class Projectile {
+constructor(x, y, vx, vy, type, owner) {
+this.x = x;
+this.y = y;
+this.vx = vx;
+this.vy = vy;
+this.type = type;
+this.owner = owner;
+this.width = type === 'bed' ? 120 : (type === 'pyramid_proj' ? 45 : (type === 'vodka_bottle' ? 30 : 25));
+this.height = type === 'bed' ? 75 : (type === 'pyramid_proj' ? 45 : (type === 'vodka_bottle' ? 45 : 25));
+this.timer = 0;
+}
+update(player) {
+this.x += this.vx;
+this.y += this.vy;
+this.timer += 0.016;
+if (this.type === 'cap_green') {
+if (this.timer >= 1.1) {
+if (this.owner && this.owner.hp > 0) {
+const angle = Math.atan2(this.owner.y + 40 - this.y, this.owner.x + 40 - this.x);
+this.vx = Math.cos(angle) * 10;
+this.vy = Math.sin(angle) * 10;
+const distToOwner = Math.sqrt(Math.pow(this.owner.x + 40 - this.x, 2) + Math.pow(this.owner.y + 40 - this.y, 2));
+if (distToOwner < 35) {
+this.timer = 999;
+}
+} else {
+this.timer = 999;
+}
+}
+}
+if (this.type === 'pyramid_proj') {
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+const distToEnemy = Math.sqrt(Math.pow(enemy.x + enemy.width/2 - this.x, 2) + Math.pow(enemy.y + enemy.height/2 - this.y, 2));
+if (distToEnemy < 150) {
+enemy.x += (this.x - enemy.x) * 0.04;
+enemy.y += (this.y - enemy.y) * 0.04;
+}
+}
+}
+if (this.type === 'soplya_drop' || this.type === 'super_soplya_drop') {
+this.vy += 0.4;
+if (this.type === 'super_soplya_drop') {
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+const dist = Math.sqrt(Math.pow((enemy.x + enemy.width/2) - this.x, 2) + Math.pow((enemy.y + enemy.height/2) - this.y, 2));
+if (dist < 55) {
+enemy.soplyaPoisonTimer = 5.0;
+showFloatingMessage("СУПЕР-СОПЛЯ: ОТРАВЛЕНИЕ!");
+playExplosionSound();
+this.timer = 999;
+return;
+}
+}
+}
+if (this.y >= 435) {
+this.timer = 999;
+const radius = 90;
+const pLevel = player.level;
+const puddleDmg = 10 + (pLevel - 1) * 15;
+const puddleSlowSec = 5;
+const puddleDmgRed = 20 + (pLevel - 1) * 2;
+battleState.puddles.push({
+x: this.x,
+y: 445,
+radius: radius,
+dmg: puddleDmg,
+slow: puddleSlowSec,
+dmgReduction: puddleDmgRed/100,
+timer: 5.0,
+isSuper: (this.type === 'super_soplya_drop')
+});
+return;
+}
+}
+// Логика Черного Кружка
+if (this.type === 'black_circle') {
+const pMidX = player.x + player.width/2;
+const pMidY = player.y + player.height/2;
+const dist = Math.sqrt(Math.pow(pMidX - this.x, 2) + Math.pow(pMidY - this.y, 2));
+if (dist < 40) {
+// ИСПРАВЛЕННЫЙ ХИТБОКС: Черный кружок летит на уровне головы/груди (высота ~380). 
+// Если игрок присел (Shift), то его хитбокс опускается вниз и верхняя грань (y) становится больше 400.
+// Проверим, пересекает ли кружок текущий Y игрока
+if (this.y >= player.y && this.y <= player.y + player.height) {
+player.blackCircleDebuff = 3.0; 
+player.blackCircleTarget = this.owner; 
+this.timer = 999;
+showFloatingMessage("Черный кружок! Потеря управления!");
+playSynthesizedSound(150, 0.5, 'sawtooth');
+}
+}
+}
+// Логика Капкана Скрута
+if (this.type === 'skrut_trap') {
+const pMidX = player.x + player.width/2;
+const pMidY = player.y + player.height/2;
+const dist = Math.sqrt(Math.pow(pMidX - (this.x + 15), 2) + Math.pow(pMidY - this.y, 2));
+if (dist < 40 && player.y + player.height >= 410) {
+player.takeDamage(1800);
+player.frozenTimer = 6.0; 
+this.timer = 999; 
+showFloatingMessage("Вы наступили на капкан! -1800 HP и стан на 6 сек.");
+playSynthesizedSound(100, 0.5, 'sawtooth');
+}
+}
+if (this.owner !== player) {
+const pMidX = player.x + player.width/2;
+const pMidY = player.y + player.height/2;
+const dist = Math.sqrt(Math.pow(pMidX - this.x, 2) + Math.pow(pMidY - this.y, 2));
+if (dist < (player.width/2 + this.width/2)) {
+// ИСПРАВЛЕННЫЙ ХИТБОКС: Для летящих снарядов (палка, крышка, лазер) проверяем высоту Y игрока.
+// Если игрок присел, его Y смещен вниз, и снаряды, летящие выше, не должны его ранить.
+let hitPossible = true;
+if (this.type === 'stick' || this.type === 'cap_green' || this.type === 'laser') {
+// Атаки летят на уровне груди/головы стоящего героя. При приседе реальный хитбокс ниже,
+// поэтому такие снаряды должны пролетать над игроком, даже если старая круговая проверка почти зацепила край.
+const projectileMidY = this.y + this.height / 2;
+const playerIsCrouching = player.height < player.baseHeight;
+if (this.y + this.height <= player.y || (playerIsCrouching && projectileMidY < player.y + 18)) {
+hitPossible = false;
+}
+}
+if (hitPossible) {
+if (this.type === 'stick') {
+player.takeDamage(110);
+player.frozenTimer = 1.0;
+playSynthesizedSound(200, 0.4, 'sine');
+this.timer = 999;
+} else if (this.type === 'cap_green') {
+player.takeDamage(130);
+this.timer = 999;
+} else if (this.type === 'laser') {
+player.takeDamage(140);
+this.timer = 999;
+} else if (this.type === 'bed') {
+player.x += this.vx;
+player.takeDamage(5);
+if (player.x <= 5) {
+player.takeDamage(9999);
+}
+}
+}
+}
+} else {
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+const eMidX = enemy.x + enemy.width/2;
+const eMidY = enemy.y + enemy.height/2;
+const dist = Math.sqrt(Math.pow(eMidX - this.x, 2) + Math.pow(eMidY - this.y, 2));
+if (dist < (enemy.width/2 + this.width/2)) {
+if (this.type === 'eye') {
+enemy.takeDamage(player.dmg / 2);
+this.timer = 999;
+} else if (this.type === 'pyramid_proj') {
+const totalBase = player.dmg;
+const extra = totalBase * 0.05;
+enemy.takeDamage(totalBase + extra);
+this.timer = 999;
+} else if (this.type === 'laser_view') {
+enemy.takeDamage(player.dmg);
+} else if (this.type === 'soplya_drop') {
+enemy.takeDamage(50);
+this.timer = 999;
+} else if (this.type === 'vodka_bottle') {
+enemy.takeDamage(player.dmg);
+this.timer = 999;
+createSlamImpact(this.x, this.y, '#f59e0b');
+} else if (this.type === 'thrown_poison') {
+this.timer = 999;
+enemy.soplyaPoisonTimer = 5.0; 
+createSlamImpact(this.x, this.y, '#10b981');
+showFloatingMessage("ВРАГ ОТРАВЛЕН ЯДОМ ДРУНОВ!");
+playExplosionSound();
+}
+}
+}
+}
+}
+draw() {
+ctx.save();
+if (this.type === 'stick') {
+ctx.fillStyle = '#b45309';
+ctx.fillRect(this.x, this.y, this.width, this.height);
+ctx.strokeStyle = '#fff';
+ctx.strokeRect(this.x, this.y, this.width, this.height);
+} else if (this.type === 'cap_green') {
+ctx.fillStyle = '#16a34a';
+ctx.beginPath();
+ctx.arc(this.x, this.y, 14, 0, Math.PI, true);
+ctx.fill();
+ctx.strokeStyle = '#fff';
+ctx.lineWidth = 2;
+ctx.stroke();
+} else if (this.type === 'laser') {
+ctx.fillStyle = '#ef4444';
+ctx.shadowColor = '#f87171';
+ctx.shadowBlur = 10;
+ctx.beginPath();
+ctx.arc(this.x, this.y, 8, 0, Math.PI*2);
+ctx.fill();
+} else if (this.type === 'bed') {
+ctx.fillStyle = '#4b5563';
+ctx.fillRect(this.x, this.y, this.width, this.height);
+ctx.fillStyle = '#9ca3af';
+ctx.fillRect(this.x + 5, this.y + 5, this.width - 10, this.height - 10);
+} else if (this.type === 'eye') {
+ctx.fillStyle = '#ffffff';
+ctx.beginPath();
+ctx.arc(this.x, this.y, 10, 0, Math.PI*2);
+ctx.fill();
+ctx.fillStyle = '#ef4444';
+ctx.beginPath();
+ctx.arc(this.x, this.y, 4, 0, Math.PI*2);
+ctx.fill();
+} else if (this.type === 'pyramid_proj') {
+ctx.translate(this.x, this.y);
+ctx.rotate(this.timer * 4);
+ctx.fillStyle = '#ef4444';
+ctx.beginPath();
+ctx.moveTo(0, -20);
+ctx.lineTo(20, 20);
+ctx.lineTo(-20, 20);
+ctx.closePath();
+ctx.fill();
+ctx.strokeStyle = '#fff';
+ctx.stroke();
+} else if (this.type === 'laser_view') {
+ctx.strokeStyle = '#ef4444';
+ctx.lineWidth = 6;
+ctx.shadowColor = '#f87171';
+ctx.shadowBlur = 12;
+ctx.beginPath();
+ctx.moveTo(this.x - 30, this.y);
+ctx.lineTo(this.x + 30, this.y);
+ctx.stroke();
+} else if (this.type === 'soplya_drop') {
+ctx.fillStyle = '#22c55e';
+ctx.beginPath();
+ctx.arc(this.x, this.y, 8, 0, Math.PI*2);
+ctx.fill();
+} else if (this.type === 'super_soplya_drop') {
+ctx.fillStyle = '#10b981';
+ctx.shadowColor = '#34d399';
+ctx.shadowBlur = 15;
+ctx.beginPath();
+ctx.arc(this.x, this.y, 14, 0, Math.PI*2);
+ctx.fill();
+} else if (this.type === 'vodka_bottle') {
+const img = cachedImages.vodka;
+if (img && img.complete) {
+ctx.drawImage(img, this.x, this.y, this.width, this.height);
+} else {
+ctx.fillStyle = '#f59e0b';
+ctx.fillRect(this.x, this.y, this.width, this.height);
+}
+} else if (this.type === 'thrown_poison') {
+ctx.fillStyle = '#10b981';
+ctx.beginPath();
+ctx.arc(this.x, this.y, 12, 0, Math.PI*2);
+ctx.fill();
+ctx.strokeStyle = '#fff';
+ctx.stroke();
+} else if (this.type === 'black_circle') {
+ctx.fillStyle = '#000000';
+ctx.shadowColor = '#4b0082';
+ctx.shadowBlur = 15;
+ctx.beginPath();
+ctx.arc(this.x, this.y, 15, 0, Math.PI * 2);
+ctx.fill();
+ctx.shadowBlur = 0;
+} else if (this.type === 'skrut_trap') {
+ctx.fillStyle = '#78350f';
+ctx.strokeStyle = '#fbbf24';
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.moveTo(this.x, this.y);
+ctx.lineTo(this.x + 15, this.y - 15);
+ctx.lineTo(this.x + 30, this.y);
+ctx.closePath();
+ctx.fill();
+ctx.stroke();
+ctx.fillStyle = '#fff';
+for(let i=0; i<4; i++) {
+ctx.fillRect(this.x + 5 + i*6, this.y - 5, 3, 5);
+}
+}
+ctx.restore();
+}
+}
+class Particle {
+constructor(x, y, vx, vy, color) {
+this.x = x;
+this.y = y;
+this.vx = vx;
+this.vy = vy;
+this.color = color;
+this.life = 1.0;
+}
+update() {
+this.x += this.vx;
+this.y += this.vy;
+this.life -= 0.05;
+}
+draw() {
+ctx.save();
+ctx.globalAlpha = this.life;
+ctx.fillStyle = this.color;
+ctx.beginPath();
+ctx.arc(this.x, this.y, 3, 0, Math.PI*2);
+ctx.fill();
+ctx.restore();
+}
+}
+function triggerBossDialogue(text) {
+playDialogueSound();
+const speech = document.getElementById('bossSpeechBubble');
+const speechTxt = document.getElementById('bossSpeechText');
+speechTxt.innerText = text;
+speech.classList.remove('hidden');
+battleState.dialogueTimer = 2.5;
+}
+function updateSpikes() {
+battleState.spikeTimer -= 0.016;
+if (battleState.spikePhase === 'cooldown' && battleState.spikeTimer <= 0) {
+battleState.spikePhase = 'preview';
+battleState.spikeTimer = 3.0;
+battleState.spikes = [];
+for (let i = 0; i < 5; i++) {
+const rx = 100 + Math.random() * (V_WIDTH - 200);
+battleState.spikes.push({
+x: rx,
+width: 90,
+active: false
+});
+}
+}
+else if (battleState.spikePhase === 'preview' && battleState.spikeTimer <= 0) {
+battleState.spikePhase = 'active';
+battleState.spikeTimer = 2.0;
+for (let s of battleState.spikes) {
+s.active = true;
+}
+playSynthesizedSound(650, 0.1, 'triangle');
+}
+else if (battleState.spikePhase === 'active' && battleState.spikeTimer <= 0) {
+battleState.spikePhase = 'cooldown';
+battleState.spikeTimer = 3.0;
+battleState.spikes = [];
+}
+}
+function updateHypercharge() {
+if (battleState.hyperActive) {
+battleState.hyperTime -= 0.016;
+document.getElementById('hyperStatusText').innerText = `АКТИВНО (${Math.ceil(battleState.hyperTime)}s)`;
+document.getElementById('hyperStatusText').className = "text-yellow-400 font-bold animate-pulse";
+if (battleState.hyperTime <= 0) {
+battleState.hyperActive = false;
+battleState.hyperCooldown = 20.0;
+document.getElementById('hyperStatusText').innerText = "ПЕРЕЗАРЯДКА";
+document.getElementById('hyperStatusText').className = "text-red-500 font-bold";
+}
+} else if (battleState.hyperCooldown > 0) {
+battleState.hyperCooldown -= 0.016;
+document.getElementById('hyperStatusText').innerText = `ЗАРЯДКА (${Math.ceil(battleState.hyperCooldown)}s)`;
+if (battleState.hyperCooldown <= 0) {
+document.getElementById('hyperStatusText').innerText = "ГОТОВО";
+document.getElementById('hyperStatusText').className = "text-green-400 font-bold";
+}
+}
+}
+function setupDrunLootAndSceanrio() {
+battleState.enemies.push(new Enemy('drun', 400, 350));
+battleState.enemies.push(new Enemy('drun', 550, 350));
+battleState.introDrunAnimTimer = 5.0; 
+battleState.drunsBled = false;
+battleState.lootSpawned = false;
+document.getElementById('battleLootHUD').classList.remove('hidden');
+battleState.battleInventory.Q = null;
+battleState.battleInventory.R = null;
+updateLootInventoryHUD();
+}
+function updateLootInventoryHUD() {
+const itemDetails = {
+shield: { name: "Щит", icon: "🛡️" },
+heal: { name: "Лечение", icon: "✚" },
+poison: { name: "Яд", icon: "🧪" },
+trap: { name: "Капкан", icon: "⚙️" },
+flashlight: { name: "Фонарь", icon: "🔦" }
+};
+['Q', 'R'].forEach(slot => {
+const item = battleState.battleInventory[slot];
+const iconEl = document.getElementById(`lootIcon${slot}`);
+const labelEl = document.getElementById(`lootLabel${slot}`);
+const slotEl = document.getElementById(`lootSlot${slot}`);
+if (item && itemDetails[item]) {
+iconEl.innerHTML = itemDetails[item].icon;
+labelEl.innerText = itemDetails[item].name;
+slotEl.classList.add('border-yellow-500');
+slotEl.classList.remove('border-slate-700');
+} else {
+iconEl.innerHTML = "";
+labelEl.innerText = "Пусто";
+slotEl.classList.remove('border-yellow-500');
+slotEl.classList.add('border-slate-700');
+}
+});
+}
+function handlePickupLoot() {
+for (let i = battleState.drunLootContainers.length - 1; i >= 0; i--) {
+const box = battleState.drunLootContainers[i];
+const dist = Math.abs((battleState.player.x + battleState.player.width/2) - box.x);
+if (dist < 80) {
+const pool = ['shield', 'heal', 'poison', 'trap', 'flashlight'];
+let p1 = pool[Math.floor(Math.random() * 4)]; 
+let p2 = pool[Math.floor(Math.random() * 4)];
+if (Math.random() < 0.15) p1 = 'flashlight';
+if (Math.random() < 0.15) p2 = 'flashlight';
+battleState.battleInventory.Q = p1;
+battleState.battleInventory.R = p2;
+updateLootInventoryHUD();
+playLevelUpSound();
+showFloatingMessage("Снаряжение Друнов подобрано! Активация на Q и R!");
+battleState.drunLootContainers.splice(i, 1);
+}
+}
+}
+function useLootItem(slot) {
+const item = battleState.battleInventory[slot];
+if (!item) return;
+if (item === 'shield') {
+battleState.playerShieldTimer = 8.0; 
+playSynthesizedSound(300, 0.5, 'sine');
+showFloatingMessage("Щит активирован! Получаемый урон снижен на 50%!");
+}
+else if (item === 'heal') {
+battleState.playerRegenTimer = 3.0; 
+playSynthesizedSound(400, 0.4, 'triangle');
+showFloatingMessage("Быстрое исцеление активировано!");
+}
+else if (item === 'poison') {
+battleState.throwAimActive = true;
+showFloatingMessage("Кликните на карту, чтобы бросить бутылку яда!");
+}
+else if (item === 'trap') {
+battleState.projectiles.push(new Projectile(battleState.player.x + battleState.player.width/2 - 15, 430, 0, 0, 'placed_trap', battleState.player));
+playSynthesizedSound(100, 0.3, 'sawtooth');
+showFloatingMessage("Капкан установлен под ноги!");
+}
+else if (item === 'flashlight') {
+let blindedCount = 0;
+for (let enemy of battleState.enemies) {
+if (enemy.type === 'skrut' || enemy.type === 'small_skrut') {
+enemy.blindTimer = 4.0; 
+blindedCount++;
+}
+}
+playLaserSound();
+showFloatingMessage(blindedCount > 0 ? "Скрут временно ослеплен излучателем!" : "Ультрафиолетовый излучатель активирован!");
+}
+battleState.battleInventory[slot] = null;
+updateLootInventoryHUD();
+}
+function executePoisonBottleThrow(tx, ty) {
+battleState.throwAimActive = false;
+const player = battleState.player;
+const angle = Math.atan2(ty - (player.y + 30), tx - (player.x + player.width/2));
+const vx = Math.cos(angle) * 12;
+const vy = Math.sin(angle) * 12;
+battleState.projectiles.push(new Projectile(player.x + player.width/2, player.y + 30, vx, vy, 'thrown_poison', player));
+playSynthesizedSound(350, 0.2, 'sine');
+}
+function handleMimicContamination() {
+battleState.mimicContamination++;
+const player = battleState.player;
+if (battleState.mimicContamination === 1) {
+player.frozenTimer = 2.0; 
+battleState.dizzinessTimer = 4.0; 
+player.hp = Math.max(10, player.hp - 200); 
+showFloatingMessage("Первое заражение Скрутом! Вас бешено дергает!");
+playSynthesizedSound(120, 0.8, 'sawtooth');
+}
+else if (battleState.mimicContamination === 2) {
+player.frozenTimer = 2.0;
+battleState.dizzinessTimer = 5.0; 
+player.hp = Math.max(10, player.hp - 400);
+showFloatingMessage("Второе заражение! Дезориентация усилена!");
+playSynthesizedSound(100, 1.2, 'sawtooth');
+}
+else if (battleState.mimicContamination >= 3) {
+player.frozenTimer = 2.0;
+battleState.dizzinessTimer = 10.0; 
+player.hp = Math.max(10, player.hp - 600);
+showFloatingMessage("Вы близки к превращению в мимика! Контроль теряется!");
+playSynthesizedSound(80, 1.6, 'sawtooth');
+}
+}
+function handleParrySuccess() {
+if (!battleState.parryActive) return;
+battleState.parryActive = false;
+battleState.parryRegistered = true;
+document.getElementById('parryPromptContainer').classList.add('hidden');
+for (let enemy of battleState.enemies) {
+if (enemy.type === 'skrut') {
+enemy.trappedTimer = 4.0; 
+enemy.x += enemy.facingLeft ? 200 : -200; 
+createSlamImpact(enemy.x, enemy.y + 50, '#eab308');
+}
+}
+playLevelUpSound();
+showFloatingMessage("УСПЕШНОЕ ПАРИРОВАНИЕ! СКРУТ ОГЛУШЕН НА 4 СЕКУНДЫ!");
+}
+function checkBossPhase() {
+if (gameState.currentLocation !== 'Murino_2') return;
+const activeCombatants = battleState.enemies.filter(e => e.hp > 0);
+const hasSkruts = battleState.enemies.some(e => (e.type === 'skrut' || e.type === 'small_skrut') && e.hp > 0);
+if (battleState.phase === 'drun_intro') {
+battleState.introDrunAnimTimer -= 0.016;
+if (battleState.introDrunAnimTimer <= 2.5 && !battleState.drunsBled) {
+battleState.drunsBled = true;
+for (let enemy of battleState.enemies) {
+if (enemy.type === 'drun') {
+enemy.vy = 4; 
+triggerBossDialogue("О нет, мы надышались туманом... Никогда не заходи в комнату веселья!");
+createSlamImpact(enemy.x, 430, '#ef4444');
+}
+}
+}
+if (battleState.introDrunAnimTimer <= 0 && !battleState.lootSpawned) {
+battleState.lootSpawned = true;
+const oldDruns = [...battleState.enemies];
+battleState.enemies = [];
+oldDruns.forEach(d => {
+battleState.drunLootContainers.push({
+x: d.x,
+y: 430,
+width: 35,
+height: 25
+});
+});
+showFloatingMessage("Друны погибли. Соберите их снаряжение на клавишу [E] рядом с ящиками!");
+setTimeout(() => {
+if (!battleState.active) return;
+transitionBattlePhase('skrut_fight', 'ФАЗА 1: СКРУТ');
+battleState.enemies.push(new Enemy('skrut', V_WIDTH - 150, 325));
+triggerBossDialogue("Я чувствую силу ваших вещей! Отдай их мне!");
+}, 4000);
+}
+}
+// Фаза Большого Скрута окончена -> Спавн 2 Маленьких Скрутов (Они идут быстрее, стреляет молния)
+if (battleState.phase === 'skrut_fight' && !hasSkruts) {
+// Награда за большого скрута начисляется после победы над обоими маленькими, одной общей суммой.
+transitionBattlePhase('skrut_division', 'ФАЗА 2: МАЛЕНЬКИЕ СКРУТЫ');
+triggerBossDialogue("Думаешь, это конец? Мы разделимся!");
+battleState.enemies.push(new Enemy('small_skrut', 300, 350));
+battleState.enemies.push(new Enemy('small_skrut', 900, 350));
+battleState.lightningTimer = 1.5; // Сброс таймера молнии
+return;
+}
+// Фаза с маленькими скрутами закончилась -> Перерыв 3с с надписью "Когда же все это закончится."
+if (battleState.phase === 'skrut_division' && !hasSkruts) {
+// НАГРАДА: Большой + маленькие скруты = 700 монет и 1500 поинтов
+gameState.coins += 700;
+gameState.points += 1500;
+updateUI();
+transitionBattlePhase('scru_break', 'КОГДА ЖЕ ВСЕ ЭТО ЗАКОНЧИТСЯ.');
+triggerBossDialogue("Когда же все это закончится.");
+setTimeout(() => {
+if (!battleState.active || battleState.phase !== 'scru_break') return;
+transitionBattlePhase('skromnik_fight', 'СКРОМНИК');
+battleState.enemies.push(new Enemy('skromnik', 100, 320));
+triggerBossDialogue("ГРРРААААХ!");
+}, 3000);
+return;
+}
+// Скромник повержен -> Начинается прыгающий монстр
+if (battleState.phase === 'skromnik_fight' && activeCombatants.length === 0) {
+// НАГРАДА: Скромник = 100 монет и 300 поинтов
+gameState.coins += 100;
+gameState.points += 300;
+updateUI();
+transitionBattlePhase('spring_boss_fight', 'ФАЗА 3: ПРЫГУЧИЙ МОНСТР');
+battleState.enemies.push(new Enemy('spring_monster', 100, 325));
+battleState.springState = 'idle';
+triggerBossDialogue("Я раздавлю тебя сверху!");
+return;
+}
+// Прыгающий монстр повержен -> Свет сужается (Радиус 260), Начинается фаза с тенями по бокам попарно
+if (battleState.phase === 'spring_boss_fight' && activeCombatants.length === 0) {
+// НАГРАДА: Прыгающий монстр = 500 монет и 2000 поинтов
+gameState.coins += 500;
+gameState.points += 2000;
+updateUI();
+transitionBattlePhase('shadows_invasion', 'ФАЗА С ТЕНЯМИ');
+battleState.fogRadius = 260; // Радиус увеличен, чтобы было видно игрока и опасность вокруг
+battleState.fogPhaseTimer = 15.0; // Фаза теней идет ровно 15 секунд
+battleState.shadowsInsideCount = 0;
+battleState.superPressSequence = 0;
+battleState.shadowDotTimer = 1.0;
+battleState.shadowSpawnTimer = 0; // Сброс спавнера теней
+triggerBossDialogue("THE FOG IS COMING... ТЕНИ ИДУТ!");
+const fogSnd = document.getElementById('soundFogIsComing');
+if (fogSnd) {
+fogSnd.currentTime = 0;
+fogSnd.play().catch(e => {});
+}
+return;
+}
+// Завершение Фазы Тумана (Теней) по таймеру ровно через 15 сек -> передышка 5 сек и финальный фруктовый дождь
+if (battleState.phase === 'shadows_invasion' && battleState.fogPhaseTimer <= 0) {
+// НАГРАДА: Фаза с тенями = 1200 монет и 2300 поинтов
+gameState.coins += 1200;
+gameState.points += 2300;
+updateUI();
+battleState.fogRadius = 9999; // Возвращаем свет
+battleState.shadowsInsideCount = 0; // Сбрасываем дебафф теней
+battleState.enemies = []; // Очищаем оставшиеся тени
+transitionBattlePhase('fruit_rain_prep', 'ПЕРЕДЫШКА 5 СЕКУНД');
+setTimeout(() => {
+if (!battleState.active || battleState.phase !== 'fruit_rain_prep') return;
+transitionBattlePhase('fruit_rain_active', 'ВКУСНОСТЬ ДОЖДЬ!');
+triggerBossDialogue("ПОПРОБУЙ УКЛОНИТЬСЯ ОТ ФРУКТОВЫХ КАПЕЛЬ!");
+battleState.keysCollected = 0;
+battleState.goldenKeys = [
+{ x: 250, y: 410, collected: false },
+{ x: 600, y: 300, collected: false }, 
+{ x: 950, y: 410, collected: false }
+];
+}, 5000); // Передышка ровно 5 секунд
+return;
+}
+}
+function handleShadowPurgeActivation() {
+battleState.superPressSequence++;
+playSynthesizedSound(700, 0.15, 'sine');
+showFloatingMessage(`Первое прожатие can-суперсилы зафиксировано (${battleState.superPressSequence}/2)`);
+if (battleState.superPressSequence >= 2) {
+if (battleState.shadowsInsideCount > 0) {
+showFloatingMessage(`ОЧИЩЕНИЕ! Вы выбили ${battleState.shadowsInsideCount} теней!`);
+for (let i = 0; i < battleState.shadowsInsideCount; i++) {
+const dir = i % 2 === 0 ? -120 : 120;
+const releasedShadow = new Enemy('shadow_creature', battleState.player.x + dir, 355);
+battleState.enemies.push(releasedShadow);
+}
+battleState.shadowsInsideCount = 0; 
+battleState.shadowDotTimer = 1.0;
+playLevelUpSound();
+createSlamImpact(battleState.player.x + 37, battleState.player.y + 40, '#a855f7');
+}
+battleState.superPressSequence = 0; 
+}
+}
+function updateFruitRain() {
+if (battleState.phase !== 'fruit_rain_active') return;
+if (Math.random() < 0.15) {
+const fTypes = ['plum', 'grape', 'apple'];
+const chosenType = fTypes[Math.floor(Math.random() * 3)];
+battleState.fallingFruits.push({
+type: chosenType,
+x: Math.random() * V_WIDTH,
+y: -40,
+vy: 4.5 + Math.random() * 3.5,
+radius: 16 
+});
+}
+for (let i = battleState.fallingFruits.length - 1; i >= 0; i--) {
+const fruit = battleState.fallingFruits[i];
+fruit.y += fruit.vy;
+const pRect = {
+x: battleState.player.x,
+y: battleState.player.y,
+w: battleState.player.width,
+h: battleState.player.height
+};
+const isColliding = checkCircleRectCollision({ x: fruit.x, y: fruit.y, r: fruit.radius }, pRect);
+if (isColliding) {
+battleState.player.takeDamage(800); 
+battleState.fallingFruits.splice(i, 1);
+playSynthesizedSound(100, 0.2, 'sawtooth');
+showFloatingMessage("ФРУКТ НАНЕС ВАМ 800 ЕД. УРОНА!");
+continue;
+}
+if (fruit.y > V_HEIGHT + 50) {
+battleState.fallingFruits.splice(i, 1);
+}
+}
+let uncollectedCount = 0;
+battleState.goldenKeys.forEach(key => {
+if (!key.collected) {
+uncollectedCount++;
+const dist = Math.sqrt(Math.pow((battleState.player.x + 37) - key.x, 2) + Math.pow((battleState.player.y + 45) - key.y, 2));
+if (dist < 60) {
+key.collected = true;
+battleState.keysCollected++;
+playLevelUpSound();
+showFloatingMessage(`Собран Золотой Ключ (${battleState.keysCollected}/3)!`);
+}
+}
+});
+if (battleState.keysCollected >= 3) {
+// НАГРАДА: Фруктовый дождь = 800 монет и 2400 поинтов
+gameState.coins += 800;
+gameState.points += 2400;
+updateUI();
+
+// Завершаем локацию - запускаем финальные титры с надписями и черным экраном
+battleState.fallingFruits = [];
+battleState.enemies = [];
+transitionBattlePhase('fog_ending', 'fog is coming');
+saveGameState();
+
+// Черный экран и титры в конце 2 части
+setTimeout(() => {
+if (!battleState.active) return;
+playSynthesizedSound(100, 2.5, 'sawtooth');
+// Финал - Нокаут и начисление финишного супербонуса
+// НАГРАДА: Финал = 3000 монет и 5000 поинтов за эту часть
+gameState.coins += 3000;
+gameState.points += 5000;
+if (!gameState.completedLocations.includes('Murino_2')) {
+gameState.completedLocations.push('Murino_2');
+}
+updateUI();
+saveGameState();
+endBattleSequence(true);
+}, 3000);
+}
+}
+function executeNormalAttack() {
+const player = battleState.player;
+if (player.attackCooldown > 0 || player.frozenTimer > 0) return;
+player.attackCooldown = 15;
+let currentDmg = player.dmg;
+if (battleState.hyperActive) currentDmg *= 2;
+let applyStun = false;
+if (player.heroInfo.id === 'Oglushaemost' && battleState.stunningSuperReady) {
+applyStun = true;
+battleState.stunningSuperReady = false;
+}
+if (player.heroInfo.attackType === 'melee_fist') {
+player.fistExtension = 130;
+player.fistTargetX = mouseX;
+player.fistTargetY = mouseY;
+playPunchSound();
+const punchX = player.x + player.width/2 + (player.facingLeft ? -110 : 110);
+const punchY = player.y + player.height/2;
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+const dist = Math.sqrt(Math.pow(enemy.x + enemy.width/2 - punchX, 2) + Math.pow(enemy.y + enemy.height/2 - punchY, 2));
+if (dist < 120) {
+enemy.takeDamage(currentDmg);
+if (applyStun) enemy.trappedTimer = 1.0;
+}
+}
+if (battleState.hyperActive) {
+const punchX2 = player.x + player.width/2 + (player.facingLeft ? 110 : -110);
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+const dist = Math.sqrt(Math.pow(enemy.x + enemy.width/2 - punchX2, 2) + Math.pow(enemy.y + enemy.height/2 - punchY, 2));
+if (dist < 120) {
+enemy.takeDamage(currentDmg);
+if (applyStun) enemy.trappedTimer = 1.0;
+}
+}
+}
+}
+else if (player.heroInfo.attackType === 'eyes') {
+playSynthesizedSound(500, 0.1, 'sine');
+const dir = player.facingLeft ? -9 : 9;
+battleState.projectiles.push(new Projectile(player.x + player.width/2, player.y + 20, dir, 0, 'eye', player));
+battleState.projectiles.push(new Projectile(player.x + player.width/2, player.y + 50, dir, 0, 'eye', player));
+}
+else if (player.heroInfo.attackType === 'nose') {
+playPunchSound();
+createSlamImpact(player.x + player.width/2, player.y + player.height/2, '#fca5a5');
+let attackDmg = player.dmg;
+if (player.smena2RageTimer > 0) attackDmg *= 2;
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+const dist = Math.sqrt(Math.pow((enemy.x + enemy.width/2) - (player.x + player.width/2), 2) + Math.pow((enemy.y + enemy.height/2) - (player.y + player.height/2), 2));
+if (dist < 150) {
+enemy.takeDamage(attackDmg);
+if (applyStun) enemy.trappedTimer = 1.0;
+}
+}
+}
+else if (player.heroInfo.attackType === 'madness') {
+playSynthesizedSound(200, 0.1, 'triangle');
+createSlamImpact(player.x + player.width/2, player.y + player.height/2, '#c084fc');
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+const dist = Math.sqrt(Math.pow(enemy.x + enemy.width/2 - (player.x + player.width/2), 2) + Math.pow(enemy.y + enemy.height/2 - (player.y + player.height/2), 2));
+if (dist < 130) {
+enemy.takeDamage(player.dmg);
+let inc = 5;
+if (battleState.madnessRageActive) inc = 100;
+enemy.madness += inc;
+enemy.madnessTimer = 3.0;
+if (applyStun) enemy.trappedTimer = 1.0;
+}
+}
+}
+else if (player.heroInfo.attackType === 'pyramid') {
+playSynthesizedSound(350, 0.1, 'sawtooth');
+const angle = Math.atan2(mouseY - (player.y + 30), mouseX - (player.x + player.width/2));
+const vx = Math.cos(angle) * 11;
+const vy = Math.sin(angle) * 11;
+const proj = new Projectile(player.x + player.width/2, player.y + 30, vx, vy, 'pyramid_proj', player);
+battleState.projectiles.push(proj);
+}
+else if (player.heroInfo.attackType === 'laser_pierce') {
+playLaserSound();
+const dir = player.facingLeft ? -15 : 15;
+if (battleState.puglivostUpgraded || battleState.puglivostPermDeathUpgrade) {
+battleState.projectiles.push(new Projectile(player.x + player.width/2, player.y + 20, dir, 0, 'laser_view', player));
+battleState.projectiles.push(new Projectile(player.x + player.width/2, player.y + 50, dir, 0, 'laser_view', player));
+} else {
+battleState.projectiles.push(new Projectile(player.x + player.width/2, player.y + 35, dir, 0, 'laser_view', player));
+}
+}
+else if (player.heroInfo.attackType === 'soplya') {
+playSynthesizedSound(400, 0.12, 'sine');
+const angle = Math.atan2(mouseY - (player.y + 30), mouseX - (player.x + player.width/2));
+const vx = Math.cos(angle) * 11;
+const vy = Math.sin(angle) * 11;
+const pType = battleState.soplyaSuperCharged ? 'super_soplya_drop' : 'soplya_drop';
+battleState.projectiles.push(new Projectile(player.x + player.width/2, player.y + 30, vx, vy, pType, player));
+if (battleState.soplyaSuperCharged) {
+battleState.soplyaSuperCharged = false;
+}
+}
+else if (player.heroInfo.attackType === 'wave') {
+playSynthesizedSound(300, 0.2, 'sine');
+createSlamImpact(player.x + player.width/2, player.y + player.height/2, '#93c5fd');
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+const dist = Math.sqrt(Math.pow((enemy.x + enemy.width/2) - (player.x + player.width/2), 2) + Math.pow((enemy.y + enemy.height/2) - (player.y + player.height/2), 2));
+let limitDist = battleState.waveUpgraded ? 350 : 250;
+if (dist < limitDist) {
+let finalDmg = 10 + (player.level - 1) * 20;
+if (dist > 100) {
+finalDmg = 250 + (player.level - 1) * 50;
+}
+enemy.takeDamage(finalDmg);
+if (applyStun) enemy.trappedTimer = 1.0;
+}
+}
+}
+else if (player.heroInfo.attackType === 'syr') {
+playSynthesizedSound(350, 0.12, 'sawtooth');
+const angle = Math.atan2(mouseY - (player.y + 30), mouseX - (player.x + player.width/2));
+const vx = Math.cos(angle) * 12;
+const vy = Math.sin(angle) * 12;
+battleState.projectiles.push(new Projectile(player.x + player.width/2, player.y + 30, vx, vy, 'vodka_bottle', player));
+}
+else if (player.heroInfo.attackType === 'hands') {
+playPunchSound();
+createSlamImpact(player.x + player.width/2, player.y + player.height/2, '#f97316');
+let knockbackMode = false;
+if (player.level >= 9 && player.omaygadCharge >= 100) {
+knockbackMode = true;
+player.omaygadCharge = 0;
+showFloatingMessage("СОКРУШИТЕЛЬНЫЙ ОТБРОС РУКАМИ!");
+}
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+const dist = Math.sqrt(Math.pow(enemy.x + enemy.width/2 - (player.x + player.width/2), 2) + Math.pow(enemy.y + enemy.height/2 - (player.y + player.height/2), 2));
+if (dist < 150) {
+enemy.takeDamage(player.dmg);
+if (applyStun) enemy.trappedTimer = 1.0;
+if (knockbackMode) {
+enemy.vx = enemy.x > player.x ? 25 : -25;
+enemy.vy = -8;
+}
+}
+}
+}
+}
+function triggerSuperActivation() {
+const player = battleState.player;
+if (!player) return;
+if (battleState.phase === 'shadows_invasion' && battleState.shadowsInsideCount > 0) {
+handleShadowPurgeActivation();
+return;
+}
+if (player.level < 9) {
+playSynthesizedSound(120, 0.2, 'sawtooth');
+showFloatingMessage("Суперсила заблокирована! Требуется 9 уровень героя.");
+return;
+}
+if (player.heroInfo.id === 'Mell') {
+if (player.isSuperJumping) return;
+battleState.superAimMode = true;
+showFloatingMessage("Кликните на карту для Смертельного Прыжка!");
+}
+else if (player.heroInfo.attackType === 'eyes') {
+playExplosionSound();
+let firedCount = 0;
+const eyeBurst = setInterval(() => {
+if (!battleState.active || firedCount >= 3) {
+clearInterval(eyeBurst);
+return;
+}
+battleState.projectiles.push(new Projectile(player.x + player.width/2, player.y + 20, -12, 0, 'eye', player));
+battleState.projectiles.push(new Projectile(player.x + player.width/2, player.y + 50, -12, 0, 'eye', player));
+battleState.projectiles.push(new Projectile(player.x + player.width/2, player.y + 20, 12, 0, 'eye', player));
+battleState.projectiles.push(new Projectile(player.x + player.width/2, player.y + 50, 12, 0, 'eye', player));
+firedCount++;
+}, 300);
+}
+else if (player.heroInfo.attackType === 'nose') {
+playLevelUpSound();
+player.smena2RageTimer = 3.0;
+showFloatingMessage("АКТИВИРОВАНО УСКОРЕНИЕ x2 И УРОН x2!");
+}
+else if (player.heroInfo.attackType === 'madness') {
+playLevelUpSound();
+battleState.madnessRageActive = true;
+showFloatingMessage("АКТИВИРОВАНА АУРА БЕЗУМИЯ НА 5 СЕКУНД!");
+setTimeout(() => {
+battleState.madnessRageActive = false;
+}, 5000);
+}
+else if (player.heroInfo.attackType === 'pyramid') {
+playLevelUpSound();
+player.superFlightTimer = 3.0;
+showFloatingMessage("ВЗЛЕТ ПИРАМИДЫ!");
+}
+else if (player.heroInfo.attackType === 'laser_pierce') {
+playLevelUpSound();
+battleState.puglivostPermDeathUpgrade = true; 
+showFloatingMessage("ЛАЗЕР НАВСЕГДА УДВОЕН!");
+}
+else if (player.heroInfo.attackType === 'soplya') {
+playLevelUpSound();
+battleState.soplyaSuperCharged = true;
+showFloatingMessage("СЛЕДУЮЩИЙ ВЫСТРЕЛ СУПЕР-СОПЛЕЙ! Удар об пол создаст лечебную лужу (работает ТОЛЬКО на 9 ур сил под суперсилой)!");
+}
+else if (player.heroInfo.attackType === 'wave') {
+playLevelUpSound();
+battleState.stunningSuperReady = true;
+showFloatingMessage("Обязательно используйте атаку");
+}
+else if (player.heroInfo.attackType === 'syr') {
+playLevelUpSound();
+player.syrRageTimer = 4.0;
+showFloatingMessage("ДОЖДЬ ИЗ ВОДКИ И х2 СКОРОСТЬ НА 4 СЕКУНДЫ!");
+let rainCount = 0;
+const rainInterval = setInterval(() => {
+if (!battleState.active || player.syrRageTimer <= 0) {
+clearInterval(rainInterval);
+return;
+}
+const rx = Math.random() * V_WIDTH;
+battleState.projectiles.push(new Projectile(rx, -50, 0, 12, 'vodka_bottle', player));
+rainCount++;
+}, 150);
+}
+}
+function triggerHyperActivation() {
+if (!gameState.hyperUnlocked || gameState.hyperCharges <= 0) return;
+if (battleState.hyperCooldown > 0 || battleState.hyperActive) return;
+if (battleState.player.heroInfo.id !== 'Mell') return;
+playLevelUpSound();
+battleState.hyperActive = true;
+battleState.hyperTime = 3.0;
+battleState.hyperUsedThisGame = true;
+showFloatingMessage("ГИПЕРСИЛА: ДВА КУЛАКА И х2 УРОН НА 3 СЕКУНДЫ!");
+}
+function executeSuperJumpSlam(targetX, targetY) {
+battleState.superAimMode = false;
+const player = battleState.player;
+player.isSuperJumping = true;
+player.superJumpPhase = 'soaring';
+player.fistTargetX = targetX;
+player.fistTargetY = targetY;
+playJumpSound();
+}
+function executeSuperStunWaveSlam() {
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+enemy.trappedTimer = 1.0; 
+}
+}
+function executeSlamImpact(x, y) {
+playExplosionSound();
+createSlamImpact(x, y, '#ef4444');
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+const dist = Math.abs((enemy.x + enemy.width/2) - x);
+if (dist < 260) {
+enemy.takeDamage(550);
+enemy.vy = -12;
+}
+}
+}
+function createSlamImpact(x, y, color = '#3b82f6') {
+for (let i = 0; i < 18; i++) {
+const angle = (i / 18) * Math.PI * 2;
+const spd = 4 + Math.random() * 6;
+battleState.particles.push(new Particle(x, y, Math.cos(angle) * spd, Math.sin(angle) * spd, color));
+}
+}
+function gameLoop() {
+if (!battleState.active) return;
+ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
+let bgImg = cachedImages.ArmyBg;
+if (gameState.currentLocation === 'Murino_1') {
+bgImg = cachedImages.Murino1Bg;
+} else if (gameState.currentLocation === 'Murino_2') {
+bgImg = cachedImages.Murino2Bg;
+}
+ctx.drawImage(bgImg, 0, 0, V_WIDTH, V_HEIGHT);
+if (battleState.toxicFloorActive) {
+ctx.fillStyle = 'rgba(34, 197, 94, 0.25)';
+ctx.fillRect(0, 440, V_WIDTH, 160);
+}
+battleState.puddles = battleState.puddles.filter(p => p.timer > 0);
+for (let puddle of battleState.puddles) {
+puddle.timer -= 0.016;
+ctx.fillStyle = puddle.isSuper ? 'rgba(16, 185, 129, 0.55)' : 'rgba(34, 197, 94, 0.4)';
+ctx.beginPath();
+ctx.ellipse(puddle.x, puddle.y, puddle.radius, 15, 0, 0, Math.PI * 2);
+ctx.fill();
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+const dist = Math.abs((enemy.x + enemy.width/2) - puddle.x);
+if (dist < puddle.radius) {
+enemy.slowTimer = puddle.slow;
+enemy.damageReductionTimer = puddle.slow;
+enemy.damageReductionFactor = puddle.dmgReduction;
+enemy.takeDamage(puddle.dmg * 0.016);
+}
+}
+}
+for (let box of battleState.drunLootContainers) {
+ctx.fillStyle = '#b45309';
+ctx.fillRect(box.x - box.width/2, box.y - box.height, box.width, box.height);
+ctx.strokeStyle = '#fff';
+ctx.strokeRect(box.x - box.width/2, box.y - box.height, box.width, box.height);
+ctx.fillStyle = '#fef08a';
+ctx.font = 'bold 8px "Press Start 2P", monospace';
+ctx.fillText("ЛУТ [E]", box.x - box.width/2 - 5, box.y - box.height - 5);
+}
+for (let i = battleState.projectiles.length - 1; i >= 0; i--) {
+const proj = battleState.projectiles[i];
+if (proj.type === 'placed_trap') {
+ctx.drawImage(cachedImages.trap_item, proj.x, proj.y, 35, 20);
+for (let enemy of battleState.enemies) {
+if (enemy.hp <= 0) continue;
+const dist = Math.abs((enemy.x + enemy.width/2) - (proj.x + 17));
+if (dist < 40) {
+enemy.trappedTimer = 25.0; 
+enemy.vx = 0;
+enemy.vy = 0;
+battleState.projectiles.splice(i, 1);
+playSynthesizedSound(150, 0.25, 'sawtooth');
+showFloatingMessage("Враг угодил в капкан на 25 секунд!");
+break;
+}
+}
+}
+}
+if (gameState.currentLocation === 'Murino_2') {
+// Логика фазы Молний во время битвы с маленькими скрутами
+if (battleState.phase === 'skrut_division' && battleState.active) {
+battleState.lightningTimer -= 0.016;
+if (battleState.lightningTimer <= 0) {
+battleState.lightningTimer = 3.0 + Math.random() * 2.5; // Слуйчайная молния каждые 3-5.5 сек
+const strikeX = Math.random() * V_WIDTH;
+// Визуальный предупреждающий знак молнии
+createSlamImpact(strikeX, 450, '#60a5fa');
+setTimeout(() => {
+if (!battleState.active) return;
+playLaserSound();
+// Наносим урон и вешаем заморозку на 3 секунды
+const playerX = battleState.player.x + battleState.player.width / 2;
+if (Math.abs(playerX - strikeX) < 100) {
+battleState.player.frozenTimer = 3.0; // ЗАМОРОЗКА НА 3 СЕКУНДЫ
+battleState.player.takeDamage(1200); // Крупный урон от молнии
+showFloatingMessage("ВАС УДАРИЛО МОЛНИЕЙ! Заморозка 3 сек! -1200 HP");
+}
+}, 600);
+}
+}
+
+// Логика спавна теней по бокам попарно
+if (battleState.phase === 'shadows_invasion' && battleState.active) {
+battleState.shadowSpawnTimer -= 0.016;
+if (battleState.shadowSpawnTimer <= 0) {
+battleState.shadowSpawnTimer = 1.5; // Спавн каждые 1.5 секунды
+// Спавним слева и справа одновременно по паре
+battleState.enemies.push(new Enemy('shadow_creature', -50, 355));
+battleState.enemies.push(new Enemy('shadow_creature', V_WIDTH + 50, 355));
+playSynthesizedSound(200, 0.1, 'sawtooth');
+}
+}
+
+if (battleState.phase === 'fruit_rain_active') {
+battleState.goldenKeys.forEach(key => {
+if (!key.collected) {
+ctx.fillStyle = '#facc15';
+ctx.shadowColor = '#fbbf24';
+ctx.shadowBlur = 15;
+ctx.fillRect(key.x, key.y, 20, 10);
+ctx.beginPath();
+ctx.arc(key.x - 5, key.y + 5, 8, 0, Math.PI * 2);
+ctx.fill();
+ctx.shadowBlur = 0;
+}
+});
+battleState.fallingFruits.forEach(fruit => {
+ctx.save();
+ctx.beginPath();
+ctx.arc(fruit.x, fruit.y, fruit.radius, 0, Math.PI * 2);
+let mainColor = '#a855f7'; 
+let shadowColor = '#c084fc';
+if (fruit.type === 'grape') {
+mainColor = '#14532d'; 
+shadowColor = '#22c55e';
+} else if (fruit.type === 'apple') {
+mainColor = '#22c55e'; 
+shadowColor = '#4ade80';
+}
+ctx.fillStyle = mainColor;
+ctx.shadowColor = shadowColor;
+ctx.shadowBlur = 12;
+ctx.fill();
+ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+ctx.lineWidth = 2;
+ctx.stroke();
+ctx.restore();
+});
+}
+}
+for (let bed of battleState.beds) {
+ctx.fillStyle = '#4b5563';
+ctx.fillRect(bed.x, bed.y, bed.width, bed.height);
+ctx.fillStyle = '#d1d5db';
+ctx.fillRect(bed.x + 4, bed.y + 4, bed.width - 8, bed.height - 8);
+ctx.fillStyle = '#374151';
+ctx.fillRect(bed.x + 15, bed.y + bed.height, 8, 30);
+ctx.fillRect(bed.x + bed.width - 23, bed.y + bed.height, 8, 30);
+}
+for (let hazard of battleState.spikes) {
+if (hazard.active) {
+ctx.fillStyle = '#9ca3af';
+ctx.strokeStyle = '#4b5563';
+ctx.lineWidth = 1;
+ctx.beginPath();
+for (let xOffset = 0; xOffset < hazard.width; xOffset += 15) {
+ctx.moveTo(hazard.x + xOffset, 440);
+ctx.lineTo(hazard.x + xOffset + 7, 440 - 20);
+ctx.lineTo(hazard.x + xOffset + 15, 440);
+}
+ctx.closePath();
+ctx.fill();
+ctx.stroke();
+if (battleState.player.x + battleState.player.width > hazard.x && battleState.player.x < hazard.x + hazard.width) {
+if (battleState.player.y + battleState.player.height >= 430) {
+battleState.player.takeDamage(120);
+}
+}
+} else {
+if (Math.floor(Date.now() / 150) % 2 === 0) {
+ctx.fillStyle = 'rgba(239, 68, 68, 0.5)';
+ctx.fillRect(hazard.x, 437, hazard.width, 3);
+}
+}
+}
+battleState.player.update();
+battleState.player.draw();
+battleState.projectiles = battleState.projectiles.filter(p => p.timer < 5.0);
+for (let p of battleState.projectiles) {
+p.update(battleState.player);
+p.draw();
+}
+battleState.enemies = battleState.enemies.filter(e => e.hp > 0);
+for (let enemy of battleState.enemies) {
+enemy.update(battleState.player);
+enemy.draw();
+}
+battleState.particles = battleState.particles.filter(p => p.life > 0);
+for (let p of battleState.particles) {
+p.update();
+p.draw();
+}
+if (battleState.superAimMode) {
+ctx.strokeStyle = '#ef4444';
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.arc(mouseX, mouseY, 35, 0, Math.PI*2);
+ctx.stroke();
+ctx.fillStyle = 'rgba(239, 68, 68, 0.15)';
+ctx.fill();
+}
+if (battleState.throwAimActive) {
+ctx.strokeStyle = '#10b981';
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.arc(mouseX, mouseY, 40, 0, Math.PI*2);
+ctx.stroke();
+ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+ctx.fill();
+}
+if (battleState.fogRadius < 9999) {
+ctx.save();
+const pX = battleState.player.x + battleState.player.width/2;
+const pY = battleState.player.y + battleState.player.height/2;
+ctx.fillStyle = 'rgba(12, 15, 25, 0.98)';
+ctx.beginPath();
+ctx.rect(0, 0, V_WIDTH, V_HEIGHT);
+ctx.arc(pX, pY, battleState.fogRadius, 0, Math.PI * 2, true);
+ctx.fill();
+ctx.restore();
+}
+if (battleState.parryActive) {
+battleState.parryTimer -= 0.016;
+if (battleState.parryTimer <= 0) {
+battleState.parryActive = false;
+document.getElementById('parryPromptContainer').classList.add('hidden');
+if (!battleState.parryRegistered) {
+battleState.player.takeDamage(500);
+showFloatingMessage("ВЫ НЕ УСПЕЛИ ПАРИРОВАТЬ! Получен сокрушительный урон!");
+playSynthesizedSound(80, 0.6, 'sawtooth');
+}
+}
+}
+if (battleState.playerShieldTimer > 0) {
+battleState.playerShieldTimer -= 0.016;
+}
+if (battleState.playerRegenTimer > 0) {
+battleState.playerRegenTimer -= 0.016;
+battleState.player.hp = Math.min(battleState.player.maxHp, battleState.player.hp + 50 * 0.016); 
+}
+// DOT урон от теней
+if (battleState.shadowsInsideCount > 0 && battleState.phase === 'shadows_invasion') {
+battleState.shadowDotTimer -= 0.016;
+if (battleState.shadowDotTimer <= 0) {
+const dotDmg = battleState.shadowsInsideCount * 150;
+battleState.player.takeDamage(dotDmg);
+battleState.shadowDotTimer = 1.0;
+showFloatingMessage(`Тени внутри наносят ${dotDmg} урона!`);
+}
+}
+if (battleState.phase === 'shadows_invasion') {
+battleState.fogPhaseTimer -= 0.016;
+}
+updateFruitRain();
+checkBossPhase();
+updateBattleWaves();
+updateHypercharge();
+document.getElementById('playerHpText').innerText = `${Math.ceil(battleState.player.hp)} / ${battleState.player.maxHp}`;
+document.getElementById('playerHpBar').style.width = `${(battleState.player.hp / battleState.player.maxHp) * 100}%`;
+const activeBoss = battleState.enemies.find(e => e.type !== 'knife' && e.type !== 'mine' && e.type !== 'drun');
+if (activeBoss) {
+document.getElementById('enemyHpText').innerText = `${activeBoss.hp} / ${activeBoss.maxHp}`;
+document.getElementById('enemyHpBar').style.width = `${(activeBoss.hp / activeBoss.maxHp) * 100}%`;
+document.getElementById('enemyNameText').innerText = activeBoss.type.toUpperCase();
+} else {
+document.getElementById('enemyHpText').innerText = "0 / 1500";
+document.getElementById('enemyHpBar').style.width = '0%';
+}
+
+// Рендеринг заставки черного экрана перед победными окнами во 2 части
+if (battleState.phase === 'fog_ending') {
+ctx.fillStyle = '#000';
+ctx.fillRect(0, 0, V_WIDTH, V_HEIGHT);
+ctx.fillStyle = '#ef4444';
+ctx.font = 'bold 32px "Press Start 2P", monospace';
+ctx.textAlign = 'center';
+ctx.fillText("fog is coming", V_WIDTH/2, V_HEIGHT/2);
+}
+
+requestAnimationFrame(gameLoop);
+}
+function startFight() {
+playSynthesizedSound(500, 0.3);
+document.getElementById('menuScene').classList.add('hidden');
+document.getElementById('battleScene').classList.remove('hidden');
+resizeCanvas();
+battleState.active = true;
+battleState.phase = 'helpers';
+battleState.countdown = 3;
+battleState.projectiles = [];
+battleState.enemies = [];
+battleState.particles = [];
+battleState.puddles = [];
+battleState.beds = [];
+battleState.spikes = [];
+battleState.spikePhase = 'cooldown';
+battleState.spikeTimer = 3.0;
+battleState.toxicFloorActive = false;
+battleState.customPromptText = '';
+battleState.promptTimer = 0;
+battleState.fogRadius = 9999;
+battleState.soplyaSuperCharged = false;
+battleState.hyperActive = false;
+battleState.hyperTime = 0;
+battleState.hyperCooldown = 0;
+battleState.hyperUsedThisGame = false;
+battleState.drunLootContainers = [];
+battleState.battleInventory.Q = null;
+battleState.battleInventory.R = null;
+battleState.playerShieldTimer = 0;
+battleState.playerRegenTimer = 0;
+battleState.throwAimActive = false;
+battleState.mimicContamination = 0;
+battleState.dizzinessTimer = 0;
+battleState.keysCollected = 0;
+battleState.shadowsInsideCount = 0;
+battleState.superPressSequence = 0;
+battleState.fallingFruits = [];
+battleState.goldenKeys = [];
+battleState.parryActive = false;
+battleState.stunningSuperReady = false;
+battleState.fogPhaseTimer = 0;
+battleState.shadowDotTimer = 1.0;
+battleState.lightningTimer = 2.0;
+battleState.shadowSpawnTimer = 0;
+battleState.player = new Player();
+document.getElementById('battlePlayerImg').src = battleState.player.heroInfo.img || "https://placehold.co/150";
+document.getElementById('battlePlayerName').innerText = battleState.player.heroInfo.name;
+const omayHUD = document.getElementById('omaygadChargeHUD');
+if (battleState.player.heroInfo.id === 'Omaygad') {
+omayHUD.classList.remove('hidden');
+} else {
+omayHUD.classList.add('hidden');
+}
+const hyperHUD = document.getElementById('hyperHUD');
+if (gameState.hyperUnlocked && battleState.player.heroInfo.id === 'Mell' && gameState.hyperCharges > 0) {
+hyperHUD.classList.remove('hidden');
+document.getElementById('hyperChargeLabel').innerText = `${gameState.hyperCharges}/3`;
+document.getElementById('hyperStatusText').innerText = "ГОТОВО [Z]";
+document.getElementById('hyperStatusText').className = "text-green-400 font-bold";
+} else {
+hyperHUD.classList.add('hidden');
+}
+const introOverlay = document.getElementById('battleIntroOverlay');
+const countdownEl = document.getElementById('battleCountdown');
+introOverlay.classList.remove('opacity-0', 'pointer-events-none');
+const locNames = {
+Army: 'Армия (Старт)',
+Murino_1: 'Мурино - Улица',
+Murino_2: 'Мурино - Дом и Подвал'
+};
+document.getElementById('introLocName').innerText = locNames[gameState.currentLocation].toUpperCase();
+document.getElementById('battleStatusMsg').innerText = "ПОДГОТОВКА";
+document.getElementById('toxicFloorOverlay').classList.add('hidden');
+let count = 3;
+countdownEl.innerText = count;
+playTickSound();
+const timer = setInterval(() => {
+count--;
+if (count > 0) {
+countdownEl.innerText = count;
+playTickSound();
+} else {
+clearInterval(timer);
+introOverlay.classList.add('opacity-0', 'pointer-events-none');
+playCurrentStageMusic();
+if (gameState.currentLocation === 'Army') {
+battleState.enemies.push(new Enemy('helper', 900, 350));
+battleState.enemies.push(new Enemy('helper', 1100, 350));
+document.getElementById('battleStatusMsg').innerText = "ВОЛНА 1: ПОМОЩНИКИ";
+}
+else if (gameState.currentLocation === 'Murino_1') {
+transitionBattlePhase('murino_intro_replies', 'ВХОД В МУРИНО');
+triggerBossDialogue("Этот город Мурино... Сплошные страшные человейники...");
+setTimeout(() => {
+if (!battleState.active) return;
+triggerBossDialogue("Кто здесь вообще обитает? И как выбраться отсюда?");
+setTimeout(() => {
+if (!battleState.active) return;
+transitionBattlePhase('helpers', 'АТАКА СКРОМНИКА!');
+battleState.enemies.push(new Enemy('skromnik', V_WIDTH - 150, 320));
+}, 3000);
+}, 3000);
+}
+else if (gameState.currentLocation === 'Murino_2') {
+transitionBattlePhase('drun_intro', 'ПОИСК ВЫХОДА С ДРУНАМИ');
+setupDrunLootAndSceanrio();
+}
+requestAnimationFrame(gameLoop);
+}
+}, 1000);
+}
+function updateBattleWaves() {
+if (battleState.dialogueTimer > 0) {
+battleState.dialogueTimer -= 0.016;
+if (battleState.dialogueTimer <= 0) {
+document.getElementById('bossSpeechBubble').classList.add('hidden');
+}
+}
+if (battleState.player && battleState.player.heroInfo.id === 'Omaygad') {
+if (battleState.player.omaygadCharge < 100) {
+battleState.player.omaygadCharge += 0.2;
+}
+document.getElementById('omaygadChargeBar').style.width = `${battleState.player.omaygadCharge}%`;
+}
+const activeCombatants = battleState.enemies.filter(e => e.hp > 0);
+if (gameState.currentLocation === 'Army') {
+if (activeCombatants.length === 0 && battleState.phase !== 'knockout') {
+if (battleState.phase === 'helpers') {
+transitionBattlePhase('commander_transition', 'ОТДЫХ: 5 СЕКУНД');
+gameState.points += 200;
+gameState.coins += 100;
+updateUI();
+setTimeout(() => {
+if (!battleState.active) return;
+transitionBattlePhase('commander', 'КОМАНДИР!');
+const boss = new Enemy('commander', 600, -100);
+battleState.enemies.push(boss);
+triggerBossDialogue("Это были мои самые верные помощники, и за них ты ответишь!");
+}, 5000);
+}
+else if (battleState.phase === 'commander') {
+transitionBattlePhase('commander_rage', 'ЯРОСТЬ КОМАНДИРА!');
+gameState.points += 500;
+gameState.coins += 100;
+updateUI();
+const boss = new Enemy('commander_rage', 600, 120);
+battleState.enemies.push(boss);
+triggerBossDialogue("Ты нечестно меня победил! Умри!");
+}
+else if (battleState.phase === 'commander_rage') {
+transitionBattlePhase('commander_dead_talking', 'ПОРАЖЕНИЕ КОМАНДИРА');
+gameState.points += 500;
+gameState.coins += 300;
+updateUI();
+triggerBossDialogue("Ам ам ам ам...");
+setTimeout(() => {
+if (!battleState.active) return;
+transitionBattlePhase('mines', 'ВТОРЖЕНИЕ МИН!');
+for (let i = 0; i < 30; i++) {
+setTimeout(() => {
+if (!battleState.active) return;
+const side = Math.random() > 0.5 ? -40 : V_WIDTH + 40;
+battleState.enemies.push(new Enemy('mine', side, 420));
+}, i * 160);
+}
+}, 3000);
+}
+else if (battleState.phase === 'mines') {
+transitionBattlePhase('extra_wave', 'ПОМОЩНИКИ + МИНЫ!');
+gameState.points += 100;
+gameState.coins += 50;
+updateUI();
+battleState.enemies.push(new Enemy('helper', 950, 350));
+battleState.enemies.push(new Enemy('helper', 1050, 350));
+for (let i = 0; i < 5; i++) {
+battleState.enemies.push(new Enemy('mine', V_WIDTH + 100 + i*90, 420));
+}
+}
+else if (battleState.phase === 'extra_wave') {
+transitionBattlePhase('general_6a', 'ВОЕНАЧАЛЬНИК!');
+battleState.beds = [
+{ x: 300, y: 320, width: 200, height: 25 },
+{ x: 700, y: 320, width: 200, height: 25 }
+];
+const boss = new Enemy('general', 600, 340);
+battleState.enemies.push(boss);
+triggerBossDialogue("Бой с моими шестерками был очень весел! Пора закругляться!");
+}
+}
+const generalBoss = battleState.enemies.find(e => e.type === 'general' && e.hp > 0);
+if (generalBoss) {
+if (battleState.phase === 'general_6a' && generalBoss.hp <= 3000) {
+transitionBattlePhase('general_6b', 'ЯД НА ПОЛУ!');
+triggerBossDialogue("А ты смышленый парень! Это средство для таких мышей!");
+battleState.toxicFloorActive = true;
+document.getElementById('toxicFloorOverlay').classList.remove('hidden');
+}
+else if (battleState.phase === 'general_6b' && generalBoss.hp <= 1500) {
+transitionBattlePhase('general_6c', 'УВОРАЧИВАЙТЕСЬ!');
+triggerBossDialogue("Молодец, но мы еще не закончили!");
+battleState.toxicFloorActive = false;
+document.getElementById('toxicFloorOverlay').classList.add('hidden');
+battleState.beds = [];
+generalBoss.x = -9999;
+generalBoss.y = -9999;
+let count = 0;
+const bedObstacleInterval = setInterval(() => {
+if (!battleState.active) {
+clearInterval(bedObstacleInterval);
+return;
+}
+battleState.projectiles.push(new Projectile(V_WIDTH + 50, 375, -7.5, 0, 'bed', null));
+count++;
+if (count >= 4) {
+clearInterval(bedObstacleInterval);
+setTimeout(() => {
+if (!battleState.active) return;
+transitionBattlePhase('general_6d', 'ДУЭЛЬ НА КУЛАКАХ!');
+generalBoss.x = 600;
+generalBoss.y = 345;
+triggerBossDialogue("Ого, а ты бы был хорошим зайцем в окопе! Подеремся!");
+}, 3000);
+}
+}, 4000);
+}
+else if (battleState.phase === 'general_6d' && generalBoss.hp <= 500) {
+transitionBattlePhase('general_fury', 'ЯРОСТЬ ВОЕНАЧАЛЬНИКА!');
+const furyInterval = setInterval(() => {
+if (!battleState.active || generalBoss.hp <= 0) {
+clearInterval(furyInterval);
+return;
+}
+const side = Math.random() > 0.5 ? -40 : V_WIDTH + 40;
+battleState.enemies.push(new Enemy('mine', side, 420));
+}, 1400);
+}
+}
+if (battleState.phase === 'general_fury' && !generalBoss) {
+transitionBattlePhase('knockout', 'НОКАУТ');
+endBattleSequence(true);
+}
+if (battleState.phase === 'commander_rage' || battleState.phase === 'general_fury') {
+updateSpikes();
+}
+}
+else if (gameState.currentLocation === 'Murino_1') {
+if (battleState.phase === 'mimic_rage' && Math.random() < 0.005 && !battleState.player.lightningDebuff) {
+const strikeX = Math.random() * V_WIDTH;
+createSlamImpact(strikeX, 450, '#60a5fa');
+setTimeout(() => {
+playLaserSound();
+if (Math.abs(battleState.player.x + 37 - strikeX) < 100) {
+battleState.player.frozenTimer = 2.0;
+battleState.player.lightningDebuff = true;
+battleState.player.hp = Math.max(10, Math.floor(battleState.player.hp * 0.5));
+showFloatingMessage("Молния ударила в вас! Скорость снижена!");
+}
+}, 800);
+}
+if (activeCombatants.length === 0 && battleState.phase !== 'knockout' && !battleState.phase.startsWith('survival_') && battleState.phase !== 'drun_rescue') {
+if (battleState.phase === 'helpers') {
+gameState.coins += 400;
+gameState.crystals += 2;
+updateUI();
+transitionBattlePhase('mimic_talk_1', 'ВСТРЕЧА С ДРУНОМ');
+triggerBossDialogue("Привет, это я друн! Меня здесь держали в человейнике, но я выбрался!");
+setTimeout(() => {
+if (!battleState.active) return;
+transitionBattlePhase('mimic_talk_2', 'РАЗОБЛАЧЕНИЕ');
+triggerBossDialogue("Ну тогда пошли отсюда! Скорее!");
+setTimeout(() => {
+if (!battleState.active) return;
+triggerBossDialogue("Нет, я не уйду! Мне здесь нравится, и тебе тоже понравится!");
+setTimeout(() => {
+if (!battleState.active) return;
+transitionBattlePhase('mimic_fight', 'БИТВА С МИМИКОМ');
+const m = new Enemy('mimic', V_WIDTH - 200, 350);
+m.mimicHeroCopied = 'Mell';
+battleState.enemies.push(m);
+}, 2500);
+}, 2500);
+}, 2500);
+}
+else if (battleState.phase === 'mimic_fight') {
+gameState.coins += 400;
+updateUI();
+transitionBattlePhase('mimic_rage', 'ИСТИННЫЙ ОБЛИК');
+triggerBossDialogue("АААРГХ! ТЫ НЕ УЙДЕШЬ ИЗ МУРИНО!");
+const rageM = new Enemy('mimic_rage', V_WIDTH/2, 350);
+battleState.enemies.push(rageM);
+}
+else if (battleState.phase === 'mimic_rage') {
+gameState.coins += 200;
+updateUI();
+transitionBattlePhase('mimic_knives', 'ДОЖДЬ ИЗ НОЖЕЙ');
+triggerBossDialogue("ПОПРОБУЙ УКЛОНИТЬСЯ ОТ ЭТОГО!");
+battleState.survivalTimer = 15.0;
+battleState.lastKnivesThrown = Date.now();
+}
+}
+if (battleState.phase === 'mimic_knives') {
+battleState.survivalTimer -= 0.016;
+if (Date.now() - battleState.lastKnivesThrown > 1000) {
+battleState.lastKnivesThrown = Date.now();
+const k = new Enemy('knife', V_WIDTH + 20, Math.random() * 300 + 100);
+battleState.enemies.push(k);
+}
+if (battleState.survivalTimer <= 0) {
+battleState.enemies = [];
+transitionBattlePhase('survival_shrink', 'СВЕТ СУЖАЕТСЯ');
+battleState.survivalTimer = 2.0;
+battleState.fogRadius = 9999;
+}
+}
+else if (battleState.phase === 'survival_shrink') {
+battleState.survivalTimer -= 0.016;
+battleState.fogRadius = 9999 - (9999 - 130) * ((2.0 - battleState.survivalTimer) / 2.0);
+if (battleState.survivalTimer <= 0) {
+battleState.fogRadius = 130;
+transitionBattlePhase('survival_countdown_3', 'ВЫЖИВИ ИЛИ УМРИ!');
+battleState.survivalTimer = 3.0;
+battleState.survivalRound = 1;
+playTickSound();
+}
+}
+else if (battleState.phase === 'survival_countdown_3') {
+const lastSec = Math.ceil(battleState.survivalTimer);
+battleState.survivalTimer -= 0.016;
+const curSec = Math.ceil(battleState.survivalTimer);
+if (curSec < lastSec && curSec > 0) {
+playTickSound();
+}
+if (battleState.survivalTimer <= 0) {
+battleState.survivalInstruction = Math.random() > 0.5 ? 'ДВИГАЙСЯ!' : 'НЕ ДВИГАЙСЯ!';
+transitionBattlePhase('survival_challenge', battleState.survivalInstruction);
+battleState.survivalTimer = 3.0;
+battleState.survivalGraceTimer = 0.5;
+playLevelUpSound();
+}
+}
+else if (battleState.phase === 'survival_challenge') {
+battleState.survivalTimer -= 0.016;
+if (battleState.survivalGraceTimer > 0) {
+battleState.survivalGraceTimer -= 0.016;
+} else {
+const isMoving = keys.KeyA || keys.KeyD || keys.Space || Math.abs(battleState.player.vx) > 0.5;
+if (battleState.survivalInstruction === 'НЕ ДВИГАЙСЯ!') {
+if (isMoving) {
+battleState.player.takeDamage(9999);
+showFloatingMessage("НАРУШЕНО ПРАВИЛО! ВЫ ПОДВИГАЛИСЬ!");
+}
+} else if (battleState.survivalInstruction === 'ДВИГАЙСЯ!') {
+if (!isMoving) {
+battleState.player.takeDamage(9999);
+showFloatingMessage("НАРУШЕНО ПРАВИЛО! ВЫ ОСТАНОВИЛИСЬ!");
+}
+}
+}
+if (battleState.survivalTimer <= 0 && battleState.player.hp > 0) {
+if (battleState.survivalRound >= 4) {
+battleState.fogRadius = 9999;
+const mMur1 = document.getElementById('bgMusicMurino1');
+if (mMur1) mMur1.volume = 1.0;
+transitionBattlePhase('drun_rescue', 'ДРУНЫ-СПАСАТЕЛИ');
+triggerBossDialogue("Быстрее, мы забираем тебя! Иди с нами!");
+const d1 = new Enemy('drun', 100, 350);
+const d2 = new Enemy('drun', 200, 350);
+battleState.enemies.push(d1);
+battleState.enemies.push(d2);
+battleState.drunRescueTimer = 6.0;
+} else {
+transitionBattlePhase('survival_countdown_5', `РАУНД ${battleState.survivalRound} ПРОЙДЕН!`);
+battleState.survivalTimer = 5.0;
+battleState.survivalRound++;
+playTickSound();
+}
+}
+}
+else if (battleState.phase === 'survival_countdown_5') {
+const lastSec = Math.ceil(battleState.survivalTimer);
+battleState.survivalTimer -= 0.016;
+const curSec = Math.ceil(battleState.survivalTimer);
+if (curSec < lastSec && curSec > 0) {
+playTickSound();
+}
+if (battleState.survivalTimer <= 0) {
+battleState.survivalInstruction = Math.random() > 0.5 ? 'ДВИГАЙСЯ!' : 'НЕ ДВИГАЙСЯ!';
+transitionBattlePhase('survival_challenge', battleState.survivalInstruction);
+battleState.survivalTimer = 3.0;
+battleState.survivalGraceTimer = 0.5;
+playLevelUpSound();
+}
+}
+// ИСПРАВЛЕНИЕ: Беспрепятственный выход за экран игрока и друнов в финале Мурино 1
+if (battleState.phase === 'drun_rescue') {
+battleState.drunRescueTimer -= 0.016;
+battleState.player.facingLeft = false;
+battleState.player.x += 2.5; 
+for (let e of battleState.enemies) {
+if (e.type === 'drun') {
+e.facingLeft = false;
+e.x += 2.5;
+}
+}
+if (battleState.player.x >= V_WIDTH) { 
+gameState.points += 1300;
+gameState.coins += 700;
+if (!gameState.completedLocations.includes('Murino_1')) {
+gameState.completedLocations.push('Murino_1');
+}
+gameState.currentLocation = 'Murino_2'; 
+saveGameState();
+endBattleSequence(true);
+}
+}
+}
+}
+function endBattleSequence(isWin) {
+battleState.active = false;
+const mArmy = document.getElementById('bgMusicArmy');
+const mMur1 = document.getElementById('bgMusicMurino1');
+const mMur2 = document.getElementById('bgMusicMurino2');
+mArmy.pause();
+mMur1.pause();
+mMur2.pause();
+document.getElementById('parryPromptContainer').classList.add('hidden');
+document.getElementById('battleLootHUD').classList.add('hidden');
+if (isWin) {
+let coinReward = 1500;
+let ptReward = 1200;
+// В зависимости от локации, финальные награды
+if (gameState.currentLocation === 'Murino_2') {
+// Завершение всей 2-й части Мурино даёт супербонус наград:
+coinReward = 0; // Награды за фазы уже начислены в процессе, чтобы не дублировать
+ptReward = 0;
+}
+gameState.points += ptReward;
+gameState.coins += coinReward;
+if (!gameState.completedLocations.includes(gameState.currentLocation)) {
+gameState.completedLocations.push(gameState.currentLocation);
+}
+// Выводим красивое окошко нокаута со всеми заработанными за локацию вещами
+document.getElementById('rewardCoinsText').innerText = `+${coinReward || 'ПОБЕДА'}`;
+document.getElementById('rewardPointsText').innerText = `+${ptReward || 'ПРОЙДЕНО'}`;
+playLevelUpSound();
+document.getElementById('victoryOverlay').classList.remove('hidden');
+} else {
+playSynthesizedSound(120, 0.5, 'sawtooth');
+document.getElementById('defeatOverlay').classList.remove('hidden');
+if (gameState.currentLocation === 'Murino_2' && battleState.mimicContamination > 0) {
+document.getElementById('defeatTextReason').innerText = "Скрут забирает вашу душу... Герой окончательно превратился в мимика!";
+} else {
+document.getElementById('defeatTextReason').innerText = "Вы не справились на этот раз. Прокачайте своего героя, купите гиперсилу и попробуйте снова!";
+}
+battleState.puglivostPermDeathUpgrade = false;
+}
+if (gameState.hyperUnlocked && battleState.hyperUsedThisGame) {
+gameState.hyperCharges--;
+if (gameState.hyperCharges <= 0) {
+gameState.hyperUnlocked = false;
+gameState.hyperPrice = 5;
+}
+}
+updateUI();
+}
+function exitBattle(isWin) {
+playSynthesizedSound(300, 0.1);
+document.getElementById('victoryOverlay').classList.add('hidden');
+document.getElementById('defeatOverlay').classList.add('hidden');
+document.getElementById('battleScene').classList.add('hidden');
+document.getElementById('menuScene').classList.remove('hidden');
+updateUI();
+playCurrentStageMusic();
+}
+window.onload = function() {
+loadGameState();
+}
+</script>
+
+<!-- Firebase -->
+<script type="module">
+  // Import Firebase SDK
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAt9RopDjGhGarn-NxlH1Uzf2PFtcQ14Ds",
+    authDomain: "relook-a0a12.firebaseapp.com",
+    projectId: "relook-a0a12",
+    storageBucket: "relook-a0a12.firebasestorage.app",
+    messagingSenderId: "199638240697",
+    appId: "1:199638240697:web:c7bca3f27737057f37ba68",
+    measurementId: "G-J633VVYTF7"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  window.window.currentUser = null;
+
+  // Проверка сохранённого юзера
+  auth.onAuthStateChanged(async (user) => {
+      if(user && user.emailVerified){
+        window.currentUser = user;
+        loadUserData(user);
+      }
+    });
+
+  function showLoginRegister(){
+    document.getElementById('splashScene').style.display = 'none';
+    document.body.insertAdjacentHTML('afterbegin', `
+      <div id="firebaseAuthOverlay" class="absolute inset-0 bg-black/95 flex flex-col items-center justify-center z-60 text-white">
+        <h2 class="gaming-font text-2xl mb-4">Вход / Регистрация</h2>
+        <div class="flex gap-4">
+          <button onclick="showLoginForm()" class="px-4 py-2 bg-red-600 rounded">Вход</button>
+          <button onclick="showRegisterForm()" class="px-4 py-2 bg-green-600 rounded">Регистрация</button>
+        </div>
+        <div id="authFormContainer" class="mt-6"></div>
+      </div>
+    `);
+  }
+
+  window.showLoginForm = () => {
+    const container = document.getElementById('authFormContainer');
+    container.innerHTML = `
+      <input type="email" id="loginEmail" placeholder="Email" class="p-2 mb-2 w-64 text-black"><br>
+      <input type="password" id="loginPass" placeholder="Пароль" class="p-2 mb-2 w-64 text-black"><br>
+      <button onclick="loginUser()" class="px-4 py-2 bg-red-500 rounded">Войти</button>
+      <button onclick="loginGoogle()" class="px-4 py-2 bg-blue-500 rounded mt-2">Войти через Google</button>
+      <div id="loginError" class="text-red-400 mt-2"></div>
+    `;
+  };
+
+  window.showRegisterForm = () => {
+    const container = document.getElementById('authFormContainer');
+    container.innerHTML = `
+      <input type="text" id="regNick" placeholder="Никнейм" class="p-2 mb-2 w-64 text-black"><br>
+      <input type="email" id="regEmail" placeholder="Email" class="p-2 mb-2 w-64 text-black"><br>
+      <input type="password" id="regPass" placeholder="Пароль" class="p-2 mb-2 w-64 text-black"><br>
+      <input type="password" id="regPass2" placeholder="Повторите пароль" class="p-2 mb-2 w-64 text-black"><br>
+      <button onclick="registerUser()" class="px-4 py-2 bg-green-500 rounded">Зарегистрироваться</button>
+      <div id="regError" class="text-red-400 mt-2"></div>
+    `;
+  };
+
+  async function loginUser(){
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPass').value;
+    const errorDiv = document.getElementById('loginError');
+    errorDiv.innerText = '';
+    try{
+      const cred = await signInWithEmailAndPassword(auth, email, pass);
+      if(!cred.user.emailVerified){
+        errorDiv.innerText = 'Почта не подтверждена!';
+        return;
+      }
+      window.currentUser = cred.user;
+      loadUserData(cred.user);
+      document.getElementById('firebaseAuthOverlay').remove();
+      document.getElementById('splashScene').style.display = 'flex';
+    } catch(e){
+      errorDiv.innerText = 'Ошибка входа: '+e.message;
+    }
+  }
+
+  async function registerUser(){
+    const nick = document.getElementById('regNick').value;
+    const email = document.getElementById('regEmail').value;
+    const pass = document.getElementById('regPass').value;
+    const pass2 = document.getElementById('regPass2').value;
+    const errorDiv = document.getElementById('regError');
+    errorDiv.innerText = '';
+    if(pass!==pass2){ errorDiv.innerText = 'Пароли не совпадают!'; return; }
+    try{
+      // Проверка уникальности ника
+      const nickDoc = await getDoc(doc(db,'users',nick));
+      if(nickDoc.exists()){ errorDiv.innerText='Ник уже занят!'; return; }
+      const cred = await createUserWithEmailAndPassword(auth,email,pass);
+      await sendEmailVerification(cred.user);
+      await setDoc(doc(db,'users',cred.user.uid),{
+        nick: nick,
+        email: email,
+        coins: 0,
+        points: 0,
+        crystals: 0,
+        heroes: {},
+      });
+      alert('Регистрация успешна! Подтвердите почту по ссылке.');
+    } catch(e){
+      errorDiv.innerText='Ошибка регистрации: '+e.message;
+    }
+  }
+
+  async function loginGoogle(){
+    try{
+      const result = await signInWithPopup(auth,provider);
+      window.currentUser = result.user;
+      // После Google входа попросим ник и пароль
+      showRegisterForm();
+    } catch(e){
+      alert('Ошибка Google входа: '+e.message);
+    }
+  }
+
+  async function loadUserData(user){
+    // Специальный радужный ник для разработчика
+    let displayNick = user.email === 'sobakastalina123@gmail.com' ? '<span class="gaming-font rainbow-text">Разработчик</span>' : user.email;
+    const topNickElem = document.getElementById('activeHeroName');
+    if(topNickElem){ topNickElem.innerHTML = displayNick; }
+    // Здесь можно добавить загрузку всех прогресс-данных из Firestore
+  }
+
+</script>
+
+<style>
+.rainbow-text {
+  background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: rainbow 3s linear infinite;
+}
+@keyframes rainbow {
+  0%{background-position:0%}
+  100%{background-position:100%}
+}
+</style>
+
+<script>
+
+function startGame() {
+  if(!window.currentUser){
+    
+document.body.insertAdjacentHTML('afterbegin', `
+<div style="position: fixed; top:0; left:0; width:100vw; height:100vh; background-color: rgba(0,0,0,0.95); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:9999; color:white; text-align:center;">
+  <h2 class="gaming-font text-3xl mb-6">Вход / Регистрация</h2>
+  <div style="display:flex; gap:40px; margin-bottom:40px;">
+    <button onclick="showLoginForm()" style="padding:12px 24px; font-size:18px; background:#e74c3c; border:none; border-radius:8px; cursor:pointer;">Вход</button>
+    <button onclick="showRegisterForm()" style="padding:12px 24px; font-size:18px; background:#2ecc71; border:none; border-radius:8px; cursor:pointer;">Регистрация</button>
+  </div>
+  <div id="authFormContainer" style="width:320px;"></div>
+</div>
+`);
+
+    return;
+  }
+  // Если вошёл, продолжаем обычный старт
+  document.getElementById('splashScene').style.display = 'none';
+  startFight();
+}
+
+</script>
+</body>
+</html>
