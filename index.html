@@ -73,12 +73,12 @@ z-index: 25;
 </style>
 </head>
 <body class="w-screen h-screen flex items-center justify-center relative select-none">
-<audio id="bgMusicMenu" loop src="https://www.image2url.com/r2/default/audio/1780179647396-169283b7-f9b0-4282-898b-084eccec0a81.mp3"></audio>
-<audio id="bgMusicArmy" loop src="https://www.image2url.com/r2/default/files/1780179166383-74227762-5a4f-4955-a06e-b01658622c52.mp3"></audio>
-<audio id="bgMusicMurino1" loop src="https://fine.sunproxy.net/file/dVhoK0hDL2dMOGZlK3o3dVQwNElwRTJkYm1Ba2xNbmNINmh0TDl0M3JINktNVlpIaEQzRjJ3ZzJsTWNUaU5XWnFXbm1YbXJqbGMra2p2Ky9FemdkNW50b0dQTHJCOWplWTJuM1g4djlCTDA9/instupendo_-_six_forty_seven_(SkySound.cc).mp3"></audio>
-<audio id="bgMusicMurino2" loop src="https://muzpab.я.ws/media/music/48/48105_7a4d9b6a436862612c2da65fe6a7ddb2.mp3?The%20Caretaker%20-%20It%27s%20Just%20A%20Burning%20Memory.mp3"></audio>
-<audio id="soundScaryMurino" src="https://www.image2url.com/r2/default/audio/1780178878223-ba13f36c-f6fd-46c5-aca2-9f30a8160dba.mp3"></audio>
-<audio id="soundFogIsComing" src="https://www.myinstants.com/media/sounds/the-fog-is-coming.mp3"></audio>
+<audio id="bgMusicMenu" loop src="./assets/audio/1780179647396-169283b7-f9b0-4282-898b-084eccec0a81.mp3"></audio>
+<audio id="bgMusicArmy" loop src="./assets/audio/1780179647396-169283b7-f9b0-4282-898b-084eccec0a81.mp3"></audio>
+<audio id="bgMusicMurino1" loop src="./assets/audio/instupendo_-_six_forty_seven_(SkySound.cc).mp3"></audio>
+<audio id="bgMusicMurino2" loop src="./assets/audio/The Caretaker - It's Just A Burning Memory.mp3"></audio>
+<audio id="soundScaryMurino" src="./assets/audio/1780178878223-ba13f36c-f6fd-46c5-aca2-9f30a8160dba.mp3"></audio>
+<audio id="soundFogIsComing" src="./assets/audio/the-fog-is-coming (2).mp3"></audio>
 <div class="absolute top-4 right-4 z-50 flex gap-2">
 <button id="musicToggleBtn" onclick="toggleMusic()" class="bg-slate-900/90 hover:bg-slate-800 text-white p-3 rounded-full border border-slate-700 transition shadow-lg flex items-center justify-center w-12 h-12">
 <i id="musicIcon" class="fas fa-music text-red-500"></i>
@@ -184,7 +184,7 @@ CREDITS
 </div>
 <!-- Картинка героя -->
 <div class="w-44 h-44 rounded-full overflow-hidden border-4 border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.4)] my-6 relative bg-slate-800 flex items-center justify-center">
-<img id="selectedHeroImg" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeYnkXnb1ypzbGzYabcpPt7hWLDHUktc_BIQ&s" alt="Mell" class="w-full h-full object-cover">
+<img id="selectedHeroImg" src="./assets/images/images.jpg" alt="Mell" class="w-full h-full object-cover">
 </div>
 <div id="heroSpecialsLabel" class="text-xs text-gray-400 text-center px-4">
 Супер-способность: <span class="text-red-500 font-bold">Прыжок Смерти (X)</span> - разблокируется на 9 ур.
@@ -205,7 +205,7 @@ CREDITS
 <!-- Выбор локации -->
 <div class="w-full">
 <button onclick="openLocationSelect()" class="w-full h-16 rounded-xl overflow-hidden relative group border-2 border-slate-700 hover:border-red-500 transition">
-<div id="locationBtnBg" class="absolute inset-0 bg-cover bg-center filter grayscale opacity-40 contrast-125" style="background-image: url('https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg')"></div>
+<div id="locationBtnBg" class="absolute inset-0 bg-cover bg-center filter grayscale opacity-40 contrast-125" style="background-image: url('./assets/images/1-960x540.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/70 group-hover:bg-red-950/40 transition"></div>
 <div class="absolute inset-0 flex items-center justify-center gap-3">
 <i class="fas fa-map-marked-alt text-xl text-red-500"></i>
@@ -225,7 +225,7 @@ CREDITS
 <!-- Сетка локаций -->
 <div class="grid grid-cols-4 gap-4 my-auto">
 <button onclick="selectLocation('Army', 0, true)" class="h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group">
-<div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('./assets/images/1-960x540.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/50"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span class="bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">СТАРТОВАЯ</span>
@@ -236,7 +236,7 @@ CREDITS
 </div>
 </button>
 <button id="locMurinoBtn" onclick="openMurinoSubparts()" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-60">
-<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('https://avatars.mds.yandex.net/i?id=368eca4c07965278b14cd8e894bac250_l-5642274-images-thumbs&n=13')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('./assets/images/i.webp')"></div>
 <div class="absolute inset-0 bg-slate-950/85"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span id="locMurinoBadge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font"><i class="fas fa-lock mr-1"></i> ЗАКРЫТО</span>
@@ -247,7 +247,7 @@ CREDITS
 </div>
 </button>
 <button id="locMolochnoeBtn" onclick="selectLocation('Molochnoe', 0, false)" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-60">
-<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('https://placehold.co/300x200/111827/ffffff?text=Selo')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('./assets/images/images.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/85"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span id="locMolochnoeBadge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font"><i class="fas fa-lock mr-1"></i> ЗАКРЫТО</span>
@@ -258,7 +258,7 @@ CREDITS
 </div>
 </button>
 <button id="locMytishchiBtn" onclick="selectLocation('Mytishchi', 0, false)" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-60">
-<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('https://placehold.co/300x200/111827/ffffff?text=Mytishchi')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('./assets/images/images.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/85"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span id="locMytishchiBadge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font"><i class="fas fa-lock mr-1"></i> ЗАКРЫТО</span>
@@ -284,7 +284,7 @@ CREDITS
 <div class="grid grid-cols-3 gap-6 my-auto max-w-4xl mx-auto w-full">
 <!-- Часть 1: Улица -->
 <button onclick="selectMurinoPart('Murino_1', true)" class="h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group">
-<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://static.wikia.nocookie.net/fantasticbeings/images/1/13/IMG_9765.JPG/revision/latest/scale-to-width-down/536?cb=20170913095609&path-prefix=ru')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('./assets/images/IMG_9765.JPG.png')"></div>
 <div class="absolute inset-0 bg-slate-950/50"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span class="bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ДОСТУПНО</span>
@@ -296,7 +296,7 @@ CREDITS
 </button>
 <!-- Часть 2: Дом и Подвал -->
 <button id="murinoPart2Btn" onclick="selectMurinoPart('Murino_2', false)" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-50">
-<div class="absolute inset-0 bg-cover bg-center opacity-15" style="background-image: url('https://cdnb.artstation.com/p/assets/images/images/053/848/533/large/infinity-vision-dark-cooridoor-preview01.jpg?1663165516')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-15" style="background-image: url('./assets/images/infinity-vision-dark-cooridoor-preview01.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/85"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span id="murinoPart2Badge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ЗАКРЫТО</span>
@@ -308,7 +308,7 @@ CREDITS
 </button>
 <!-- Часть 3: Туман (FOG) - Заблокировано -->
 <button onclick="showFloatingMessage('Локация временно закрыта согласно сюжету!')" class="h-48 rounded-xl bg-slate-900 border-2 border-red-900/60 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-30 cursor-not-allowed">
-<div class="absolute inset-0 bg-cover bg-center opacity-5 filter blur-[1px]" style="background-image: url('https://cs6.pikabu.ru/video/2017/09/01/4/og_og_1504239048317731297.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-5 filter blur-[1px]" style="background-image: url('./assets/images/og_og_1504239048317731297.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/90"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span class="bg-red-900 text-red-200 font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ЗАБЛОКИРОВАНО</span>
@@ -713,7 +713,7 @@ Mell: {
 id: "Mell",
 name: "Mell",
 rarity: "Стартовый",
-img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeYnkXnb1ypzbGzYabcpPt7hWLDHUktc_BIQ&s",
+img: "./assets/images/images.jpg",
 baseHp: 1500,
 hpPerLevel: 150,
 baseDmg: 100,
@@ -726,7 +726,7 @@ Pucheglaz: {
 id: "Pucheglaz",
 name: "Пучеглазость",
 rarity: "Обычный",
-img: "https://s10.iimage.su/s/30/gwwpDxexycPhaWfrfzO9g8aYvWRj1BfKXBfpQmQhv.jpg",
+img: "./assets/images/images.jpg",
 baseHp: 1500,
 hpPerLevel: 100,
 baseDmg: 90,  
@@ -739,7 +739,7 @@ Smena2: {
 id: "Smena2",
 name: "2 смена",
 rarity: "Обычный",
-img: "https://s10.iimage.su/s/30/th_gNzlEc1x44I93mIjLqiVa9SXRBJ1kXOFdzUSKQP12.jpg",
+img: "./assets/images/images.jpg",
 baseHp: 1400,
 hpPerLevel: 90,
 baseDmg: 100,
@@ -752,7 +752,7 @@ Otstalost: {
 id: "Otstalost",
 name: "Отсталость",
 rarity: "Редкий",
-img: "https://s10.iimage.su/s/30/th_gI0sZqkxuzRKyJMQYkwf7km6Q7IIbu6Xnn7Gagb3f.jpg",
+img: "./assets/images/images.jpg",
 baseHp: 1700,
 hpPerLevel: 50,
 baseDmg: 40,
@@ -765,7 +765,7 @@ Pyramid: {
 id: "Pyramid",
 name: "Пирамида красности",
 rarity: "Редкий",
-img: "https://s10.iimage.su/s/30/th_gvRmx8ex77f78qPLFSpFMpTMsfRQEbTCTctnSkj76.jpg",
+img: "./assets/images/images.jpg",
 baseHp: 1300,
 hpPerLevel: 100,
 baseDmg: 170,
@@ -778,7 +778,7 @@ Puglivost: {
 id: "Puglivost",
 name: "Пугливость",
 rarity: "Редкий",
-img: "https://i.ibb.co/jPvLP2CP/photo-2026-05-31-06-46-39.jpg",
+img: "./assets/images/images.jpg",
 baseHp: 1000,
 hpPerLevel: 60,
 baseDmg: 80,
@@ -791,7 +791,7 @@ Soplya: {
 id: "Soplya",
 name: "Сопля",
 rarity: "Мифический",
-img: "https://s10.iimage.su/s/30/th_gO5pi7lxjPSXKglgKP5Hfca2odIAb5RwQK7HBDIyF.jpg",
+img: "./assets/images/images.jpg",
 baseHp: 900,
 hpPerLevel: 100,
 baseDmg: 200,
@@ -804,7 +804,7 @@ Oglushaemost: {
 id: "Oglushaemost",
 name: "Оглушаемость",
 rarity: "Мифический",
-img: "https://s10.iimage.su/s/30/th_gOr2OsGx78XX3GjaX9attU6B7XwWy5kCOf2gD2bz6.jpg",
+img: "./assets/images/images.jpg",
 baseHp: 1300,
 hpPerLevel: 100,
 baseDmg: 10,
@@ -817,7 +817,7 @@ Syr: {
 id: "Syr",
 name: "Сыр",
 rarity: "Особый",
-img: "https://s10.iimage.su/s/30/th_gZtt9LPxYeyoZczvYNw6UYTbhz7Ez6ozLDQKQwYJi.jpg",
+img: "./assets/images/images.jpg",
 baseHp: 800,
 hpPerLevel: 300,
 baseDmg: 500,
@@ -830,7 +830,7 @@ Omaygad: {
 id: "Omaygad",
 name: "Омайгад",
 rarity: "Особый",
-img: "https://i.ibb.co/4wYq62sh/photo-2026-05-31-05-14-58.jpg",
+img: "./assets/images/images.jpg",
 baseHp: 1600,
 hpPerLevel: 120,
 baseDmg: 120,
@@ -857,6 +857,7 @@ hyperPrice: 3
 };
 function saveGameState() {
 localStorage.setItem('MellstroFight_v3_state_h', JSON.stringify(gameState));
+if (window.queueFirebaseSave) window.queueFirebaseSave();
 }
 function loadGameState() {
 const saved = localStorage.getItem('MellstroFight_v3_state_h');
@@ -890,9 +891,17 @@ document.getElementById('crystalsDisplay').innerText = gameState.crystals;
 document.getElementById('shopCrystalsDisplay').innerText = gameState.crystals;
 const hero = HEROES_DB[gameState.selectedHero] || HEROES_DB.Mell;
 const lv = gameState.heroLevels[hero.id] || 1;
-document.getElementById('activeHeroName').innerText = hero.name;
+const activeHeroNameElem = document.getElementById('activeHeroName');
+if (activeHeroNameElem) {
+  const userHeader = window.getUserHeaderHtml ? window.getUserHeaderHtml() : '';
+  if (userHeader) {
+    activeHeroNameElem.innerHTML = userHeader;
+  } else {
+    activeHeroNameElem.innerText = hero.name;
+  }
+}
 document.getElementById('selectedHeroNameLabel').innerText = hero.name;
-document.getElementById('selectedHeroImg').src = hero.img || "https://placehold.co/150";
+document.getElementById('selectedHeroImg').src = hero.img || "./assets/images/images.jpg";
 const curDmg = hero.baseDmg + (lv - 1) * hero.dmgPerLevel;
 document.getElementById('heroPowerTitle').innerText = `СИЛА: ${hero.rarity.toUpperCase()} (УРОВЕНЬ ${lv}) - Сила: ${curDmg}`;
 if (lv >= 9) {
@@ -910,10 +919,10 @@ document.getElementById('selectedLocDisplay').innerText = locNames[gameState.cur
 const locBtnBg = document.getElementById('locationBtnBg');
 const locBtnLabel = document.getElementById('locationBtnLabel');
 if (gameState.currentLocation.startsWith('Murino')) {
-locBtnBg.style.backgroundImage = "url('https://avatars.mds.yandex.net/i?id=368eca4c07965278b14cd8e894bac250_l-5642274-images-thumbs&n=13')";
+locBtnBg.style.backgroundImage = "url('./assets/images/i.webp')";
 locBtnLabel.innerText = `ВЫБРАТЬ ЛОКАЦИЮ (${locNames[gameState.currentLocation].toUpperCase()})`;
 } else {
-locBtnBg.style.backgroundImage = "url('https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg')";
+locBtnBg.style.backgroundImage = "url('./assets/images/1-960x540.jpg')";
 locBtnLabel.innerText = "ВЫБРАТЬ ЛОКАЦИЮ (АРМИЯ)";
 }
 const buyHyperBtn = document.getElementById('buyHyperBtn');
@@ -1012,7 +1021,7 @@ const imgDiv = document.createElement('div');
 imgDiv.className = "w-14 h-14 rounded-full overflow-hidden border border-slate-700 bg-slate-800 relative flex items-center justify-center";
 if (isUnlocked) {
 const img = document.createElement('img');
-img.src = hero.img || "https://placehold.co/150";
+img.src = hero.img || "./assets/images/images.jpg";
 img.className = "w-full h-full object-cover";
 imgDiv.appendChild(img);
 } else {
@@ -1101,7 +1110,7 @@ playSynthesizedSound(150, 0.3, 'sawtooth');
 showFloatingMessage("Недостаточно монет для улучшения героя!");
 }
 }
-function startGame() {
+function startGameOriginal() {
 playSynthesizedSound(400, 0.15);
 const splash = document.getElementById('splashScene');
 splash.classList.add('opacity-0');
@@ -1352,40 +1361,61 @@ const V_HEIGHT = 600;
 let canvasScaleX = 1;
 let canvasScaleY = 1;
 const imgPreload = {
-Mell: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeYnkXnb1ypzbGzYabcpPt7hWLDHUktc_BIQ&s",
-Pucheglaz: "https://s10.iimage.su/s/30/gwwpDxexycPhaWfrfzO9g8aYvWRj1BfKXBfpQmQhv.jpg",
-Smena2: "https://s10.iimage.su/s/30/th_gNzlEc1x44I93mIjLqiVa9SXRBJ1kXOFdzUSKQP12.jpg",
-Otstalost: "https://s10.iimage.su/s/30/th_gI0sZqkxuzRKyJMQYkwf7km6Q7IIbu6Xnn7Gagb3f.jpg",
-Pyramid: "https://s10.iimage.su/s/30/th_gvRmx8ex77f78qPLFSpFMpTMsfRQEbTCTctnSkj76.jpg",
-Puglivost: "https://i.ibb.co/jPvLP2CP/photo-2026-05-31-06-46-39.jpg",
-Soplya: "https://s10.iimage.su/s/30/th_gO5pi7lxjPSXKglgKP5Hfca2odIAb5RwQK7HBDIyF.jpg",
-Oglushaemost: "https://s10.iimage.su/s/30/th_gOr2OsGx78XX3GjaX9attU6B7XwWy5kCOf2gD2bz6.jpg",
-Syr: "https://s10.iimage.su/s/30/th_gZtt9LPxYeyoZczvYNw6UYTbhz7Ez6ozLDQKQwYJi.jpg",
-Omaygad: "https://i.ibb.co/4wYq62sh/photo-2026-05-31-05-14-58.jpg",
-vodka: "https://s10.iimage.su/s/30/th_g6y6qLwxv95nuJcbeYLmjiCEJePIHz5Z8sCIBYIwS.png",
-ArmyBg: 'https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg',
-Murino1Bg: 'https://avatars.mds.yandex.net/i?id=368eca4c07965278b14cd8e894bac250_l-5642274-images-thumbs&n=13',
-Murino2Bg: 'https://cdnb.artstation.com/p/assets/images/images/053/848/533/large/infinity-vision-dark-cooridoor-preview01.jpg?1663165516',
-Murino3Bg: 'https://cs6.pikabu.ru/video/2017/09/01/4/og_og_1504239048317731297.jpg',
-helper: 'https://s10.iimage.su/s/30/th_gYuXKdxxVePCgH7whlrLwbQMgak5jUzcl2G8Mz7BS.png',
-commander: 'https://s10.iimage.su/s/30/th_gNjDNFWxdsGNNl8udIDUXlRbD8ZSkmmMJn1wdywph.png',
-general: 'https://s10.iimage.su/s/30/th_gIQwNyQxtiO2lpCyfdvt9Vh1OjlGcwpbRutAj1lGD.png',
-skromnik: 'https://static.wikia.nocookie.net/fantasticbeings/images/1/13/IMG_9765.JPG/revision/latest/scale-to-width-down/536?cb=20170913095609&path-prefix=ru',
-mimic_true: 'https://i.pinimg.com/originals/d9/62/30/d96230c1b8282a419aaffd6109fb90f4.jpg?nii=t',
-fog_creature: 'https://avatars.mds.yandex.net/i?id=503a24b487f8f83ff015f57a6f8a60ef2e3b9e7a-10150478-images-thumbs&n=13',
-drun: 'https://i.ibb.co/pD5wY3B/channels4-profile.jpg',
-corridor_monster: 'https://i.pinimg.com/1200x/04/22/22/042222bf7b945078bfb6a5bfbfe3b96d.jpg',
-skrut: 'https://i.pinimg.com/736x/c3/fe/8a/c3fe8a0d6bcbcdeeb4d310e4f5e598e4.jpg',
-red_beast: 'https://i.pinimg.com/originals/2f/ea/d2/2fead28a9cd651e86988518cb8de60bb.png',
-spring_monster: 'https://i.ibb.co/tThrkDCF/i.jpg',
-shadow_creature: 'https://i.ibb.co/5m1VNkJ/7188eedc53c4bde8686236bbafa539f2-no-bg-preview-carve-photos.png',
-trap_item: 'https://i.ibb.co/HT9trWzs/istockphoto-483767002-612x612-no-bg-preview-carve-photos.png',
-flashlight_item: 'https://i.ibb.co/p6wDyCTk/orig-1-no-bg-preview-carve-photos.png',
-knife_asset: 'https://i.ibb.co/8T9p91x/Gemini-Generated-Image-u6ltxau6ltxau6lt-no-bg-preview-carve-photos.png'
+Mell: "./assets/images/images.jpg",
+Pucheglaz: "./assets/images/images.jpg",
+Smena2: "./assets/images/images.jpg",
+Otstalost: "./assets/images/images.jpg",
+Pyramid: "./assets/images/images.jpg",
+Puglivost: "./assets/images/images.jpg",
+Soplya: "./assets/images/images.jpg",
+Oglushaemost: "./assets/images/images.jpg",
+Syr: "./assets/images/images.jpg",
+Omaygad: "./assets/images/images.jpg",
+vodka: "./assets/images/images.jpg",
+ArmyBg: './assets/images/1-960x540.jpg',
+Murino1Bg: './assets/images/i.webp',
+Murino2Bg: './assets/images/infinity-vision-dark-cooridoor-preview01.jpg',
+Murino3Bg: './assets/images/og_og_1504239048317731297.jpg',
+helper: './assets/images/images.jpg',
+commander: './assets/images/images.jpg',
+general: './assets/images/images.jpg',
+skromnik: './assets/images/IMG_9765.JPG.png',
+mimic_true: './assets/images/images.jpg',
+fog_creature: './assets/images/i.webp',
+drun: './assets/images/images.jpg',
+corridor_monster: './assets/images/images.jpg',
+skrut: './assets/images/images.jpg',
+red_beast: './assets/images/images.jpg',
+spring_monster: './assets/images/i.webp',
+shadow_creature: './assets/images/images.jpg',
+trap_item: './assets/images/images.jpg',
+flashlight_item: './assets/images/images.jpg',
+knife_asset: './assets/images/images.jpg'
 };
 const cachedImages = {};
+const FALLBACK_IMAGE_SRC = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+  <rect width="128" height="128" fill="#111827"/>
+  <circle cx="64" cy="64" r="44" fill="#334155"/>
+  <text x="64" y="72" text-anchor="middle" font-size="14" fill="#f8fafc" font-family="Arial">IMG</text>
+</svg>`);
+function imageReady(img) {
+  return !!(img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0);
+}
+function drawImageSafe(img, x, y, w, h, fallbackColor = '#334155') {
+  if (imageReady(img)) {
+    ctx.drawImage(img, x, y, w, h);
+  } else {
+    ctx.fillStyle = fallbackColor;
+    ctx.fillRect(x, y, w, h);
+  }
+}
 Object.entries(imgPreload).forEach(([k, url]) => {
 const img = new Image();
+img.onerror = () => {
+  img.onerror = null;
+  img.src = FALLBACK_IMAGE_SRC;
+};
 img.src = url;
 cachedImages[k] = img;
 });
@@ -1793,9 +1823,9 @@ ctx.filter = `hue-rotate(${battleState.mimicContamination * 60}deg) saturate(1.8
 if (this.facingLeft) {
 ctx.translate(this.x + this.width, this.y);
 ctx.scale(-1, 1);
-ctx.drawImage(img, 0, 0, this.width, this.height);
+drawImageSafe(img, 0, 0, this.width, this.height);
 } else {
-ctx.drawImage(img, this.x, this.y, this.width, this.height);
+drawImageSafe(img, this.x, this.y, this.width, this.height);
 }
 ctx.restore();
 if (this.heroInfo.attackType === 'melee_fist' && this.fistExtension > 0) {
@@ -2454,7 +2484,7 @@ ctx.stroke();
 if (this.trappedTimer > 0) {
 ctx.shadowColor = '#f59e0b';
 ctx.shadowBlur = 15;
-ctx.drawImage(cachedImages.trap_item, this.x + this.width/2 - 25, this.y + this.height - 25, 50, 30);
+drawImageSafe(cachedImages.trap_item, this.x + this.width/2 - 25, this.y + this.height - 25, 50, 30, '#f59e0b');
 }
 if (this.blindTimer > 0) {
 ctx.fillStyle = '#fef08a';
@@ -2494,9 +2524,9 @@ renderH = this.height;
 if (!this.facingLeft) {
 ctx.translate(this.x + renderW, this.y);
 ctx.scale(-1, 1);
-ctx.drawImage(useImg, 0, 0, renderW, renderH);
+drawImageSafe(useImg, 0, 0, renderW, renderH);
 } else {
-ctx.drawImage(useImg, this.x, this.y, renderW, renderH);
+drawImageSafe(useImg, this.x, this.y, renderW, renderH);
 }
 ctx.restore();
 }
@@ -2753,7 +2783,7 @@ ctx.fill();
 } else if (this.type === 'vodka_bottle') {
 const img = cachedImages.vodka;
 if (img && img.complete) {
-ctx.drawImage(img, this.x, this.y, this.width, this.height);
+drawImageSafe(img, this.x, this.y, this.width, this.height);
 } else {
 ctx.fillStyle = '#f59e0b';
 ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -3514,7 +3544,7 @@ bgImg = cachedImages.Murino1Bg;
 } else if (gameState.currentLocation === 'Murino_2') {
 bgImg = cachedImages.Murino2Bg;
 }
-ctx.drawImage(bgImg, 0, 0, V_WIDTH, V_HEIGHT);
+drawImageSafe(bgImg, 0, 0, V_WIDTH, V_HEIGHT, '#020617');
 if (battleState.toxicFloorActive) {
 ctx.fillStyle = 'rgba(34, 197, 94, 0.25)';
 ctx.fillRect(0, 440, V_WIDTH, 160);
@@ -3549,7 +3579,7 @@ ctx.fillText("ЛУТ [E]", box.x - box.width/2 - 5, box.y - box.height - 5);
 for (let i = battleState.projectiles.length - 1; i >= 0; i--) {
 const proj = battleState.projectiles[i];
 if (proj.type === 'placed_trap') {
-ctx.drawImage(cachedImages.trap_item, proj.x, proj.y, 35, 20);
+drawImageSafe(cachedImages.trap_item, proj.x, proj.y, 35, 20, '#f59e0b');
 for (let enemy of battleState.enemies) {
 if (enemy.hp <= 0) continue;
 const dist = Math.abs((enemy.x + enemy.width/2) - (proj.x + 17));
@@ -3823,7 +3853,7 @@ battleState.shadowDotTimer = 1.0;
 battleState.lightningTimer = 2.0;
 battleState.shadowSpawnTimer = 0;
 battleState.player = new Player();
-document.getElementById('battlePlayerImg').src = battleState.player.heroInfo.img || "https://placehold.co/150";
+document.getElementById('battlePlayerImg').src = battleState.player.heroInfo.img || "./assets/images/images.jpg";
 document.getElementById('battlePlayerName').innerText = battleState.player.heroInfo.name;
 const omayHUD = document.getElementById('omaygadChargeHUD');
 if (battleState.player.heroInfo.id === 'Omaygad') {
@@ -4257,180 +4287,635 @@ loadGameState();
 }
 </script>
 
-<!-- Firebase -->
 <script type="module">
-  // Import Firebase SDK
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  signOut,
+  onAuthStateChanged,
+  EmailAuthProvider,
+  linkWithCredential,
+  updatePassword
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAt9RopDjGhGarn-NxlH1Uzf2PFtcQ14Ds",
-    authDomain: "relook-a0a12.firebaseapp.com",
-    projectId: "relook-a0a12",
-    storageBucket: "relook-a0a12.firebasestorage.app",
-    messagingSenderId: "199638240697",
-    appId: "1:199638240697:web:c7bca3f27737057f37ba68",
-    measurementId: "G-J633VVYTF7"
+const firebaseConfig = {
+  apiKey: "AIzaSyAt9RopDjGhGarn-NxlH1Uzf2PFtcQ14Ds",
+  authDomain: "relook-a0a12.firebaseapp.com",
+  projectId: "relook-a0a12",
+  storageBucket: "relook-a0a12.firebasestorage.app",
+  messagingSenderId: "199638240697",
+  appId: "1:199638240697:web:c7bca3f27737057f37ba68",
+  measurementId: "G-J633VVYTF7"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+window.currentUser = null;
+window.currentUserProfile = null;
+window.firebaseProfileLoaded = false;
+window.firebaseApplyingRemote = false;
+window.pendingGoogleUser = null;
+let saveTimer = null;
+
+function authOverlay() {
+  return document.getElementById('firebaseAuthOverlay');
+}
+
+function removeAuthOverlay() {
+  const old = authOverlay();
+  if (old) old.remove();
+}
+
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  }[ch]));
+}
+
+window.getUserHeaderHtml = function() {
+  if (!window.currentUser) return '';
+  if (window.currentUser.email === 'sobakastalina123@gmail.com') {
+    return '<span class="rainbow-dev-title">Разработчик</span>';
+  }
+  const nick = window.currentUserProfile?.nick || window.currentUser.displayName || window.currentUser.email || 'Игрок';
+  return escapeHtml(nick);
+};
+
+function setAuthError(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = text || '';
+}
+
+function getDefaultGameStateSnapshot() {
+  const fallback = {
+    coins: 1000,
+    points: 0,
+    crystals: 0,
+    currentLocation: 'Army',
+    selectedHero: 'Mell',
+    completedLocations: [],
+    heroLevels: {
+      Mell: 1, Pucheglaz: 1, Smena2: 1, Otstalost: 1, Pyramid: 1,
+      Puglivost: 1, Soplya: 1, Oglushaemost: 1, Syr: 1, Omaygad: 1
+    },
+    unlockedHeroes: ['Mell'],
+    hyperUnlocked: false,
+    hyperCharges: 0,
+    hyperPrice: 3
   };
+  try {
+    return JSON.parse(JSON.stringify(typeof gameState !== 'undefined' ? gameState : fallback));
+  } catch {
+    return fallback;
+  }
+}
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const provider = new GoogleAuthProvider();
+function rememberLastProfile(profile, user) {
+  try {
+    localStorage.setItem('MellstroFight_lastProfile', JSON.stringify({
+      nick: profile?.nick || user?.displayName || 'Игрок',
+      email: user?.email || profile?.email || '',
+      points: (typeof gameState !== 'undefined' ? gameState.points : (profile?.gameState?.points || 0)) || 0
+    }));
+  } catch {}
+}
 
-  window.window.currentUser = null;
+async function loadUserData(user) {
+  const ref = doc(db, 'users', user.uid);
+  const snap = await getDoc(ref);
 
-  // Проверка сохранённого юзера
-  auth.onAuthStateChanged(async (user) => {
-      if(user && user.emailVerified){
-        window.currentUser = user;
-        loadUserData(user);
-      }
+  if (!snap.exists()) {
+    window.currentUser = user;
+    window.currentUserProfile = null;
+    window.firebaseProfileLoaded = false;
+    showGoogleSetupForm();
+    return false;
+  }
+
+  const profile = snap.data();
+  window.currentUser = user;
+  window.currentUserProfile = profile;
+  window.firebaseProfileLoaded = true;
+
+  if (profile.gameState && typeof gameState !== 'undefined') {
+    window.firebaseApplyingRemote = true;
+    Object.assign(gameState, getDefaultGameStateSnapshot(), profile.gameState);
+    localStorage.setItem('MellstroFight_v3_state_h', JSON.stringify(gameState));
+    window.firebaseApplyingRemote = false;
+  }
+
+  rememberLastProfile(profile, user);
+
+  if (typeof updateUI === 'function') updateUI();
+  if (typeof renderHeroesScreen === 'function') {
+    try { renderHeroesScreen(); } catch {}
+  }
+  return true;
+}
+
+window.queueFirebaseSave = function() {
+  if (!window.currentUser || !window.firebaseProfileLoaded || window.firebaseApplyingRemote) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      const stateCopy = getDefaultGameStateSnapshot();
+      await setDoc(doc(db, 'users', window.currentUser.uid), {
+        uid: window.currentUser.uid,
+        email: window.currentUser.email || '',
+        nick: window.currentUserProfile?.nick || window.currentUser.displayName || window.currentUser.email || 'Игрок',
+        gameState: stateCopy,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      rememberLastProfile(window.currentUserProfile, window.currentUser);
+    } catch (err) {
+      console.warn('Не удалось сохранить прогресс в Firebase:', err);
+    }
+  }, 600);
+};
+
+async function continueIntoGame(user) {
+  const loaded = await loadUserData(user);
+  if (!loaded) return;
+  removeAuthOverlay();
+  if (typeof startGameOriginal === 'function') {
+    startGameOriginal();
+  }
+}
+
+function lastProfileHtml() {
+  let last = null;
+  try { last = JSON.parse(localStorage.getItem('MellstroFight_lastProfile') || 'null'); } catch {}
+  if (!last?.email) return '';
+  return `
+    <div class="auth-last-card">
+      <div class="auth-last-title">Последний профиль</div>
+      <div class="auth-last-nick">${escapeHtml(last.nick || 'Игрок')}</div>
+      <div class="auth-last-email">${escapeHtml(last.email)}</div>
+      <div class="auth-last-points">Поинты: ${Number(last.points || 0)}</div>
+      <div class="auth-last-actions">
+        <button class="auth-small-btn auth-red" onclick="showLoginForm('${escapeHtml(last.email)}')">Войти в этот профиль</button>
+        <button class="auth-small-btn auth-gray" onclick="showLoginForm('')">Войти в другой</button>
+      </div>
+    </div>
+  `;
+}
+
+window.showAuthOverlay = function() {
+  removeAuthOverlay();
+  document.body.insertAdjacentHTML('beforeend', `
+    <div id="firebaseAuthOverlay" class="auth-overlay">
+      <div class="auth-modal">
+        <button class="auth-close" onclick="closeAuthOverlay()" aria-label="Закрыть">×</button>
+        <div class="auth-glow"></div>
+        <h2 class="gaming-font auth-title">Аккаунт игрока</h2>
+        <p class="auth-subtitle">Войдите или зарегистрируйтесь, чтобы прогресс сохранялся на всех устройствах.</p>
+        ${lastProfileHtml()}
+        <div class="auth-tabs">
+          <button class="auth-tab auth-tab-login" onclick="showLoginForm()">Вход</button>
+          <button class="auth-tab auth-tab-register" onclick="showRegisterForm()">Регистрация</button>
+        </div>
+        <div id="authFormContainer" class="auth-form-container"></div>
+      </div>
+    </div>
+  `);
+};
+
+window.closeAuthOverlay = function() {
+  removeAuthOverlay();
+};
+
+window.showLoginForm = function(prefilledEmail = '') {
+  const container = document.getElementById('authFormContainer');
+  if (!container) return;
+  container.innerHTML = `
+    <div class="auth-form">
+      <input type="email" id="loginEmail" placeholder="Почта" value="${escapeHtml(prefilledEmail)}" class="auth-input">
+      <input type="password" id="loginPass" placeholder="Пароль" class="auth-input">
+      <button onclick="loginUser()" class="auth-main-btn auth-red">Войти</button>
+      <button onclick="loginGoogle()" class="auth-main-btn auth-blue">Войти через Google</button>
+      <div id="loginError" class="auth-error"></div>
+    </div>
+  `;
+};
+
+window.showRegisterForm = function() {
+  const container = document.getElementById('authFormContainer');
+  if (!container) return;
+  container.innerHTML = `
+    <div class="auth-form">
+      <input type="text" id="regNick" placeholder="Никнейм" class="auth-input">
+      <input type="email" id="regEmail" placeholder="Почта" class="auth-input">
+      <input type="password" id="regPass" placeholder="Пароль" class="auth-input">
+      <input type="password" id="regPass2" placeholder="Повторите пароль" class="auth-input">
+      <button onclick="registerUser()" class="auth-main-btn auth-green">Отправить ссылку на почту</button>
+      <div id="regError" class="auth-error"></div>
+    </div>
+  `;
+};
+
+window.showGoogleSetupForm = function() {
+  const container = document.getElementById('authFormContainer');
+  if (!container) {
+    window.showAuthOverlay();
+    setTimeout(window.showGoogleSetupForm, 0);
+    return;
+  }
+  container.innerHTML = `
+    <div class="auth-form">
+      <div class="auth-info">Google подключен. Осталось выбрать свободный ник и пароль.</div>
+      <input type="text" id="googleNick" placeholder="Никнейм" class="auth-input">
+      <input type="password" id="googlePass" placeholder="Пароль" class="auth-input">
+      <input type="password" id="googlePass2" placeholder="Повторите пароль" class="auth-input">
+      <button onclick="finishGoogleRegistration()" class="auth-main-btn auth-green">Создать профиль</button>
+      <div id="googleError" class="auth-error"></div>
+    </div>
+  `;
+};
+
+async function usernameIsTaken(nickLower) {
+  const snap = await getDoc(doc(db, 'usernames', nickLower));
+  return snap.exists();
+}
+
+window.registerUser = async function() {
+  const nick = document.getElementById('regNick')?.value.trim();
+  const email = document.getElementById('regEmail')?.value.trim();
+  const pass = document.getElementById('regPass')?.value;
+  const pass2 = document.getElementById('regPass2')?.value;
+  setAuthError('regError', '');
+
+  if (!nick || !email || !pass) return setAuthError('regError', 'Заполните никнейм, почту и пароль.');
+  if (nick.length < 3) return setAuthError('regError', 'Никнейм должен быть минимум 3 символа.');
+  if (pass !== pass2) return setAuthError('regError', 'Пароли не совпадают.');
+  if (pass.length < 6) return setAuthError('regError', 'Пароль должен быть минимум 6 символов.');
+
+  const nickLower = nick.toLowerCase();
+  try {
+    if (await usernameIsTaken(nickLower)) {
+      return setAuthError('regError', 'Никнейм уже занят. Измените никнейм.');
+    }
+
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await sendEmailVerification(cred.user);
+
+    const profile = {
+      uid: cred.user.uid,
+      nick,
+      nickLower,
+      email,
+      provider: 'password',
+      emailVerified: false,
+      gameState: getDefaultGameStateSnapshot(),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+
+    await setDoc(doc(db, 'users', cred.user.uid), profile);
+    await setDoc(doc(db, 'usernames', nickLower), {
+      uid: cred.user.uid,
+      nick,
+      email,
+      createdAt: serverTimestamp()
     });
 
-  function showLoginRegister(){
-    document.getElementById('splashScene').style.display = 'none';
-    document.body.insertAdjacentHTML('afterbegin', `
-      <div id="firebaseAuthOverlay" class="absolute inset-0 bg-black/95 flex flex-col items-center justify-center z-60 text-white">
-        <h2 class="gaming-font text-2xl mb-4">Вход / Регистрация</h2>
-        <div class="flex gap-4">
-          <button onclick="showLoginForm()" class="px-4 py-2 bg-red-600 rounded">Вход</button>
-          <button onclick="showRegisterForm()" class="px-4 py-2 bg-green-600 rounded">Регистрация</button>
-        </div>
-        <div id="authFormContainer" class="mt-6"></div>
-      </div>
-    `);
+    await signOut(auth);
+    setAuthError('regError', 'Ссылка отправлена на почту. Подтвердите email, потом войдите.');
+  } catch (err) {
+    setAuthError('regError', 'Ошибка регистрации: ' + (err.message || err.code));
   }
+};
 
-  window.showLoginForm = () => {
-    const container = document.getElementById('authFormContainer');
-    container.innerHTML = `
-      <input type="email" id="loginEmail" placeholder="Email" class="p-2 mb-2 w-64 text-black"><br>
-      <input type="password" id="loginPass" placeholder="Пароль" class="p-2 mb-2 w-64 text-black"><br>
-      <button onclick="loginUser()" class="px-4 py-2 bg-red-500 rounded">Войти</button>
-      <button onclick="loginGoogle()" class="px-4 py-2 bg-blue-500 rounded mt-2">Войти через Google</button>
-      <div id="loginError" class="text-red-400 mt-2"></div>
-    `;
-  };
+window.loginUser = async function() {
+  const email = document.getElementById('loginEmail')?.value.trim();
+  const pass = document.getElementById('loginPass')?.value;
+  setAuthError('loginError', '');
 
-  window.showRegisterForm = () => {
-    const container = document.getElementById('authFormContainer');
-    container.innerHTML = `
-      <input type="text" id="regNick" placeholder="Никнейм" class="p-2 mb-2 w-64 text-black"><br>
-      <input type="email" id="regEmail" placeholder="Email" class="p-2 mb-2 w-64 text-black"><br>
-      <input type="password" id="regPass" placeholder="Пароль" class="p-2 mb-2 w-64 text-black"><br>
-      <input type="password" id="regPass2" placeholder="Повторите пароль" class="p-2 mb-2 w-64 text-black"><br>
-      <button onclick="registerUser()" class="px-4 py-2 bg-green-500 rounded">Зарегистрироваться</button>
-      <div id="regError" class="text-red-400 mt-2"></div>
-    `;
-  };
+  if (!email || !pass) return setAuthError('loginError', 'Введите почту и пароль.');
 
-  async function loginUser(){
-    const email = document.getElementById('loginEmail').value;
-    const pass = document.getElementById('loginPass').value;
-    const errorDiv = document.getElementById('loginError');
-    errorDiv.innerText = '';
-    try{
-      const cred = await signInWithEmailAndPassword(auth, email, pass);
-      if(!cred.user.emailVerified){
-        errorDiv.innerText = 'Почта не подтверждена!';
-        return;
-      }
-      window.currentUser = cred.user;
-      loadUserData(cred.user);
-      document.getElementById('firebaseAuthOverlay').remove();
-      document.getElementById('splashScene').style.display = 'flex';
-    } catch(e){
-      errorDiv.innerText = 'Ошибка входа: '+e.message;
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    if (!cred.user.emailVerified) {
+      await signOut(auth);
+      return setAuthError('loginError', 'Почта не подтверждена. Откройте ссылку из письма.');
     }
+    await continueIntoGame(cred.user);
+  } catch (err) {
+    setAuthError('loginError', 'Такого пользователя нет или пароль неверный. Зарегистрируйтесь.');
   }
+};
 
-  async function registerUser(){
-    const nick = document.getElementById('regNick').value;
-    const email = document.getElementById('regEmail').value;
-    const pass = document.getElementById('regPass').value;
-    const pass2 = document.getElementById('regPass2').value;
-    const errorDiv = document.getElementById('regError');
-    errorDiv.innerText = '';
-    if(pass!==pass2){ errorDiv.innerText = 'Пароли не совпадают!'; return; }
-    try{
-      // Проверка уникальности ника
-      const nickDoc = await getDoc(doc(db,'users',nick));
-      if(nickDoc.exists()){ errorDiv.innerText='Ник уже занят!'; return; }
-      const cred = await createUserWithEmailAndPassword(auth,email,pass);
-      await sendEmailVerification(cred.user);
-      await setDoc(doc(db,'users',cred.user.uid),{
-        nick: nick,
-        email: email,
-        coins: 0,
-        points: 0,
-        crystals: 0,
-        heroes: {},
-      });
-      alert('Регистрация успешна! Подтвердите почту по ссылке.');
-    } catch(e){
-      errorDiv.innerText='Ошибка регистрации: '+e.message;
+window.loginGoogle = async function() {
+  try {
+    setAuthError('loginError', '');
+    const result = await signInWithPopup(auth, provider);
+    window.currentUser = result.user;
+
+    const profileSnap = await getDoc(doc(db, 'users', result.user.uid));
+    if (profileSnap.exists()) {
+      await continueIntoGame(result.user);
+    } else {
+      window.showAuthOverlay();
+      window.showGoogleSetupForm();
     }
+  } catch (err) {
+    setAuthError('loginError', 'Ошибка Google входа: ' + (err.message || err.code));
   }
+};
 
-  async function loginGoogle(){
-    try{
-      const result = await signInWithPopup(auth,provider);
-      window.currentUser = result.user;
-      // После Google входа попросим ник и пароль
-      showRegisterForm();
-    } catch(e){
-      alert('Ошибка Google входа: '+e.message);
+window.finishGoogleRegistration = async function() {
+  const user = auth.currentUser || window.currentUser;
+  if (!user) return setAuthError('googleError', 'Сначала войдите через Google.');
+
+  const nick = document.getElementById('googleNick')?.value.trim();
+  const pass = document.getElementById('googlePass')?.value;
+  const pass2 = document.getElementById('googlePass2')?.value;
+  setAuthError('googleError', '');
+
+  if (!nick || !pass) return setAuthError('googleError', 'Введите никнейм и пароль.');
+  if (nick.length < 3) return setAuthError('googleError', 'Никнейм должен быть минимум 3 символа.');
+  if (pass !== pass2) return setAuthError('googleError', 'Пароли не совпадают.');
+  if (pass.length < 6) return setAuthError('googleError', 'Пароль должен быть минимум 6 символов.');
+
+  const nickLower = nick.toLowerCase();
+
+  try {
+    if (await usernameIsTaken(nickLower)) {
+      return setAuthError('googleError', 'Никнейм уже занят. Измените никнейм.');
     }
-  }
 
-  async function loadUserData(user){
-    // Специальный радужный ник для разработчика
-    let displayNick = user.email === 'sobakastalina123@gmail.com' ? '<span class="gaming-font rainbow-text">Разработчик</span>' : user.email;
-    const topNickElem = document.getElementById('activeHeroName');
-    if(topNickElem){ topNickElem.innerHTML = displayNick; }
-    // Здесь можно добавить загрузку всех прогресс-данных из Firestore
-  }
+    try {
+      const credential = EmailAuthProvider.credential(user.email, pass);
+      await linkWithCredential(user, credential);
+    } catch {
+      try { await updatePassword(user, pass); } catch {}
+    }
 
+    const profile = {
+      uid: user.uid,
+      nick,
+      nickLower,
+      email: user.email || '',
+      provider: 'google',
+      emailVerified: true,
+      gameState: getDefaultGameStateSnapshot(),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+
+    await setDoc(doc(db, 'users', user.uid), profile);
+    await setDoc(doc(db, 'usernames', nickLower), {
+      uid: user.uid,
+      nick,
+      email: user.email || '',
+      createdAt: serverTimestamp()
+    });
+
+    await continueIntoGame(user);
+  } catch (err) {
+    setAuthError('googleError', 'Ошибка создания профиля: ' + (err.message || err.code));
+  }
+};
+
+window.startGame = function() {
+  if (!window.currentUser || !window.firebaseProfileLoaded) {
+    window.showAuthOverlay();
+    return;
+  }
+  if (typeof startGameOriginal === 'function') startGameOriginal();
+};
+
+onAuthStateChanged(auth, async (user) => {
+  try {
+    if (!user) {
+      window.currentUser = null;
+      window.currentUserProfile = null;
+      window.firebaseProfileLoaded = false;
+      if (typeof updateUI === 'function') updateUI();
+      return;
+    }
+
+    const isGoogleUser = user.providerData?.some((p) => p.providerId === 'google.com');
+    if (!user.emailVerified && !isGoogleUser) {
+      window.currentUser = null;
+      window.currentUserProfile = null;
+      window.firebaseProfileLoaded = false;
+      return;
+    }
+
+    await loadUserData(user);
+  } catch (err) {
+    console.warn('Firebase auth state error:', err);
+  }
+});
 </script>
 
 <style>
-.rainbow-text {
-  background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: rainbow 3s linear infinite;
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(127, 29, 29, 0.35), rgba(0, 0, 0, 0.88) 55%, rgba(0, 0, 0, 0.96));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+  padding: 20px;
+  backdrop-filter: blur(8px);
 }
-@keyframes rainbow {
-  0%{background-position:0%}
-  100%{background-position:100%}
+.auth-modal {
+  position: relative;
+  width: min(440px, 92vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(3, 7, 18, 0.98));
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  border-radius: 24px;
+  box-shadow: 0 0 40px rgba(239, 68, 68, 0.22), 0 25px 80px rgba(0, 0, 0, 0.65);
+  padding: 34px 30px 28px;
+  color: #fff;
+  text-align: center;
+}
+.auth-glow {
+  position: absolute;
+  inset: -2px;
+  border-radius: 24px;
+  pointer-events: none;
+  box-shadow: inset 0 0 24px rgba(248, 113, 113, 0.12);
+}
+.auth-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.9);
+  color: #cbd5e1;
+  font-size: 24px;
+  line-height: 28px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.auth-close:hover {
+  color: #fff;
+  background: rgba(220, 38, 38, 0.9);
+  transform: scale(1.06);
+}
+.auth-title {
+  font-size: 18px;
+  color: #f87171;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+.auth-subtitle {
+  color: #cbd5e1;
+  font-size: 13px;
+  line-height: 1.45;
+  margin-bottom: 18px;
+}
+.auth-tabs {
+  display: flex;
+  gap: 12px;
+  margin: 18px 0;
+}
+.auth-tab, .auth-main-btn, .auth-small-btn {
+  border: 0;
+  border-radius: 14px;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s, filter 0.15s, box-shadow 0.15s;
+}
+.auth-tab {
+  flex: 1;
+  padding: 12px;
+  font-size: 14px;
+}
+.auth-tab:hover, .auth-main-btn:hover, .auth-small-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+.auth-tab-login, .auth-red {
+  background: linear-gradient(135deg, #dc2626, #f97316);
+  box-shadow: 0 8px 22px rgba(220, 38, 38, 0.22);
+}
+.auth-tab-register, .auth-green {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  box-shadow: 0 8px 22px rgba(34, 197, 94, 0.18);
+}
+.auth-blue {
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.18);
+}
+.auth-gray {
+  background: #334155;
+}
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.auth-input {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.95);
+  color: #fff;
+  padding: 13px 14px;
+  outline: none;
+}
+.auth-input:focus {
+  border-color: rgba(248, 113, 113, 0.75);
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12);
+}
+.auth-main-btn {
+  width: 100%;
+  padding: 13px 14px;
+  font-size: 14px;
+}
+.auth-error {
+  min-height: 20px;
+  color: #fca5a5;
+  font-size: 12px;
+  line-height: 1.35;
+  margin-top: 4px;
+}
+.auth-info {
+  color: #bfdbfe;
+  background: rgba(30, 64, 175, 0.25);
+  border: 1px solid rgba(96, 165, 250, 0.25);
+  border-radius: 14px;
+  padding: 10px;
+  font-size: 12px;
+}
+.auth-last-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 18px;
+  padding: 14px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+.auth-last-title {
+  color: #94a3b8;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.auth-last-nick {
+  color: #fff;
+  font-weight: 900;
+  margin-top: 4px;
+}
+.auth-last-email, .auth-last-points {
+  color: #cbd5e1;
+  font-size: 12px;
+  margin-top: 2px;
+}
+.auth-last-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.auth-small-btn {
+  flex: 1;
+  padding: 9px 10px;
+  font-size: 12px;
+}
+.rainbow-dev-title {
+  font-weight: 900;
+  background: linear-gradient(90deg, #ff004c, #ff9f00, #fff200, #00ff85, #00c8ff, #8b5cf6, #ff00e5, #ff004c);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rainbowDevMove 2.2s linear infinite;
+  text-shadow: 0 0 14px rgba(255,255,255,0.15);
+}
+@keyframes rainbowDevMove {
+  from { background-position: 0% 50%; }
+  to { background-position: 300% 50%; }
 }
 </style>
 
-<script>
-
-function startGame() {
-  if(!window.currentUser){
-    
-document.body.insertAdjacentHTML('afterbegin', `
-<div style="position: fixed; top:0; left:0; width:100vw; height:100vh; background-color: rgba(0,0,0,0.95); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:9999; color:white; text-align:center;">
-  <h2 class="gaming-font text-3xl mb-6">Вход / Регистрация</h2>
-  <div style="display:flex; gap:40px; margin-bottom:40px;">
-    <button onclick="showLoginForm()" style="padding:12px 24px; font-size:18px; background:#e74c3c; border:none; border-radius:8px; cursor:pointer;">Вход</button>
-    <button onclick="showRegisterForm()" style="padding:12px 24px; font-size:18px; background:#2ecc71; border:none; border-radius:8px; cursor:pointer;">Регистрация</button>
-  </div>
-  <div id="authFormContainer" style="width:320px;"></div>
-</div>
-`);
-
-    return;
-  }
-  // Если вошёл, продолжаем обычный старт
-  document.getElementById('splashScene').style.display = 'none';
-  startFight();
-}
-
-</script>
 </body>
 </html>
