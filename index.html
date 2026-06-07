@@ -71,6 +71,12 @@ inset: 0;
 pointer-events: none;
 z-index: 25;
 }
+#horrorVhsOverlay.m3-readable-light .vhs-darkness {
+background: radial-gradient(circle, rgba(0,0,0,0.02) 0 210px, rgba(0,0,0,0.18) 360px, rgba(0,0,0,0.32) 100%);
+}
+#horrorVhsOverlay.m3-readable-light .vhs-noise {
+opacity: 0.35;
+}
 </style>
 </head>
 <body class="w-screen h-screen flex items-center justify-center relative select-none">
@@ -109,7 +115,7 @@ CREDITS
 <div id="splashAuthStatus" class="text-[10px] text-gray-500 mt-2 min-h-[18px]">Войдите, чтобы начать игру</div>
 </div>
 </div>
-<div class="absolute bottom-4 text-xs text-gray-600">v3.9.4 - FIX: CORS images + m3drawEnemy</div>
+<div class="absolute bottom-4 text-xs text-gray-600">v3.9.5 - FIX: свет Мурино 3 + разморозка стражей</div>
 </div>
 <!-- Окно Credits -->
 <div id="creditsModal" class="hidden absolute inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
@@ -1694,7 +1700,11 @@ murino2FinalRewardPoints: 0
 function resetAllPhaseEffects() {
 battleState.toxicFloorActive = false;
 document.getElementById('toxicFloorOverlay').classList.add('hidden');
-document.getElementById('horrorVhsOverlay').classList.add('hidden');
+const horrorOverlay = document.getElementById('horrorVhsOverlay');
+    if (horrorOverlay) {
+      horrorOverlay.classList.add('hidden');
+      horrorOverlay.classList.remove('m3-readable-light');
+    }
 document.getElementById('parryPromptContainer').classList.add('hidden');
 battleState.spikes = [];
 battleState.spikePhase = 'cooldown';
@@ -4861,7 +4871,9 @@ function m3StartFight() {
   document.getElementById('battleLootHUD').classList.add('hidden');
   document.getElementById('parryPromptContainer').classList.add('hidden');
   document.getElementById('toxicFloorOverlay').classList.add('hidden');
-  document.getElementById('horrorVhsOverlay').classList.remove('hidden');
+  const m3HorrorOverlay = document.getElementById('horrorVhsOverlay');
+  m3HorrorOverlay.classList.remove('hidden');
+  m3HorrorOverlay.classList.add('m3-readable-light');
   const m3 = battleState.murino3 = {
     phase: 'guard_intro', timer: 3.0, enemies: [], hazards: [], bullets: [], puddles: [], darkTimer: 0,
     qteWave: 0, perfect: true, afterRabbit: false, waveIndex: 0, fogStage: 1,
@@ -4930,6 +4942,10 @@ function m3FinishGuardQte() {
 function m3StartGuardFight() {
   const m3 = m3ensure();
   m3.phase = 'guard_fight';
+  if (battleState.player) {
+    battleState.player.frozenTimer = 0;
+    battleState.player.vx = 0;
+  }
   m3.enemies = [];
   m3spawnEnemy('guard', 820, 326, 15000);
   m3spawnEnemy('guard', 980, 326, 15000);
@@ -4941,6 +4957,7 @@ function m3StartGuardFight() {
 }
 function m3StartBlackDrops() {
   const m3 = m3ensure();
+  if (battleState.player) battleState.player.frozenTimer = 0;
   m3.phase = 'black_drops';
   m3.timer = 4.2;
   m3.bullets = [];
@@ -5557,7 +5574,7 @@ function m3Frame() {
   if (m3.phase === 'guard_qte') m3DrawQte();
   m3DrawTextPanel();
   for (let i = battleState.particles.length - 1; i >= 0; i--) { const p = battleState.particles[i]; p.update(); p.draw(); if (p.life <= 0) battleState.particles.splice(i,1); }
-  if (m3.darkTimer > 0) { ctx.fillStyle = `rgba(0,0,0,${m3.darkTimer > 1 ? 0.72 : m3.darkTimer * 0.72})`; ctx.fillRect(0,0,V_WIDTH,V_HEIGHT); }
+  if (m3.darkTimer > 0) { ctx.fillStyle = `rgba(0,0,0,${m3.darkTimer > 1 ? 0.42 : m3.darkTimer * 0.42})`; ctx.fillRect(0,0,V_WIDTH,V_HEIGHT); }
   if (m3.phase === 'fun_room' && m3.poisonStarted) { ctx.fillStyle='rgba(34,197,94,.28)'; ctx.fillRect(0,0,V_WIDTH,V_HEIGHT); ctx.fillStyle='#86efac'; ctx.font='bold 18px "Press Start 2P", monospace'; ctx.textAlign='center'; ctx.fillText('ЯДОВИТЫЙ ДЫМ КОМНАТЫ ВЕСЕЛЬЯ', V_WIDTH/2, 90); }
   if (m3.phase === 'fog_boss' && m3.attackMode === 'lasers' && m3.laserCountdown > 0) { ctx.fillStyle='#ef4444'; ctx.font='bold 42px "Press Start 2P", monospace'; ctx.textAlign='center'; ctx.fillText(Math.ceil(m3.laserCountdown), V_WIDTH/2, 250); }
   m3DrawStatusBars();
@@ -5640,7 +5657,11 @@ endBattleSequence = function(isWin) {
   if (gameState.currentLocation === 'Murino_3') {
     battleState.active = false;
     m3hideOverlay();
-    document.getElementById('horrorVhsOverlay').classList.add('hidden');
+    const horrorOverlay = document.getElementById('horrorVhsOverlay');
+    if (horrorOverlay) {
+      horrorOverlay.classList.add('hidden');
+      horrorOverlay.classList.remove('m3-readable-light');
+    }
     const fogMusic = document.getElementById('soundFogIsComing'); if (fogMusic) { fogMusic.loop = false; fogMusic.pause(); }
     if (isWin) {
       gameState.points += 35000;
