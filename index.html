@@ -108,7 +108,7 @@ CREDITS
 <div id="splashAuthStatus" class="text-[10px] text-gray-500 mt-2 min-h-[18px]">Войдите, чтобы начать игру</div>
 </div>
 </div>
-<div class="absolute bottom-4 text-xs text-gray-600">v3.8.1 - Мурино 2: фазы, награды и хитбокс приседа</div>
+<div class="absolute bottom-4 text-xs text-gray-600">v3.9.0 - Мурино 3: THE FOG + сохранение аккаунта</div>
 </div>
 <!-- Окно Credits -->
 <div id="creditsModal" class="hidden absolute inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
@@ -4503,6 +4503,1131 @@ playCurrentStageMusic();
 window.onload = function() {
 loadGameState();
 }
+
+/* =========================================================
+   ОБНОВЛЕНИЕ: МУРИНО — ЧАСТЬ 3: THE FOG
+   Добавлено как отдельный режим поверх существующего canvas-движка,
+   чтобы не ломать Армию, Мурино 1 и Мурино 2.
+   ========================================================= */
+(function installMurino3Update(){
+const M3_ASSETS = {
+Murino3StreetBg: 'https://img.magnific.com/free-photo/abandoned-alley-psychiatric-hospital_1150-18954.jpg?semt=ais_hybrid&w=740&q=80',
+Murino3PostRabbitBg: 'https://i.ibb.co/kV3R2Sgn/file.jpg',
+Murino3FogBg: 'https://i.ibb.co/23DYQFvY/i-4.jpg',
+Murino3FunRoomBg: 'https://i.ibb.co/JwrHDFQ3/Gemini-Generated-Image-voczo2voczo2vocz.jpg',
+m3_guard: 'https://i.ibb.co/0pvHvTrG/abfr2goik2ae1.jpg',
+m3_rabbit: 'https://i.ibb.co/wh0n2sGQ/images.jpg',
+m3_watch: 'https://i.ibb.co/S7DBpmqk/pd109-pdobj02045a-image-no-bg-preview-carve-photos.png',
+m3_squeezer: 'https://i.pinimg.com/736x/32/a0/56/32a05640296695289ac8b605359dfb00.jpg',
+m3_fog: 'https://i.ibb.co/tp3wxrCQ/The-fog-is-coming-aka-pinhead-tho.jpg'
+};
+Object.entries(M3_ASSETS).forEach(([k, url]) => {
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.src = url;
+  cachedImages[k] = img;
+});
+
+if (!HEROES_DB.Drun) {
+  HEROES_DB.Drun = {
+    id: 'Drun',
+    name: 'Друн',
+    rarity: 'Помощник',
+    img: 'https://i.ibb.co/pD5wY3B/channels4-profile.jpg',
+    baseHp: 500,
+    hpPerLevel: 120,
+    baseDmg: 30,
+    dmgPerLevel: 25,
+    desc: 'Помощник после победы над THE FOG. Кидает сливу, которая взрывается и увеличивает радиус урона.',
+    superDesc: 'Помощник с ИИ: уворачивается, перепрыгивает атаки и помогает герою.',
+    attackType: 'drun_plum'
+  };
+}
+if (!gameState.heroLevels.Drun) gameState.heroLevels.Drun = 1;
+
+function m3dt() { return 0.016; }
+function m3rand(a, b) { return a + Math.random() * (b - a); }
+function m3clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function m3dist(ax, ay, bx, by) { return Math.hypot(ax - bx, ay - by); }
+function m3playerCenter() {
+  const p = battleState.player;
+  return { x: p.x + p.width / 2, y: p.y + p.height / 2 };
+}
+function m3ensure() {
+  if (!battleState.murino3) battleState.murino3 = {};
+  return battleState.murino3;
+}
+function m3showMsg(txt, seconds = 2.2) {
+  battleState.customPromptText = txt;
+  battleState.promptTimer = seconds;
+  document.getElementById('battleStatusMsg').innerText = txt;
+}
+function m3drawImage(key, x, y, w, h, flip = false) {
+  const img = cachedImages[key];
+  ctx.save();
+  if (img && img.complete && img.naturalWidth) {
+    if (flip) {
+      ctx.translate(x + w, y);
+      ctx.scale(-1, 1);
+      ctx.drawImage(img, 0, 0, w, h);
+    } else {
+      ctx.drawImage(img, x, y, w, h);
+    }
+  } else {
+    ctx.fillStyle = '#1f2937';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = '#ef4444';
+    ctx.strokeRect(x, y, w, h);
+  }
+  ctx.restore();
+}
+function m3lineCircleDistance(x1, y1, x2, y2, cx, cy) {
+  const dx = x2 - x1, dy = y2 - y1;
+  if (dx === 0 && dy === 0) return m3dist(x1, y1, cx, cy);
+  const t = m3clamp(((cx - x1) * dx + (cy - y1) * dy) / (dx * dx + dy * dy), 0, 1);
+  return m3dist(x1 + t * dx, y1 + t * dy, cx, cy);
+}
+function m3rectHitPlayer(r) {
+  const p = battleState.player;
+  return p.x < r.x + r.w && p.x + p.width > r.x && p.y < r.y + r.h && p.y + p.height > r.y;
+}
+function m3circleHitPlayer(c) {
+  const p = battleState.player;
+  const closestX = m3clamp(c.x, p.x, p.x + p.width);
+  const closestY = m3clamp(c.y, p.y, p.y + p.height);
+  return m3dist(c.x, c.y, closestX, closestY) <= c.r;
+}
+function m3createOverlay() {
+  let overlay = document.getElementById('murino3ChoiceOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'murino3ChoiceOverlay';
+    overlay.className = 'hidden absolute inset-0 z-50 pointer-events-auto flex items-center justify-center';
+    document.getElementById('battleScene').appendChild(overlay);
+  }
+  return overlay;
+}
+function m3hideOverlay() {
+  const overlay = m3createOverlay();
+  overlay.classList.add('hidden');
+  overlay.innerHTML = '';
+}
+function m3showChoice(title, buttons) {
+  const overlay = m3createOverlay();
+  overlay.classList.remove('hidden');
+  overlay.innerHTML = `
+    <div class="bg-black/85 border-2 border-red-600 rounded-2xl p-6 max-w-xl text-center shadow-[0_0_40px_rgba(220,38,38,.45)]">
+      <div class="gaming-font text-red-500 text-xs mb-5">${title}</div>
+      <div class="flex gap-4 justify-center flex-wrap" id="m3ChoiceButtons"></div>
+    </div>`;
+  const wrap = overlay.querySelector('#m3ChoiceButtons');
+  buttons.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = b.className || 'bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-xl gaming-font text-[10px] transition';
+    btn.innerText = b.label;
+    btn.onclick = () => { m3hideOverlay(); b.onClick(); };
+    wrap.appendChild(btn);
+  });
+}
+function m3showFogButton() {
+  m3showChoice('THE FOG IS COMING', [{
+    label: 'НАЧАТЬ БОССА THE FOG',
+    className: 'bg-red-700 hover:bg-red-500 text-white font-black py-4 px-8 rounded-xl gaming-font text-[11px] animate-pulse',
+    onClick: () => m3StartFogBoss()
+  }]);
+}
+function m3showButtonQTE() {
+  const m3 = m3ensure();
+  m3.pendingButtons = 4;
+  m3.buttonQteTimer = 3.0;
+  const overlay = m3createOverlay();
+  overlay.classList.remove('hidden');
+  overlay.innerHTML = '<div class="absolute inset-0" id="m3QteButtonArea"></div>';
+  const area = overlay.querySelector('#m3QteButtonArea');
+  for (let i = 0; i < 4; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'absolute bg-red-600 hover:bg-green-500 text-white font-black rounded-full w-16 h-16 border-4 border-white animate-pulse gaming-font text-xs';
+    btn.innerText = '!' ;
+    btn.style.left = `${12 + Math.random() * 74}%`;
+    btn.style.top = `${18 + Math.random() * 60}%`;
+    btn.onclick = () => {
+      if (btn.disabled) return;
+      btn.disabled = true;
+      btn.style.opacity = '0.25';
+      m3.pendingButtons--;
+      playTickSound();
+      if (m3.pendingButtons <= 0) {
+        m3hideOverlay();
+        m3.attackMode = null;
+        m3.attackCooldown = 1.2;
+        m3showMsg('Все кнопки нажаты! Выжили.', 1.5);
+      }
+    };
+    area.appendChild(btn);
+  }
+}
+function m3showDoorChoice() {
+  const m3 = m3ensure();
+  m3.doorChoice = null;
+  m3.doorTimer = 2.0;
+  m3.attackedDoor = Math.random() < 0.5 ? 'left' : 'right';
+  m3showChoice('FOG СМЕЁТСЯ. КУДА СПРЯТАТЬСЯ?', [
+    { label: 'ЛЕВАЯ ДВЕРЬ', onClick: () => { m3.doorChoice = 'left'; m3hideOverlay(); } },
+    { label: 'ПРАВАЯ ДВЕРЬ', onClick: () => { m3.doorChoice = 'right'; m3hideOverlay(); } }
+  ]);
+}
+function m3setBackground() {
+  const m3 = m3ensure();
+  let bgKey = 'Murino3StreetBg';
+  if (m3.phase === 'fun_room') bgKey = 'Murino3FunRoomBg';
+  if (m3.afterRabbit && m3.phase !== 'fog_boss') bgKey = 'Murino3PostRabbitBg';
+  if (m3.phase === 'fog_boss') bgKey = 'Murino3FogBg';
+  m3drawImage(bgKey, 0, 0, V_WIDTH, V_HEIGHT);
+  ctx.fillStyle = 'rgba(0,0,0,0.22)';
+  ctx.fillRect(0, 0, V_WIDTH, V_HEIGHT);
+}
+function m3spawnEnemy(type, x, y, hp) {
+  const cfg = {
+    guard: { name: 'СТРАЖ', key: 'm3_guard', w: 105, h: 125, hp: 15000 },
+    rabbit: { name: 'ЗАЯЦ С ЧАСАМИ', key: 'm3_rabbit', w: 95, h: 120, hp: 25000 },
+    skromnik: { name: 'СКРОМНИК', key: 'skromnik', w: 92, h: 138, hp: 7000 },
+    squeezer: { name: 'СЖИМАЮЩИЙ', key: 'm3_squeezer', w: 120, h: 135, hp: 13000 },
+    fog: { name: 'THE FOG', key: 'm3_fog', w: 145, h: 160, hp: 100000 },
+    shadow: { name: 'ТЕНЬ', key: 'shadow_creature', w: 74, h: 96, hp: 800 }
+  }[type];
+  const e = { type, name: cfg.name, key: cfg.key, x, y, w: cfg.w, h: cfg.h, hp: hp || cfg.hp, maxHp: hp || cfg.hp, vx: 0, vy: 0, timer: 0, cd: 0, history: [], flash: 0, dead: false };
+  m3ensure().enemies.push(e);
+  return e;
+}
+function m3damageEnemy(e, dmg) {
+  if (!e || e.hp <= 0) return;
+  e.hp -= dmg;
+  e.flash = 0.2;
+  createSlamImpact(e.x + e.w / 2, e.y + e.h / 2, '#ef4444');
+  if (e.hp <= 0) {
+    e.hp = 0;
+    e.dead = true;
+    playExplosionSound();
+  }
+}
+function m3damagePlayer(amount, label) {
+  if (!battleState.active || !battleState.player || battleState.player.hp <= 0) return;
+  battleState.player.takeDamage(amount);
+  if (label) showFloatingMessage(label);
+}
+function m3currentTargets() {
+  const m3 = m3ensure();
+  return m3.enemies.filter(e => e.hp > 0 && e.type !== 'shadow');
+}
+function m3drawEnemy(e) {
+  if (e.hp <= 0) return;
+  if (e.flash > 0) e.flash -= m3dt();
+  const pc = m3playerCenter();
+  const flip = pc.x < e.x + e.w / 2;
+  ctx.save();
+  if (e.flash > 0) ctx.globalAlpha = 0.55;
+  m3drawImage(e.key, e.x, e.y, e.w, e.h, !flip);
+  ctx.restore();
+  ctx.fillStyle = 'rgba(0,0,0,0.75)';
+  ctx.fillRect(e.x, e.y - 16, e.w, 8);
+  ctx.fillStyle = e.type === 'fog' ? '#dc2626' : '#22c55e';
+  ctx.fillRect(e.x, e.y - 16, e.w * (e.hp / e.maxHp), 8);
+  ctx.strokeStyle = '#fff';
+  ctx.strokeRect(e.x, e.y - 16, e.w, 8);
+}
+function m3updateHud() {
+  const p = battleState.player;
+  document.getElementById('playerHpText').innerText = `${Math.ceil(p.hp)} / ${p.maxHp}`;
+  document.getElementById('playerHpBar').style.width = `${m3clamp((p.hp / p.maxHp) * 100, 0, 100)}%`;
+  const boss = m3currentTargets()[0];
+  if (boss) {
+    document.getElementById('enemyHpText').innerText = `${Math.ceil(boss.hp)} / ${boss.maxHp}`;
+    document.getElementById('enemyHpBar').style.width = `${m3clamp((boss.hp / boss.maxHp) * 100, 0, 100)}%`;
+    document.getElementById('enemyNameText').innerText = boss.name;
+  } else {
+    document.getElementById('enemyHpText').innerText = '0 / 0';
+    document.getElementById('enemyHpBar').style.width = '0%';
+    document.getElementById('enemyNameText').innerText = 'МУРИНО 3';
+  }
+}
+function m3recordHistory() {
+  const m3 = m3ensure();
+  const p = battleState.player;
+  if (!m3.playerHistory) m3.playerHistory = [];
+  m3.playerHistory.push({ x: p.x, y: p.y, hp: p.hp, t: performance.now() });
+  while (m3.playerHistory.length > 180) m3.playerHistory.shift();
+  for (const e of m3.enemies || []) {
+    if (!e.history) e.history = [];
+    e.history.push({ x: e.x, y: e.y, hp: e.hp, t: performance.now() });
+    while (e.history.length > 180) e.history.shift();
+  }
+}
+function m3useWatch() {
+  const m3 = m3ensure();
+  if (!m3.watchUnlocked || (m3.watchCooldown || 0) > 0) return;
+  const p = battleState.player;
+  const hist = (m3.playerHistory || []);
+  const targetTime = performance.now() - 2000;
+  let snap = hist[0];
+  for (const h of hist) if (h.t <= targetTime) snap = h;
+  if (snap) {
+    p.x = snap.x; p.y = snap.y; p.hp = Math.min(p.maxHp, snap.hp + 800);
+    m3.watchCooldown = 8.0;
+    createSlamImpact(p.x + p.width / 2, p.y + p.height / 2, '#60a5fa');
+    m3showMsg('ЧАСЫ ЗАЙЦА: возврат на 2 секунды назад + лечение!', 2.4);
+  }
+}
+function m3DrawTextPanel() {
+  const m3 = m3ensure();
+  if (!m3.speech) return;
+  ctx.save();
+  ctx.fillStyle = 'rgba(15,23,42,.92)';
+  ctx.strokeStyle = '#ef4444';
+  ctx.lineWidth = 2;
+  ctx.roundRect(190, 60, 820, 82, 18);
+  ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 16px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(m3.speech, V_WIDTH / 2, 108);
+  ctx.restore();
+}
+function m3StartFight() {
+  playSynthesizedSound(500, 0.3);
+  document.getElementById('menuScene').classList.add('hidden');
+  document.getElementById('battleScene').classList.remove('hidden');
+  resizeCanvas();
+  m3hideOverlay();
+  battleState.active = true;
+  battleState.phase = 'murino3';
+  battleState.projectiles = [];
+  battleState.enemies = [];
+  battleState.particles = [];
+  battleState.puddles = [];
+  battleState.spikes = [];
+  battleState.customPromptText = '';
+  battleState.promptTimer = 0;
+  battleState.playerShieldTimer = 0;
+  battleState.playerRegenTimer = 0;
+  battleState.hyperActive = false;
+  battleState.hyperTime = 0;
+  battleState.hyperCooldown = 0;
+  battleState.hyperUsedThisGame = false;
+  battleState.player = new Player();
+  battleState.player.x = 130;
+  battleState.player.y = 450 - battleState.player.height;
+  document.getElementById('battlePlayerImg').src = battleState.player.heroInfo.img || 'https://placehold.co/150';
+  document.getElementById('battlePlayerName').innerText = battleState.player.heroInfo.name;
+  document.getElementById('battleLootHUD').classList.add('hidden');
+  document.getElementById('parryPromptContainer').classList.add('hidden');
+  document.getElementById('toxicFloorOverlay').classList.add('hidden');
+  document.getElementById('horrorVhsOverlay').classList.remove('hidden');
+  const m3 = battleState.murino3 = {
+    phase: 'guard_intro', timer: 3.0, enemies: [], hazards: [], bullets: [], puddles: [], darkTimer: 0,
+    qteWave: 0, perfect: true, afterRabbit: false, waveIndex: 0, fogStage: 1,
+    playerHistory: [], watchUnlocked: false, watchCooldown: 0, helperDrun: null
+  };
+  const introOverlay = document.getElementById('battleIntroOverlay');
+  const countdownEl = document.getElementById('battleCountdown');
+  document.getElementById('introLocName').innerText = 'МУРИНО — ЧАСТЬ 3: ТУМАН';
+  introOverlay.classList.remove('opacity-0', 'pointer-events-none');
+  let count = 3;
+  countdownEl.innerText = count;
+  const timer = setInterval(() => {
+    count--;
+    if (count > 0) { countdownEl.innerText = count; playTickSound(); }
+    else {
+      clearInterval(timer);
+      introOverlay.classList.add('opacity-0', 'pointer-events-none');
+      const fogMusic = document.getElementById('soundFogIsComing');
+      if (fogMusic) { fogMusic.loop = true; fogMusic.volume = 0.55; fogMusic.currentTime = 0; fogMusic.play().catch(() => {}); }
+      m3showMsg('Через 3 секунды появятся два стража...', 3.0);
+      requestAnimationFrame(gameLoop);
+    }
+  }, 1000);
+}
+function m3StartQteWave() {
+  const m3 = m3ensure();
+  m3.phase = 'guard_qte';
+  m3.qteWave += 1;
+  const greenW = Math.max(0.08, 0.24 - (m3.qteWave - 1) * 0.028);
+  m3.qte = {
+    arrow: 0,
+    dir: 1,
+    greenX: Math.random() * (1 - greenW),
+    greenW,
+    speed: 0.9 + m3.qteWave * 0.22,
+    time: Math.max(2.1, 5.0 - (m3.qteWave - 1) * 0.55),
+    resolved: false
+  };
+  m3showMsg(`Стражи держат героя! Волна ${m3.qteWave}/6 — нажмите C на зелёной зоне`, 2.5);
+}
+function m3ResolveQte(success, reason) {
+  const m3 = m3ensure();
+  if (!m3.qte || m3.qte.resolved) return;
+  m3.qte.resolved = true;
+  if (success) {
+    for (const g of m3.enemies.filter(e => e.type === 'guard')) m3damageEnemy(g, 500);
+    m3showMsg('Точно! Стражи получили -500 HP.', 1.8);
+    playLevelUpSound();
+  } else {
+    m3.perfect = false;
+    m3damagePlayer(2000, reason || 'Ошибка тайминга! -2000 HP');
+  }
+  m3.phase = 'guard_qte_break';
+  m3.timer = 2.0;
+}
+function m3FinishGuardQte() {
+  const m3 = m3ensure();
+  if (m3.perfect && battleState.player.hp > 0) {
+    for (const g of m3.enemies.filter(e => e.type === 'guard')) g.hp = 0;
+    m3showMsg('Идеальная серия! Стражи умирают сами.', 2.5);
+    setTimeout(() => { if (battleState.active) m3StartBlackDrops(); }, 1800);
+  } else {
+    m3StartGuardFight();
+  }
+}
+function m3StartGuardFight() {
+  const m3 = m3ensure();
+  m3.phase = 'guard_fight';
+  m3.enemies = [];
+  m3spawnEnemy('guard', 820, 326, 15000);
+  m3spawnEnemy('guard', 980, 326, 15000);
+  m3.bombTimer = 1.2;
+  m3.spikeTimer = 2.4;
+  m3.rainTimer = 5.0;
+  m3.lightningTimer = 10.0;
+  m3showMsg('Ошибка в испытании: теперь нужно сразиться со стражами!', 3.0);
+}
+function m3StartBlackDrops() {
+  const m3 = m3ensure();
+  m3.phase = 'black_drops';
+  m3.timer = 4.2;
+  m3.bullets = [];
+  const starts = [850, 950, 1050];
+  const targets = [220, 560, 890];
+  for (let i = 0; i < 3; i++) {
+    m3.bullets.push({ type: 'black_drop', x: starts[i], y: 340, vx: (targets[i] - starts[i]) / 135, vy: -4 - i, gravity: 0.12, r: 18, puddle: false });
+  }
+  m3showMsg('Из стражей вылетают 3 чёрные капли!', 2.5);
+}
+function m3StartRabbitDialogue() {
+  const m3 = m3ensure();
+  m3.phase = 'dialogue';
+  m3.enemies = [];
+  m3spawnEnemy('rabbit', 850, 330, 25000);
+  m3.dialogueIndex = 0;
+  m3.dialogueTimer = 0.2;
+  m3.dialogues = [
+    'Заяц с часами: зачем ты пришёл сюда?',
+    'Заяц с часами: разве так ты хочешь умереть?',
+    'Герой: почему я умру?',
+    'Заяц: я вижу будущее. Ты умрёшь от FOG.',
+    'Герой: я тебе не верю.',
+    'Заяц: лучше переждать в комнате веселья. Доверишься мне?'
+  ];
+}
+function m3RabbitChoice() {
+  m3showChoice('ДОВЕРИТЬСЯ ЛИ ЗАЙЦУ С ЧАСАМИ?', [
+    { label: 'ДОВЕРИТЬСЯ', className: 'bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl gaming-font text-[10px]', onClick: () => m3StartFunRoom() },
+    { label: 'НЕ ДОВЕРЯТЬ', className: 'bg-red-700 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-xl gaming-font text-[10px]', onClick: () => m3StartRabbitFight() }
+  ]);
+}
+function m3StartFunRoom() {
+  const m3 = m3ensure();
+  m3.phase = 'fun_room';
+  m3.timer = 15.0;
+  m3.poisonStarted = false;
+  m3.enemies = [];
+  m3showMsg('Заяц: располагайся и жди меня...', 3.0);
+}
+function m3StartRabbitFight() {
+  const m3 = m3ensure();
+  m3.phase = 'rabbit_fight';
+  m3.enemies = [];
+  const rabbit = m3spawnEnemy('rabbit', 880, 330, 25000);
+  m3.rabbit = rabbit;
+  m3.rabbitAttackTimer = 1.5;
+  m3.trapTimer = 3.0;
+  m3.shadowTimer = 10.0;
+  m3.shadowStacks = 0;
+  m3.slowZones = [];
+  m3.mirrors = [];
+  m3showMsg('Заяц: заберу твою душу и вернусь в прошлое!', 3.0);
+}
+function m3StartRabbitOrbs() {
+  const m3 = m3ensure();
+  m3.phase = 'rabbit_orbs';
+  m3.enemies = [];
+  m3.rabbit = m3spawnEnemy('rabbit', 880, 330, 4000);
+  m3.orbTimer = 0.6;
+  m3showMsg('Последний рывок зайца: электрические шары!', 2.8);
+}
+function m3AfterRabbitVictory() {
+  const m3 = m3ensure();
+  m3.afterRabbit = true;
+  m3.watchUnlocked = true;
+  m3.phase = 'skromnik_waves';
+  m3.waveIndex = 0;
+  m3.enemies = [];
+  if (!gameState.unlockedHeroes.includes('Drun')) {
+    // Друн как помощник будет выдан в самом конце, но карточку уже можно отрендерить после победы.
+    gameState.heroLevels.Drun = gameState.heroLevels.Drun || 1;
+  }
+  m3showMsg('Часы зайца разблокированы на этот бой! Нажимайте B для возврата на 2 секунды.', 4.0);
+  setTimeout(() => { if (battleState.active) m3SpawnSkromnikWave(); }, 2500);
+}
+function m3SpawnSkromnikWave() {
+  const m3 = m3ensure();
+  m3.enemies = [];
+  m3.waveIndex++;
+  if (m3.waveIndex === 1) {
+    m3spawnEnemy('skromnik', -80, 312, 7000); m3spawnEnemy('skromnik', V_WIDTH + 40, 312, 7000);
+    m3showMsg('Волна скромников: по одному слева и справа.', 2.2);
+  } else if (m3.waveIndex === 2) {
+    for (let i = 0; i < 2; i++) { m3spawnEnemy('skromnik', -120 - i*80, 312, 7000); m3spawnEnemy('skromnik', V_WIDTH + 50 + i*80, 312, 7000); }
+    m3showMsg('Волна скромников: по два с каждой стороны.', 2.2);
+  } else if (m3.waveIndex === 3) {
+    m3spawnEnemy('skromnik', 520, -140, 7000); m3spawnEnemy('skromnik', 640, -170, 7000);
+    m3showMsg('Два скромника падают сверху в центр!', 2.2);
+  } else {
+    m3StartSqueezer();
+  }
+}
+function m3StartSqueezer() {
+  const m3 = m3ensure();
+  m3.phase = 'squeezer';
+  m3.enemies = [];
+  m3.squeezer = m3spawnEnemy('squeezer', 900, 315, 13000);
+  m3.squeezeCharge = 0;
+  m3.squeezeTargeting = 0;
+  m3showMsg('Появился СЖИМАЮЩИЙ. Убегайте из радиуса, когда шкала уменьшается!', 4.0);
+}
+function m3StartRedCrosshairs() {
+  const m3 = m3ensure();
+  m3.phase = 'red_crosshairs';
+  m3.timer = 3.0;
+  m3.hazards = [];
+  for (let i = 0; i < 4; i++) {
+    m3.hazards.push({ type: 'crosshair', x: [120, 420, 760, 1040][i], y: 220 + Math.random()*200, timer: 2.4, r: 45 });
+  }
+  m3showMsg('THE FOG IS COMING', 3.0);
+}
+function m3StartFogBoss() {
+  const m3 = m3ensure();
+  m3.phase = 'fog_boss';
+  m3.enemies = [];
+  m3.fog = m3spawnEnemy('fog', 920, 290, 100000);
+  m3.fogStage = 1;
+  m3.attackCooldown = 2.0;
+  m3.attackMode = null;
+  m3.finalTimer = null;
+  battleState.player.x = 120;
+  m3showMsg('THE FOG не говорит ни слова. Бой начался!', 3.0);
+}
+function m3Complete() {
+  const m3 = m3ensure();
+  m3.phase = 'victory_anim';
+  m3.timer = 3.0;
+  m3showMsg('FOG: я обязательно убью тебя...', 3.0);
+  playExplosionSound();
+  setTimeout(() => {
+    if (!battleState.active) return;
+    m3showMsg('Друн: боже мой, я наконец-то тебя нашёл!', 2.5);
+    setTimeout(() => { if (battleState.active) endBattleSequence(true); }, 2300);
+  }, 2500);
+}
+function m3PlayerAttack() {
+  const m3 = m3ensure();
+  const p = battleState.player;
+  if (!p || p.attackCooldown > 0 || p.frozenTimer > 0) return;
+  if (m3.shadowStacks > 0 && m3.phase === 'rabbit_fight') {
+    showFloatingMessage('Тени внутри мешают атаковать! Смотрите на тени, чтобы они лопнули.');
+    return;
+  }
+  p.attackCooldown = 15;
+  playPunchSound();
+  let dmg = p.dmg || 100;
+  if (battleState.hyperActive) dmg *= 2;
+  const pc = m3playerCenter();
+  const tx = mouseX, ty = mouseY;
+  for (const z of m3.slowZones || []) {
+    if (m3lineCircleDistance(pc.x, pc.y, tx, ty, z.x, z.y) < z.r) {
+      dmg *= 0.4;
+      m3showMsg('Атака прошла через синюю область часов: скорость/урон снижены на 60%.', 1.5);
+    }
+  }
+  for (const mir of m3.mirrors || []) {
+    if (Math.abs(tx - mir.x) < 45 && ty > mir.y && ty < mir.y + mir.h) {
+      m3damagePlayer(dmg, 'Зеркало отразило вашу атаку обратно!');
+      return;
+    }
+  }
+  let best = null, bestD = Infinity;
+  for (const e of (m3.enemies || [])) {
+    if (e.hp <= 0 || e.type === 'shadow') continue;
+    const d = m3lineCircleDistance(pc.x, pc.y, tx, ty, e.x + e.w/2, e.y + e.h/2);
+    const direct = m3dist(tx, ty, e.x + e.w/2, e.y + e.h/2);
+    if ((d < 90 || direct < 130) && direct < bestD) { best = e; bestD = direct; }
+  }
+  if (best) {
+    if (best.type === 'rabbit' && Math.random() < 0.22) {
+      best.vy = -11;
+      m3showMsg('Заяц увидел прошлое и перепрыгнул удар!', 1.4);
+      return;
+    }
+    m3damageEnemy(best, Math.max(30, Math.floor(dmg)));
+  } else {
+    createSlamImpact(tx, ty, '#94a3b8');
+  }
+}
+function m3UpdateQte() {
+  const m3 = m3ensure(), q = m3.qte;
+  if (!q || q.resolved) return;
+  q.arrow += q.dir * q.speed * m3dt();
+  if (q.arrow >= 1) { q.arrow = 1; q.dir = -1; }
+  if (q.arrow <= 0) { q.arrow = 0; q.dir = 1; }
+  q.time -= m3dt();
+  if (q.time <= 0) m3ResolveQte(false, 'Вы не успели нажать C! -2000 HP');
+}
+function m3DrawQte() {
+  const m3 = m3ensure(), q = m3.qte;
+  if (!q) return;
+  const x = 250, y = 105, w = 700, h = 54;
+  ctx.save();
+  ctx.fillStyle = 'rgba(127,29,29,.95)';
+  ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = '#22c55e';
+  ctx.fillRect(x + q.greenX * w, y, q.greenW * w, h);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.strokeRect(x, y, w, h);
+  const ax = x + q.arrow * w;
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath();
+  ctx.moveTo(ax, y + h + 18); ctx.lineTo(ax - 16, y + h + 46); ctx.lineTo(ax + 16, y + h + 46); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 14px "Press Start 2P", monospace'; ctx.textAlign = 'center';
+  ctx.fillText(`C на зелёной зоне | ${q.time.toFixed(1)} сек`, V_WIDTH/2, y - 18);
+  ctx.restore();
+}
+function m3UpdateGuardIntro() {
+  const m3 = m3ensure();
+  m3.timer -= m3dt();
+  if (m3.timer <= 0 && !m3.guardsSpawned) {
+    m3.guardsSpawned = true;
+    const p = battleState.player;
+    m3spawnEnemy('guard', p.x - 115, 326, 15000);
+    m3spawnEnemy('guard', p.x + 110, 326, 15000);
+    p.frozenTimer = 999;
+    m3showMsg('Стражи схватили героя! Готовьтесь к таймингу на C.', 2.4);
+    setTimeout(() => { if (battleState.active) m3StartQteWave(); }, 1800);
+  }
+}
+function m3UpdateGuardFight() {
+  const m3 = m3ensure();
+  m3.bombTimer -= m3dt();
+  m3.spikeTimer -= m3dt();
+  m3.rainTimer -= m3dt();
+  m3.lightningTimer -= m3dt();
+  if (m3.bombTimer <= 0) {
+    m3.bombTimer = 2.2;
+    for (const g of m3.enemies.filter(e => e.type === 'guard' && e.hp > 0)) {
+      const pc = m3playerCenter();
+      const dir = pc.x < g.x ? -1 : 1;
+      m3.bullets.push({ type: 'bomb', x: g.x + g.w/2, y: g.y + 25, vx: dir * (4 + Math.random()*2), vy: -7 - Math.random()*4, gravity: 0.25, timer: 3.0, r: 16 });
+    }
+  }
+  if (m3.spikeTimer <= 0) {
+    m3.spikeTimer = 5.2;
+    const pc = m3playerCenter();
+    m3.hazards.push({ type: 'spike', x: m3clamp(pc.x - 70 + Math.random()*80, 20, V_WIDTH-160), w: 150, warn: 1.0, active: 2.0 });
+  }
+  if (m3.rainTimer <= 0) {
+    m3.rainTimer = 9.0;
+    m3.rainActive = 5.0;
+    m3showMsg('Начинается дождь из чёрных капель.', 2.2);
+  }
+  if ((m3.rainActive || 0) > 0) {
+    m3.rainActive -= m3dt();
+    if (Math.random() < 0.08) m3.bullets.push({ type:'rain', x: Math.random()*V_WIDTH, y:-20, vx:0, vy: 3.8, r:9 });
+  }
+  if (m3.lightningTimer <= 0) {
+    m3.lightningTimer = 12.0;
+    for (let i=0;i<4;i++) m3.hazards.push({ type:'lightning', x: Math.random()*V_WIDTH, warn: 0.8 + i*0.4, active: 0.18, done:false });
+  }
+  if (m3.enemies.filter(e => e.type === 'guard' && e.hp > 0).length === 0) m3StartBlackDrops();
+}
+function m3UpdateRabbitFight() {
+  const m3 = m3ensure();
+  const rabbit = m3.rabbit;
+  if (!rabbit || rabbit.hp <= 0) { m3StartRabbitOrbs(); return; }
+  const p = battleState.player, pc = m3playerCenter();
+  rabbit.timer += m3dt();
+  const dir = pc.x < rabbit.x + rabbit.w/2 ? -1 : 1;
+  rabbit.vx = dir * 2.2;
+  if (Math.abs(pc.x - (rabbit.x + rabbit.w/2)) < 240) rabbit.vx *= -0.6;
+  if (Math.random() < 0.02) rabbit.vy = -9;
+  rabbit.x = m3clamp(rabbit.x + rabbit.vx, 20, V_WIDTH - rabbit.w - 20);
+  rabbit.vy += 0.55; rabbit.y += rabbit.vy;
+  if (rabbit.y + rabbit.h >= 450) { rabbit.y = 450 - rabbit.h; rabbit.vy = 0; }
+  if (m3dist(pc.x, pc.y, rabbit.x+rabbit.w/2, rabbit.y+rabbit.h/2) < 76 && (m3.grabCooldown || 0) <= 0) {
+    m3.grabCooldown = 4.0;
+    p.frozenTimer = 3.0;
+    m3damagePlayer(2700, 'Заяц поднял героя в воздух и ударил об пол! -2700 HP');
+  }
+  if ((m3.grabCooldown || 0) > 0) m3.grabCooldown -= m3dt();
+  m3.rabbitAttackTimer -= m3dt();
+  if (m3.rabbitAttackTimer <= 0) {
+    m3.rabbitAttackTimer = 2.0 + Math.random()*1.6;
+    const pick = Math.random();
+    if (pick < 0.38) {
+      const angle = Math.atan2(pc.y-rabbit.y, pc.x-rabbit.x);
+      m3.bullets.push({ type:'watch', x:rabbit.x+rabbit.w/2, y:rabbit.y+40, vx: Math.cos(angle)*7, vy: Math.sin(angle)*4, r:18, timer: 0.9 });
+      m3showMsg('Заяц бросил часы: синяя зона замедляет атаки.', 1.8);
+    } else if (pick < 0.72) {
+      m3.mirrors.push({ x: rabbit.x + (dir < 0 ? -80 : rabbit.w + 25), y: 250, h: 180, timer: 4.0, vx: dir * 2.8 });
+      m3showMsg('Заяц кинул зеркало: снаряды отражаются!', 1.8);
+    } else {
+      const hist = rabbit.history || [];
+      const targetTime = performance.now() - 2000;
+      let snap = hist[0];
+      for (const h of hist) if (h.t <= targetTime) snap = h;
+      if (snap) { rabbit.x = snap.x; rabbit.y = snap.y; rabbit.hp = Math.max(rabbit.hp, snap.hp); rabbit.flash = 0.8; m3showMsg('Заяц вернулся в прошлое на 2 секунды — HP восстановилось!', 2.0); }
+    }
+  }
+  m3.trapTimer -= m3dt();
+  if (m3.trapTimer <= 0) {
+    m3.trapTimer = 6.5;
+    m3.hazards.push({ type:'trap', x: pc.x - 38, y: 424, w:76, h:24, timer:7.0 });
+  }
+  m3.shadowTimer -= m3dt();
+  if (m3.shadowTimer <= 0) {
+    m3.shadowTimer = 10.0;
+    m3spawnEnemy('shadow', p.x - 220, 354, 800); m3spawnEnemy('shadow', p.x + 220, 354, 800);
+    m3showMsg('Сзади появились две тени. Смотрите на них 7 секунд!', 2.4);
+  }
+}
+function m3UpdateRabbitOrbs() {
+  const m3 = m3ensure();
+  const rabbit = m3.rabbit;
+  if (!rabbit || rabbit.hp <= 0) { m3AfterRabbitVictory(); return; }
+  m3.orbTimer -= m3dt();
+  if (m3.orbTimer <= 0) {
+    m3.orbTimer = 0.55;
+    const count = 1 + Math.floor(Math.random()*3);
+    const pc = m3playerCenter();
+    for (let i = 0; i < count; i++) {
+      const angle = Math.atan2(pc.y - (rabbit.y+60), pc.x - (rabbit.x+40)) + (i-(count-1)/2)*0.16;
+      m3.bullets.push({ type:'electric', x:rabbit.x+45, y:rabbit.y+60, vx:Math.cos(angle)*9.5, vy:Math.sin(angle)*7.5, r:17, field:52 });
+    }
+  }
+}
+function m3UpdateSkromnikWaves() {
+  const m3 = m3ensure();
+  for (const e of m3.enemies.filter(e => e.hp > 0)) {
+    const pc = m3playerCenter();
+    const dir = pc.x < e.x + e.w/2 ? -1 : 1;
+    e.x += dir * 2.8;
+    e.vy += 0.7; e.y += e.vy;
+    if (e.y + e.h >= 450) { e.y = 450 - e.h; e.vy = 0; }
+    if (m3dist(pc.x, pc.y, e.x+e.w/2, e.y+e.h/2) < 75) { m3damagePlayer(1000, 'Скромник ударил героя! -1000 HP'); e.x -= dir*120; }
+  }
+  if (m3.enemies.filter(e => e.hp > 0).length === 0) setTimeout(() => { if (battleState.active && m3.phase === 'skromnik_waves') m3SpawnSkromnikWave(); }, 900);
+}
+function m3UpdateSqueezer() {
+  const m3 = m3ensure();
+  const e = m3.squeezer;
+  if (!e || e.hp <= 0) { m3StartRedCrosshairs(); return; }
+  const p = battleState.player, pc = m3playerCenter();
+  const ex = e.x + e.w/2, ey = e.y + e.h/2;
+  const d = Math.abs(pc.x - ex);
+  const dir = pc.x < ex ? -1 : 1;
+  e.x += dir * 1.6;
+  if (d < 220) {
+    m3.squeezeTargeting += m3dt();
+    if (Math.abs(p.vx) > 0.8 || !p.grounded) m3.squeezeTargeting = Math.max(0, m3.squeezeTargeting - m3dt()*0.8);
+    if (m3.squeezeTargeting > 1.2) m3.squeezeCharge += m3dt();
+    if (m3.squeezeCharge >= 5.0) m3damagePlayer(99999, 'Сжимающий завершил метку. Моментальная смерть!');
+  } else {
+    if (m3.squeezeCharge > 0) m3showMsg('Вы вырвались из радиуса сжатия!', 1.6);
+    m3.squeezeCharge = 0; m3.squeezeTargeting = 0;
+  }
+}
+function m3BeginFogAttack(kind) {
+  const m3 = m3ensure();
+  m3.attackMode = kind;
+  m3.attackTimer = 0;
+  if (kind === 'dash') {
+    const fog = m3.fog; fog.x = Math.random() < 0.5 ? -160 : V_WIDTH + 20; fog.dashDir = fog.x < 0 ? 1 : -1; fog.y = 320;
+    m3showMsg('FOG разгоняется для очень быстрого бега!', 1.4);
+  } else if (kind === 'buttons') {
+    m3showMsg('Нажмите 4 кнопки за 3 секунды!', 1.2); m3showButtonQTE();
+  } else if (kind === 'doors') {
+    const snd = document.getElementById('soundFogIsComing'); if (snd) { snd.currentTime = 0; snd.play().catch(()=>{}); }
+    m3showDoorChoice();
+  } else if (kind === 'pull') {
+    m3.pullTimer = 5.0; m3showMsg('FOG притягивает героя к себе!', 1.5);
+  } else if (kind === 'lasers') {
+    m3.laserCountdown = 5.0; m3.laserShots = 4; m3showMsg('THE FOG IS COMING: 5...', 1.2);
+  }
+}
+function m3UpdateFogBoss() {
+  const m3 = m3ensure();
+  const fog = m3.fog;
+  if (!fog || fog.hp <= 0) { m3Complete(); return; }
+  const p = battleState.player, pc = m3playerCenter();
+  if (m3.fogStage === 1 && fog.hp <= 50000) { m3.fogStage = 2; fog.y = 80; m3showMsg('Фаза 2: FOG поднимается в небо и стреляет лазерами!', 3.0); }
+  if (m3.fogStage === 2 && fog.hp <= 25000) { m3.fogStage = 3; fog.y = 290; m3showMsg('Фаза 3: FOG стал быстрее в 1.5 раза!', 3.0); }
+  if (m3.fogStage === 3 && fog.hp <= 10000 && m3.finalTimer == null) { m3.fogStage = 4; m3.finalTimer = 12.0; m3showMsg('Финал: убейте FOG за 12 секунд!', 3.0); }
+  if (m3.fogStage === 2) {
+    fog.x += Math.sin(performance.now()/300) * 6;
+    fog.y = 80 + Math.sin(performance.now()/450) * 45;
+    if (Math.random() < 0.04) {
+      const angle = Math.atan2(pc.y-(fog.y+80), pc.x-(fog.x+70));
+      for (let i=0;i<5;i++) m3.bullets.push({ type:'fog_laser', x:fog.x+70, y:fog.y+80, vx:Math.cos(angle+(i-2)*0.08)*9, vy:Math.sin(angle+(i-2)*0.08)*9, r:9 });
+    }
+    if (Math.random() < 0.006) { fog.dropX = pc.x; fog.dropTimer = 0.7; m3showMsg('FOG падает сверху! Убегайте!', 1.2); }
+    if (fog.dropTimer) {
+      fog.dropTimer -= m3dt();
+      ctx.fillStyle = 'rgba(239,68,68,.45)'; ctx.fillRect(fog.dropX-60, 0, 120, V_HEIGHT);
+      if (fog.dropTimer <= 0) {
+        if (Math.abs(pc.x - fog.dropX) < 80) m3damagePlayer(99999, 'FOG упал на героя. Мгновенная смерть!');
+        createSlamImpact(fog.dropX, 440, '#ef4444'); fog.dropTimer = null;
+      }
+    }
+  } else if (m3.fogStage === 4) {
+    m3.finalTimer -= m3dt();
+    if (m3.finalTimer <= 0) m3damagePlayer(99999, 'Вы не успели убить FOG. THE FOG IS COMING.');
+    if (Math.random() < 0.19) {
+      const angle = Math.atan2(pc.y-(fog.y+70), pc.x-(fog.x+70));
+      m3.bullets.push({ type:'electric', x:fog.x+70, y:fog.y+70, vx:Math.cos(angle)*15, vy:Math.sin(angle)*12, r:15, field:90 });
+    }
+  }
+  if ((m3.watchCooldown || 0) > 0) m3.watchCooldown -= m3dt();
+  if (!m3.attackMode && m3.fogStage !== 4) {
+    m3.attackCooldown -= m3dt();
+    if (m3.attackCooldown <= 0) {
+      const pool = m3.fogStage === 2 ? ['buttons','doors','lasers'] : ['dash','buttons','doors','pull','lasers'];
+      m3BeginFogAttack(pool[Math.floor(Math.random()*pool.length)]);
+      m3.attackCooldown = Math.max(1.0, (m3.fogStage === 3 ? 2.0 : 3.2) / (m3.fogStage === 3 ? 1.5 : 1));
+    }
+  }
+  if (m3.attackMode === 'dash') {
+    fog.x += fog.dashDir * (m3.fogStage === 3 ? 18 : 13);
+    if (m3rectHitPlayer({x:fog.x,y:fog.y,w:fog.w,h:fog.h})) m3damagePlayer(5000, 'FOG пронёсся через героя!');
+    if (fog.x < -220 || fog.x > V_WIDTH + 220) { m3.attackMode = null; fog.x = 930; }
+  } else if (m3.attackMode === 'buttons') {
+    m3.buttonQteTimer -= m3dt();
+    if (m3.buttonQteTimer <= 0 && m3.pendingButtons > 0) { m3hideOverlay(); m3damagePlayer(99999, 'Не нажаты все 4 кнопки. Смерть от FOG!'); }
+  } else if (m3.attackMode === 'doors') {
+    m3.doorTimer -= m3dt();
+    if (m3.doorTimer <= 0) {
+      m3hideOverlay();
+      if (!m3.doorChoice || m3.doorChoice === m3.attackedDoor) m3damagePlayer(99999, `FOG атаковал ${m3.attackedDoor === 'left' ? 'левую' : 'правую'} дверь!`);
+      else m3showMsg('Вы спрятались в другой двери и выжили.', 1.6);
+      m3.attackMode = null;
+    }
+  } else if (m3.attackMode === 'pull') {
+    m3.pullTimer -= m3dt();
+    p.x += (fog.x - p.x) * 0.035;
+    if (m3dist(pc.x, pc.y, fog.x+fog.w/2, fog.y+fog.h/2) < 95) m3damagePlayer(900*m3dt(), 'FOG обжигает при касании: -900/сек');
+    if (m3.pullTimer <= 0) { p.vx = pc.x < fog.x ? -25 : 25; p.frozenTimer = 4.0; m3damagePlayer(5000, 'FOG отбросил героя к краю! -5000 HP и стан.'); m3.attackMode = null; }
+  } else if (m3.attackMode === 'lasers') {
+    if (m3.laserCountdown > 0) {
+      m3.laserCountdown -= m3dt();
+      m3showMsg(`THE FOG IS COMING: ${Math.ceil(m3.laserCountdown)}`, 0.1);
+      if (m3.laserCountdown <= 0) m3.laserTick = 0.2;
+    } else {
+      m3.laserTick -= m3dt();
+      if (m3.laserTick <= 0 && m3.laserShots > 0) {
+        m3.laserTick = 0.45; m3.laserShots--;
+        for (let i=-1;i<=1;i++) {
+          const angle = Math.atan2(pc.y-(fog.y+80), pc.x-(fog.x+70)) + i*0.12;
+          m3.bullets.push({ type:'fog_laser', x:fog.x+70, y:fog.y+80, vx:Math.cos(angle)*12, vy:Math.sin(angle)*12, r:11 });
+        }
+      }
+      if (m3.laserShots <= 0) m3.attackMode = null;
+    }
+  }
+  if (Math.random() < 0.012) m3.hazards.push({ type:'trap', x:m3rand(120,1000), y:424, w:70, h:24, timer:5.0 });
+  if (Math.random() < 0.008) m3.hazards.push({ type:'spike', x:m3rand(100,1000), w:140, warn:0.8, active:1.5 });
+}
+function m3UpdateBullets() {
+  const m3 = m3ensure();
+  for (let i = m3.bullets.length - 1; i >= 0; i--) {
+    const b = m3.bullets[i];
+    b.x += b.vx || 0; b.y += b.vy || 0;
+    if (b.gravity) b.vy += b.gravity;
+    if (b.timer != null) b.timer -= m3dt();
+    if (b.type === 'bomb' && (b.timer <= 0 || b.y > 430)) {
+      createSlamImpact(b.x, b.y, '#f97316');
+      if (m3circleHitPlayer({x:b.x,y:b.y,r:70})) m3damagePlayer(1000, 'Бомба стража взорвалась! -1000 HP');
+      m3.bullets.splice(i,1); continue;
+    }
+    if (b.type === 'watch' && b.timer <= 0) {
+      m3.slowZones = m3.slowZones || [];
+      m3.slowZones.push({ x:b.x, y:b.y, r:115, timer:5.0 });
+      m3.bullets.splice(i,1); continue;
+    }
+    if (b.type === 'black_drop' && b.y > 430) {
+      m3.puddles.push({ x:b.x, y:440, rx:75, timer:3.0 });
+      m3.bullets.splice(i,1); continue;
+    }
+    if (b.type === 'rain' && m3circleHitPlayer(b)) { m3damagePlayer(350, 'Чёрная капля задела героя.'); m3.bullets.splice(i,1); continue; }
+    if (b.type === 'electric') {
+      if (m3circleHitPlayer({x:b.x,y:b.y,r:b.r})) { m3damagePlayer(4500, 'Прямое попадание электрического шара! -4500 HP'); m3.bullets.splice(i,1); continue; }
+      if (m3circleHitPlayer({x:b.x,y:b.y,r:b.field || 50})) m3damagePlayer(200*m3dt(), 'Электрическое поле: -200/сек');
+    }
+    if (b.type === 'fog_laser' && m3circleHitPlayer({x:b.x,y:b.y,r:22})) { m3damagePlayer(2000, 'Лазер FOG: -2000 HP'); m3.bullets.splice(i,1); continue; }
+    if (b.type === 'black_drop' && m3circleHitPlayer(b)) { m3.darkTimer = 20.0; m3damagePlayer(0, 'Чёрная капля коснулась героя: экран темнеет на 20 сек.'); m3.bullets.splice(i,1); continue; }
+    if (b.x < -120 || b.x > V_WIDTH + 120 || b.y > V_HEIGHT + 120 || b.y < -200) m3.bullets.splice(i,1);
+  }
+}
+function m3DrawBullets() {
+  const m3 = m3ensure();
+  for (const b of m3.bullets) {
+    ctx.save();
+    if (b.type === 'bomb') { ctx.fillStyle = '#111827'; ctx.strokeStyle = '#f97316'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill(); ctx.stroke(); ctx.fillStyle='#f97316'; ctx.font='bold 12px sans-serif'; ctx.fillText(Math.max(0,Math.ceil(b.timer)), b.x-4,b.y+4); }
+    else if (b.type === 'rain' || b.type === 'black_drop') { ctx.fillStyle = '#020617'; ctx.shadowColor='#000'; ctx.shadowBlur=12; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill(); }
+    else if (b.type === 'watch') { m3drawImage('m3_watch', b.x-22,b.y-22,44,44); }
+    else if (b.type === 'electric') { ctx.fillStyle='rgba(59,130,246,.15)'; ctx.strokeStyle='#60a5fa'; ctx.beginPath(); ctx.arc(b.x,b.y,b.field||50,0,Math.PI*2); ctx.fill(); ctx.stroke(); ctx.fillStyle='#93c5fd'; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill(); }
+    else if (b.type === 'fog_laser') { ctx.fillStyle='#ef4444'; ctx.shadowColor='#ef4444'; ctx.shadowBlur=15; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill(); }
+    ctx.restore();
+  }
+}
+function m3UpdateHazards() {
+  const m3 = m3ensure();
+  for (let i = m3.hazards.length - 1; i >= 0; i--) {
+    const h = m3.hazards[i];
+    if (h.type === 'spike') {
+      if (h.warn > 0) h.warn -= m3dt(); else h.active -= m3dt();
+      if (h.warn <= 0 && h.active > 0 && m3rectHitPlayer({x:h.x,y:420,w:h.w,h:35})) m3damagePlayer(300*m3dt(), 'Шипы режут героя!');
+      if (h.active <= 0) m3.hazards.splice(i,1);
+    } else if (h.type === 'lightning') {
+      if (h.warn > 0) h.warn -= m3dt(); else if (!h.done) { h.done = true; h.active = 0.18; if (Math.abs(m3playerCenter().x - h.x) < 70) { battleState.player.frozenTimer = 3.0; m3damagePlayer(1200, 'Молния заморозила героя на 3 сек!'); } }
+      else { h.active -= m3dt(); if (h.active <= 0) m3.hazards.splice(i,1); }
+    } else if (h.type === 'trap') {
+      h.timer -= m3dt();
+      if (m3rectHitPlayer(h)) { battleState.player.frozenTimer = 5.0; h.timer = 0; m3showMsg('Капкан! Герой не может двигаться 5 секунд.', 2.0); }
+      if (h.timer <= 0) m3.hazards.splice(i,1);
+    } else if (h.type === 'crosshair') {
+      h.timer -= m3dt();
+      if (h.timer <= 0) { if (m3circleHitPlayer({x:h.x,y:h.y,r:h.r})) m3damagePlayer(99999, 'Красный прицел попал в героя!'); m3.hazards.splice(i,1); }
+    }
+  }
+}
+function m3DrawHazards() {
+  const m3 = m3ensure();
+  for (const h of m3.hazards) {
+    ctx.save();
+    if (h.type === 'spike') {
+      if (h.warn > 0) { ctx.fillStyle='rgba(239,68,68,.55)'; ctx.fillRect(h.x,437,h.w,5); }
+      else { ctx.fillStyle='#9ca3af'; for(let x=0;x<h.w;x+=18){ ctx.beginPath(); ctx.moveTo(h.x+x,440); ctx.lineTo(h.x+x+9,410); ctx.lineTo(h.x+x+18,440); ctx.fill(); } }
+    } else if (h.type === 'lightning') {
+      ctx.strokeStyle = h.warn > 0 ? 'rgba(96,165,250,.45)' : '#60a5fa'; ctx.lineWidth = h.warn > 0 ? 3 : 10; ctx.beginPath(); ctx.moveTo(h.x,0); ctx.lineTo(h.x,450); ctx.stroke();
+    } else if (h.type === 'trap') { m3drawImage('trap_item', h.x, h.y-10, h.w, h.h+12); }
+    else if (h.type === 'crosshair') { ctx.strokeStyle='#ef4444'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(h.x,h.y,h.r,0,Math.PI*2); ctx.moveTo(h.x-h.r-15,h.y); ctx.lineTo(h.x+h.r+15,h.y); ctx.moveTo(h.x,h.y-h.r-15); ctx.lineTo(h.x,h.y+h.r+15); ctx.stroke(); }
+    ctx.restore();
+  }
+}
+function m3UpdateZonesAndPuddles() {
+  const m3 = m3ensure();
+  m3.slowZones = (m3.slowZones || []).filter(z => (z.timer -= m3dt()) > 0);
+  m3.mirrors = (m3.mirrors || []).filter(m => { m.timer -= m3dt(); m.x += m.vx || 0; return m.timer > 0; });
+  m3.puddles = (m3.puddles || []).filter(p => { p.timer -= m3dt(); if (Math.abs(m3playerCenter().x-p.x) < p.rx && battleState.player.y+battleState.player.height>420) m3damagePlayer(250*m3dt(), 'Чёрная лужа жжёт героя.'); return p.timer > 0; });
+}
+function m3DrawZonesAndPuddles() {
+  const m3 = m3ensure();
+  for (const z of m3.slowZones || []) { ctx.fillStyle='rgba(37,99,235,.22)'; ctx.strokeStyle='#60a5fa'; ctx.beginPath(); ctx.arc(z.x,z.y,z.r,0,Math.PI*2); ctx.fill(); ctx.stroke(); m3drawImage('m3_watch', z.x-24,z.y-24,48,48); }
+  for (const mir of m3.mirrors || []) { ctx.fillStyle='rgba(147,197,253,.35)'; ctx.strokeStyle='#bfdbfe'; ctx.lineWidth=3; ctx.fillRect(mir.x,mir.y,28,mir.h); ctx.strokeRect(mir.x,mir.y,28,mir.h); }
+  for (const p of m3.puddles || []) { ctx.fillStyle='rgba(0,0,0,.65)'; ctx.beginPath(); ctx.ellipse(p.x,p.y,p.rx,18,0,0,Math.PI*2); ctx.fill(); }
+}
+function m3UpdateShadows() {
+  const m3 = m3ensure();
+  const p = battleState.player;
+  for (const s of (m3.enemies || []).filter(e => e.type === 'shadow' && e.hp > 0)) {
+    const onLeft = s.x < p.x;
+    const looking = (onLeft && p.facingLeft) || (!onLeft && !p.facingLeft);
+    if (looking) { s.lookTimer = (s.lookTimer || 0) + m3dt(); s.vx = 0; if (s.lookTimer >= 7.0) { s.hp = 0; playExplosionSound(); m3showMsg('Тень лопнула от взгляда!', 1.5); } }
+    else { s.lookTimer = Math.max(0, (s.lookTimer || 0) - m3dt()); const dir = p.x < s.x ? -1 : 1; s.x += dir * (1.5 + (m3.shadowStacks || 0) * 0.5); }
+    if (m3rectHitPlayer({x:s.x,y:s.y,w:s.w,h:s.h})) { s.hp = 0; m3.shadowStacks = (m3.shadowStacks || 0) + 1; m3showMsg(`Тень залезла в героя! Стаков: ${m3.shadowStacks}`, 2.0); }
+  }
+  if ((m3.shadowStacks || 0) > 0 && m3.rabbit && m3.rabbit.hp > 0) {
+    p.x += Math.sign((m3.rabbit.x + m3.rabbit.w/2) - (p.x + p.width/2)) * (0.6 + m3.shadowStacks * 0.5);
+  }
+}
+function m3DrawStatusBars() {
+  const m3 = m3ensure();
+  if (m3.phase === 'squeezer' && m3.squeezeCharge > 0) {
+    const p = battleState.player;
+    ctx.fillStyle='rgba(0,0,0,.8)'; ctx.fillRect(p.x - 20, p.y - 28, 120, 12);
+    ctx.fillStyle='#ef4444'; ctx.fillRect(p.x - 20, p.y - 28, 120 * (1 - m3.squeezeCharge/5), 12);
+    ctx.strokeStyle='#fff'; ctx.strokeRect(p.x - 20, p.y - 28, 120, 12);
+  }
+  if (m3.watchUnlocked) {
+    ctx.fillStyle='rgba(15,23,42,.9)'; ctx.fillRect(18, 525, 360, 44); ctx.strokeStyle='#60a5fa'; ctx.strokeRect(18,525,360,44);
+    ctx.fillStyle='#bfdbfe'; ctx.font='bold 12px "Press Start 2P", monospace';
+    ctx.fillText(`B: часы зайца ${m3.watchCooldown > 0 ? '('+Math.ceil(m3.watchCooldown)+'с)' : 'ГОТОВО'}`, 32, 553);
+  }
+  if (m3.fogStage === 4 && m3.finalTimer != null) {
+    ctx.fillStyle='#ef4444'; ctx.font='bold 22px "Press Start 2P", monospace'; ctx.textAlign='center';
+    ctx.fillText(`УБЕЙ FOG: ${Math.ceil(m3.finalTimer)}s`, V_WIDTH/2, 190);
+  }
+}
+function m3Frame() {
+  if (!battleState.active) return;
+  const m3 = m3ensure();
+  ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
+  m3setBackground();
+  if (battleState.promptTimer > 0) battleState.promptTimer -= m3dt();
+  if (m3.watchCooldown > 0) m3.watchCooldown -= m3dt();
+  if (m3.darkTimer > 0) m3.darkTimer -= m3dt();
+  if (m3.phase === 'guard_intro') m3UpdateGuardIntro();
+  if (m3.phase === 'guard_qte') { m3UpdateQte(); battleState.player.frozenTimer = 999; }
+  if (m3.phase === 'guard_qte_break') { battleState.player.frozenTimer = 999; m3.timer -= m3dt(); if (m3.timer <= 0) { if (m3.qteWave < 6) m3StartQteWave(); else { battleState.player.frozenTimer = 0; m3FinishGuardQte(); } } }
+  if (m3.phase === 'guard_fight') m3UpdateGuardFight();
+  if (m3.phase === 'black_drops') { m3.timer -= m3dt(); if (m3.timer <= 0 && m3.bullets.length === 0) m3StartRabbitDialogue(); }
+  if (m3.phase === 'dialogue') {
+    m3.dialogueTimer -= m3dt();
+    if (m3.dialogueTimer <= 0) {
+      if (m3.dialogueIndex < m3.dialogues.length) { m3.speech = m3.dialogues[m3.dialogueIndex++]; m3.dialogueTimer = 3.0; playDialogueSound(); }
+      else { m3.speech = null; m3.phase = 'choice'; m3RabbitChoice(); }
+    }
+  }
+  if (m3.phase === 'fun_room') {
+    battleState.player.frozenTimer = 2.0;
+    m3.timer -= m3dt();
+    if (m3.timer <= 0) { m3.poisonStarted = true; battleState.player.x += Math.sin(performance.now()/160)*2.5; m3damagePlayer(900*m3dt(), 'Зелёный дым отравляет героя...'); }
+  }
+  if (m3.phase === 'rabbit_fight') m3UpdateRabbitFight();
+  if (m3.phase === 'rabbit_orbs') m3UpdateRabbitOrbs();
+  if (m3.phase === 'skromnik_waves') m3UpdateSkromnikWaves();
+  if (m3.phase === 'squeezer') m3UpdateSqueezer();
+  if (m3.phase === 'red_crosshairs') { m3.timer -= m3dt(); if (m3.timer <= 0 && m3.hazards.length === 0) { m3.phase = 'fog_button'; m3showFogButton(); } }
+  if (m3.phase === 'fog_boss') m3UpdateFogBoss();
+  m3UpdateBullets();
+  m3UpdateHazards();
+  m3UpdateZonesAndPuddles();
+  m3UpdateShadows();
+  const shouldLock = ['guard_qte','guard_qte_break','dialogue','choice','fog_button','victory_anim'].includes(m3.phase);
+  if (!shouldLock && battleState.player.hp > 0) battleState.player.update();
+  else battleState.player.draw();
+  m3DrawZonesAndPuddles();
+  m3DrawHazards();
+  for (const e of (m3.enemies || [])) m3DrawEnemy(e);
+  m3DrawBullets();
+  if (m3.phase === 'guard_qte') m3DrawQte();
+  m3DrawTextPanel();
+  for (let i = battleState.particles.length - 1; i >= 0; i--) { const p = battleState.particles[i]; p.update(); p.draw(); if (p.life <= 0) battleState.particles.splice(i,1); }
+  if (m3.darkTimer > 0) { ctx.fillStyle = `rgba(0,0,0,${m3.darkTimer > 1 ? 0.72 : m3.darkTimer * 0.72})`; ctx.fillRect(0,0,V_WIDTH,V_HEIGHT); }
+  if (m3.phase === 'fun_room' && m3.poisonStarted) { ctx.fillStyle='rgba(34,197,94,.28)'; ctx.fillRect(0,0,V_WIDTH,V_HEIGHT); ctx.fillStyle='#86efac'; ctx.font='bold 18px "Press Start 2P", monospace'; ctx.textAlign='center'; ctx.fillText('ЯДОВИТЫЙ ДЫМ КОМНАТЫ ВЕСЕЛЬЯ', V_WIDTH/2, 90); }
+  if (m3.phase === 'fog_boss' && m3.attackMode === 'lasers' && m3.laserCountdown > 0) { ctx.fillStyle='#ef4444'; ctx.font='bold 42px "Press Start 2P", monospace'; ctx.textAlign='center'; ctx.fillText(Math.ceil(m3.laserCountdown), V_WIDTH/2, 250); }
+  m3DrawStatusBars();
+  m3recordHistory();
+  m3updateHud();
+  requestAnimationFrame(gameLoop);
+}
+
+// UI unlocks and wrappers
+function m3UpdatePartButton() {
+  const modal = document.getElementById('murinoPartsModal');
+  if (!modal) return;
+  const buttons = [...modal.querySelectorAll('button')];
+  const part3Btn = buttons.find(b => b.textContent.includes('Часть 3'));
+  if (!part3Btn) return;
+  part3Btn.id = 'murinoPart3Btn';
+  part3Btn.onclick = () => selectMurinoPart('Murino_3', gameState.completedLocations.includes('Murino_2'));
+  const passed2 = gameState.completedLocations.includes('Murino_2');
+  part3Btn.className = passed2
+    ? 'h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-100'
+    : 'h-48 rounded-xl bg-slate-900 border-2 border-red-900/60 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-50';
+  const badge = part3Btn.querySelector('span');
+  const title = part3Btn.querySelector('h3');
+  const desc = part3Btn.querySelector('p');
+  if (badge) { badge.className = passed2 ? 'bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font' : 'bg-red-900 text-red-200 font-bold text-[8px] px-2 py-1 rounded w-max gaming-font'; badge.textContent = passed2 ? 'ДОСТУПНО' : 'ЗАКРЫТО'; }
+  if (title) { title.className = passed2 ? 'font-bold text-lg text-white' : 'font-bold text-lg text-red-700/80'; title.textContent = 'Часть 3: Туман'; }
+  if (desc) { desc.className = passed2 ? 'text-[10px] text-emerald-400' : 'text-[10px] text-gray-600'; desc.textContent = passed2 ? 'Стражи, Заяц, Сжимающий и THE FOG' : 'Пройдите Часть 2'; }
+}
+const m3OldOpenMurino = openMurinoSubparts;
+openMurinoSubparts = function() { m3OldOpenMurino(); setTimeout(m3UpdatePartButton, 0); };
+const m3OldSelectMurino = selectMurinoPart;
+selectMurinoPart = function(partName, isAllowed) {
+  if (partName === 'Murino_3') isAllowed = gameState.completedLocations.includes('Murino_2');
+  if (partName === 'Murino_3' && isAllowed) {
+    playSynthesizedSound(400, 0.15);
+    gameState.currentLocation = 'Murino_3';
+    document.getElementById('murinoPartsModal').classList.add('hidden');
+    backToMenu();
+    return;
+  }
+  if (partName === 'Murino_3' && !isAllowed) { playSynthesizedSound(150, 0.3, 'sawtooth'); showFloatingMessage('Пройдите Мурино Часть 2!'); return; }
+  m3OldSelectMurino(partName, isAllowed);
+};
+const m3OldUpdateLocationButtons = updateLocationButtons;
+updateLocationButtons = function() {
+  m3OldUpdateLocationButtons();
+  const locNames = { Army:'Армия (Старт)', Murino_1:'Мурино - Улица', Murino_2:'Мурино - Дом и Подвал', Murino_3:'Мурино - Туман' };
+  if (gameState.currentLocation === 'Murino_3') {
+    document.getElementById('selectedLocDisplay').innerText = locNames.Murino_3;
+    document.getElementById('locationBtnLabel').innerText = 'ВЫБРАТЬ ЛОКАЦИЮ (МУРИНО - ТУМАН)';
+  }
+  m3UpdatePartButton();
+};
+const m3OldStartFight = startFight;
+startFight = function() { if (gameState.currentLocation === 'Murino_3') m3StartFight(); else m3OldStartFight(); };
+const m3OldGameLoop = gameLoop;
+gameLoop = function() { if (!battleState.active) return; if (gameState.currentLocation === 'Murino_3') { m3Frame(); return; } m3OldGameLoop(); };
+const m3OldAttack = executeNormalAttack;
+executeNormalAttack = function() { if (battleState.active && gameState.currentLocation === 'Murino_3') { m3PlayerAttack(); return; } m3OldAttack(); };
+const m3OldEndBattle = endBattleSequence;
+endBattleSequence = function(isWin) {
+  if (gameState.currentLocation === 'Murino_3') {
+    battleState.active = false;
+    m3hideOverlay();
+    document.getElementById('horrorVhsOverlay').classList.add('hidden');
+    const fogMusic = document.getElementById('soundFogIsComing'); if (fogMusic) { fogMusic.loop = false; fogMusic.pause(); }
+    if (isWin) {
+      gameState.points += 35000;
+      gameState.coins += 40000;
+      gameState.heroLevels.Drun = gameState.heroLevels.Drun || 1;
+      if (!gameState.unlockedHeroes.includes('Drun')) gameState.unlockedHeroes.push('Drun');
+      if (!gameState.completedLocations.includes('Murino_3')) gameState.completedLocations.push('Murino_3');
+      document.getElementById('rewardCoinsText').innerText = '+40000';
+      document.getElementById('rewardPointsText').innerText = '+35000';
+      playLevelUpSound();
+      document.getElementById('victoryOverlay').classList.remove('hidden');
+    } else {
+      playSynthesizedSound(120, 0.5, 'sawtooth');
+      document.getElementById('defeatTextReason').innerText = 'THE FOG IS COMING. Попробуйте снова, прокачайте героя и используйте часы зайца в нужный момент.';
+      document.getElementById('defeatOverlay').classList.remove('hidden');
+    }
+    updateUI();
+    return;
+  }
+  m3OldEndBattle(isWin);
+};
+const m3OldExitBattle = exitBattle;
+exitBattle = function(isWin) { const fogMusic = document.getElementById('soundFogIsComing'); if (fogMusic) { fogMusic.loop = false; fogMusic.pause(); } m3OldExitBattle(isWin); };
+const m3OldPlayMusic = playCurrentStageMusic;
+playCurrentStageMusic = function() {
+  const fogMusic = document.getElementById('soundFogIsComing');
+  if (gameState.currentLocation === 'Murino_3' && battleState.active && isMusicPlaying && fogMusic) {
+    fogMusic.loop = true; fogMusic.volume = 0.55; fogMusic.play().catch(()=>{}); return;
+  }
+  if (fogMusic && (!battleState.active || gameState.currentLocation !== 'Murino_3')) { fogMusic.loop = false; fogMusic.pause(); }
+  m3OldPlayMusic();
+};
+window.addEventListener('keydown', (e) => {
+  if (!battleState.active || gameState.currentLocation !== 'Murino_3') return;
+  const m3 = m3ensure();
+  if (e.code === 'KeyC' && m3.phase === 'guard_qte' && m3.qte && !m3.qte.resolved) {
+    const a = m3.qte.arrow;
+    const ok = a >= m3.qte.greenX && a <= m3.qte.greenX + m3.qte.greenW;
+    m3ResolveQte(ok, 'Вы нажали C на красной части! -2000 HP');
+  }
+  if (e.code === 'KeyB') m3useWatch();
+});
+setTimeout(() => { m3UpdatePartButton(); updateUI(); }, 0);
+})();
+
 </script>
 
 <script type="module">
