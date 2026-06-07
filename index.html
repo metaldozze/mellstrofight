@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MellstroFight - Мурино и Новая Эра</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ctext y=%2724%27 font-size=%2724%27%3E%F0%9F%91%8A%3C/text%3E%3C/svg%3E">
 <!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
 <!-- Google Fonts: Inter & Press Start 2P -->
@@ -108,7 +109,7 @@ CREDITS
 <div id="splashAuthStatus" class="text-[10px] text-gray-500 mt-2 min-h-[18px]">Войдите, чтобы начать игру</div>
 </div>
 </div>
-<div class="absolute bottom-4 text-xs text-gray-600">v3.9.0 - Мурино 3: THE FOG + сохранение аккаунта</div>
+<div class="absolute bottom-4 text-xs text-gray-600">v3.9.3 - FIX: Мурино 3 открывается после Мурино 2</div>
 </div>
 <!-- Окно Credits -->
 <div id="creditsModal" class="hidden absolute inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
@@ -314,7 +315,7 @@ CREDITS
 <div class="grid grid-cols-3 gap-6 my-auto max-w-4xl mx-auto w-full">
 <!-- Часть 1: Улица -->
 <button onclick="selectMurinoPart('Murino_1', true)" class="h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group">
-<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://static.wikia.nocookie.net/fantasticbeings/images/1/13/IMG_9765.JPG/revision/latest/scale-to-width-down/536?cb=20170913095609&path-prefix=ru')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://i.ibb.co/n8fXG6c3/scromnik.png')"></div>
 <div class="absolute inset-0 bg-slate-950/50"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span class="bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ДОСТУПНО</span>
@@ -337,7 +338,7 @@ CREDITS
 </div>
 </button>
 <!-- Часть 3: Туман (FOG) -->
-<button id="murinoPart3Btn" onclick="selectMurinoPart('Murino_3', gameState.completedLocations.includes('Murino_2'))" class="h-48 rounded-xl bg-slate-900 border-2 border-red-900/60 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-50">
+<button id="murinoPart3Btn" onclick="selectMurinoPart('Murino_3', Array.isArray(gameState.completedLocations) && gameState.completedLocations.includes('Murino_2'))" class="h-48 rounded-xl bg-slate-900 border-2 border-red-900/60 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-50">
 <div class="absolute inset-0 bg-cover bg-center opacity-10 filter blur-[1px]" style="background-image: url('https://cs6.pikabu.ru/video/2017/09/01/4/og_og_1504239048317731297.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/90"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
@@ -907,6 +908,7 @@ Q: null,
 R: null
 }
 };
+window.gameState = gameState;
 function ensureGameStateShape() {
 if (!gameState.heroLevels) gameState.heroLevels = {};
 if (!Array.isArray(gameState.unlockedHeroes)) gameState.unlockedHeroes = ['Mell'];
@@ -922,6 +924,7 @@ if (!gameState.selectedHero) gameState.selectedHero = 'Mell';
 }
 function saveGameState() {
 ensureGameStateShape();
+window.gameState = gameState;
 localStorage.setItem('MellstroFight_v3_state_h', JSON.stringify(gameState));
 if (typeof window.queueMellstroCloudSave === 'function') {
 window.queueMellstroCloudSave(JSON.parse(JSON.stringify(gameState)));
@@ -937,6 +940,7 @@ console.error(e);
 }
 }
 ensureGameStateShape();
+window.gameState = gameState;
 updateUI();
 }
 window.getMellstroGameState = function() {
@@ -947,6 +951,7 @@ window.applyMellstroCloudProgress = function(progress) {
 if (!progress || typeof progress !== 'object') return;
 gameState = Object.assign({}, gameState, progress);
 ensureGameStateShape();
+window.gameState = gameState;
 updateUI();
 renderHeroesScreen();
 };
@@ -1015,7 +1020,7 @@ const locBtnBg = document.getElementById('locationBtnBg');
 const locBtnLabel = document.getElementById('locationBtnLabel');
 if (gameState.currentLocation.startsWith('Murino')) {
 locBtnBg.style.backgroundImage = "url('https://avatars.mds.yandex.net/i?id=368eca4c07965278b14cd8e894bac250_l-5642274-images-thumbs&n=13')";
-locBtnLabel.innerText = `ВЫБРАТЬ ЛОКАЦИЮ (${locNames[gameState.currentLocation].toUpperCase()})`;
+locBtnLabel.innerText = `ВЫБРАТЬ ЛОКАЦИЮ (${(locNames[gameState.currentLocation] || gameState.currentLocation || 'ЛОКАЦИЯ').toUpperCase()})`;
 } else {
 locBtnBg.style.backgroundImage = "url('https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg')";
 locBtnLabel.innerText = "ВЫБРАТЬ ЛОКАЦИЮ (АРМИЯ)";
@@ -4123,9 +4128,11 @@ introOverlay.classList.remove('opacity-0', 'pointer-events-none');
 const locNames = {
 Army: 'Армия (Старт)',
 Murino_1: 'Мурино - Улица',
-Murino_2: 'Мурино - Дом и Подвал'
+Murino_2: 'Мурино - Дом и Подвал',
+Murino_3: 'Мурино - Туман'
 };
-document.getElementById('introLocName').innerText = locNames[gameState.currentLocation].toUpperCase();
+const introLocationName = locNames[gameState.currentLocation] || gameState.currentLocation || 'Локация';
+document.getElementById('introLocName').innerText = introLocationName.toUpperCase();
 document.getElementById('battleStatusMsg').innerText = "ПОДГОТОВКА";
 document.getElementById('toxicFloorOverlay').classList.add('hidden');
 let count = 3;
@@ -4536,14 +4543,14 @@ playCurrentStageMusic();
 }
 window.onload = function() {
 loadGameState();
-}
+};
 
 /* =========================================================
    ОБНОВЛЕНИЕ: МУРИНО — ЧАСТЬ 3: THE FOG
    Добавлено как отдельный режим поверх существующего canvas-движка,
    чтобы не ломать Армию, Мурино 1 и Мурино 2.
    ========================================================= */
-(function installMurino3Update(){
+;(function installMurino3Update(){
 const M3_ASSETS = {
 Murino3StreetBg: 'https://img.magnific.com/free-photo/abandoned-alley-psychiatric-hospital_1150-18954.jpg?semt=ais_hybrid&w=740&q=80',
 Murino3PostRabbitBg: 'https://i.ibb.co/kV3R2Sgn/file.jpg',
@@ -5563,7 +5570,7 @@ function m3Frame() {
 // UI unlocks and wrappers
 function m3UpdatePartButton() {
   const modal = document.getElementById('murinoPartsModal');
-  if (!modal || !window.gameState) return;
+  if (!modal || typeof gameState === 'undefined') return;
 
   const passed2 = Array.isArray(gameState.completedLocations) && gameState.completedLocations.includes('Murino_2');
   const part3Btn = document.getElementById('murinoPart3Btn') || [...modal.querySelectorAll('button')].find(b => b.textContent.includes('Часть 3'));
