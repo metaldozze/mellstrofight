@@ -74,12 +74,12 @@ z-index: 25;
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%2303050a%22/%3E%3Ctext x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22%23ef4444%22%3EM%3C/text%3E%3C/svg%3E">
 </head>
 <body class="w-screen h-screen flex items-center justify-center relative select-none">
-<audio id="bgMusicMenu" loop src="../mellstrofight./mellstrofight/assets/audio/главное_меню.mp3"></audio>
-<audio id="bgMusicArmy" loop src="../mellstrofight./mellstrofight/assets/audio/армия.mp3"></audio>
-<audio id="bgMusicMurino1" loop src="../mellstrofight./mellstrofight/assets/audio/мурино1.mp3"></audio>
-<audio id="bgMusicMurino2" loop src="../mellstrofight./mellstrofight/assets/audio/мурино2.mp3"></audio>
-<audio id="soundScaryMurino" src="../mellstrofight../mellstrofight./mellstrofight/assets/audio/fog.mp3"></audio>
-<audio id="soundFogIsComing" src="../mellstrofight../mellstrofight./mellstrofight/assets/audio/fog.mp3"></audio>
+<audio id="bgMusicMenu" loop src="../mellstrofight/mellstrofight/assets/audio/главное_меню.mp3"></audio>
+<audio id="bgMusicArmy" loop src="../mellstrofight/mellstrofight/assets/audio/армия.mp3"></audio>
+<audio id="bgMusicMurino1" loop src="../mellstrofight/mellstrofight/assets/audio/мурино1.mp3"></audio>
+<audio id="bgMusicMurino2" loop src="../mellstrofight/mellstrofight/assets/audio/мурино2.mp3"></audio>
+<audio id="soundScaryMurino" src="../mellstrofight../mellstrofight/mellstrofight/assets/audio/fog.mp3"></audio>
+<audio id="soundFogIsComing" src="../mellstrofight../mellstrofight/mellstrofight/assets/audio/fog.mp3"></audio>
 <div class="absolute top-4 right-4 z-50 flex gap-2">
 <button id="musicToggleBtn" onclick="toggleMusic()" class="bg-slate-900/90 hover:bg-slate-800 text-white p-3 rounded-full border border-slate-700 transition shadow-lg flex items-center justify-center w-12 h-12">
 <i id="musicIcon" class="fas fa-music text-red-500"></i>
@@ -185,7 +185,7 @@ CREDITS
 </div>
 <!-- Картинка героя -->
 <div class="w-44 h-44 rounded-full overflow-hidden border-4 border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.4)] my-6 relative bg-slate-800 flex items-center justify-center">
-<img id="selectedHeroImg" src="../mellstrofight./mellstrofight/assets/images/мелл.jpg" alt="Mell" class="w-full h-full object-cover">
+<img id="selectedHeroImg" src="../mellstrofight/mellstrofight/assets/images/мелл.jpg" alt="Mell" class="w-full h-full object-cover">
 </div>
 <div id="heroSpecialsLabel" class="text-xs text-gray-400 text-center px-4">
 Супер-способность: <span class="text-red-500 font-bold">Прыжок Смерти (X)</span> - разблокируется на 9 ур.
@@ -206,7 +206,7 @@ CREDITS
 <!-- Выбор локации -->
 <div class="w-full">
 <button onclick="openLocationSelect()" class="w-full h-16 rounded-xl overflow-hidden relative group border-2 border-slate-700 hover:border-red-500 transition">
-<div id="locationBtnBg" class="absolute inset-0 bg-cover bg-center filter grayscale opacity-40 contrast-125" style="background-image: url('../mellstrofight./mellstrofight/assets/images/армия.jpg')"></div>
+<div id="locationBtnBg" class="absolute inset-0 bg-cover bg-center filter grayscale opacity-40 contrast-125" style="background-image: url('../mellstrofight/mellstrofight/assets/images/армия.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/70 group-hover:bg-red-950/40 transition"></div>
 <div class="absolute inset-0 flex items-center justify-center gap-3">
 <i class="fas fa-map-marked-alt text-xl text-red-500"></i>
@@ -226,7 +226,7 @@ CREDITS
 <!-- Сетка локаций -->
 <div class="grid grid-cols-4 gap-4 my-auto">
 <button onclick="selectLocation('Army', 0, true)" class="h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group">
-<div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('../mellstrofight./mellstrofight/assets/images/армия.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('../mellstrofight/mellstrofight/assets/images/армия.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/50"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span class="bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">СТАРТОВАЯ</span>
@@ -237,7 +237,7 @@ CREDITS
 </div>
 </button>
 <button id="locMurinoBtn" onclick="openMurinoSubparts()" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-60">
-<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('../mellstrofight./mellstrofight/assets/images/мурино1.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('../mellstrofight/mellstrofight/assets/images/мурино1.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/85"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span id="locMurinoBadge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font"><i class="fas fa-lock mr-1"></i> ЗАКРЫТО</span>
@@ -248,7 +248,7 @@ CREDITS
 </div>
 </button>
 <button id="locMolochnoeBtn" onclick="selectLocation('Molochnoe', 0, false)" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-60">
-<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('../mellstrofight./mellstrofight/assets/images/мелл.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('../mellstrofight/mellstrofight/assets/images/мелл.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/85"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span id="locMolochnoeBadge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font"><i class="fas fa-lock mr-1"></i> ЗАКРЫТО</span>
@@ -259,7 +259,7 @@ CREDITS
 </div>
 </button>
 <button id="locMytishchiBtn" onclick="selectLocation('Mytishchi', 0, false)" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-60">
-<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('../mellstrofight./mellstrofight/assets/images/мелл.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('../mellstrofight/mellstrofight/assets/images/мелл.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/85"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span id="locMytishchiBadge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font"><i class="fas fa-lock mr-1"></i> ЗАКРЫТО</span>
@@ -285,7 +285,7 @@ CREDITS
 <div class="grid grid-cols-3 gap-6 my-auto max-w-4xl mx-auto w-full">
 <!-- Часть 1: Улица -->
 <button onclick="selectMurinoPart('Murino_1', true)" class="h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group">
-<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('../mellstrofight./mellstrofight/assets/images/мурино1.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('../mellstrofight/mellstrofight/assets/images/мурино1.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/50"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span class="bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ДОСТУПНО</span>
@@ -297,7 +297,7 @@ CREDITS
 </button>
 <!-- Часть 2: Дом и Подвал -->
 <button id="murinoPart2Btn" onclick="selectMurinoPart('Murino_2', false)" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-50">
-<div class="absolute inset-0 bg-cover bg-center opacity-15" style="background-image: url('../mellstrofight./mellstrofight/assets/images/мурино2.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-15" style="background-image: url('../mellstrofight/mellstrofight/assets/images/мурино2.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/85"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span id="murinoPart2Badge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ЗАКРЫТО</span>
@@ -309,7 +309,7 @@ CREDITS
 </button>
 <!-- Часть 3: Туман (FOG) - Заблокировано -->
 <button onclick="showFloatingMessage('Локация временно закрыта согласно сюжету!')" class="h-48 rounded-xl bg-slate-900 border-2 border-red-900/60 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-30 cursor-not-allowed">
-<div class="absolute inset-0 bg-cover bg-center opacity-5 filter blur-[1px]" style="background-image: url('../mellstrofight./mellstrofight/assets/images/подвал.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-5 filter blur-[1px]" style="background-image: url('../mellstrofight/mellstrofight/assets/images/подвал.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/90"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span class="bg-red-900 text-red-200 font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ЗАБЛОКИРОВАНО</span>
@@ -714,7 +714,7 @@ Mell: {
 id: "Mell",
 name: "Mell",
 rarity: "Стартовый",
-img: "../mellstrofight./mellstrofight/assets/images/мелл.jpg",
+img: "../mellstrofight/mellstrofight/assets/images/мелл.jpg",
 baseHp: 1500,
 hpPerLevel: 150,
 baseDmg: 100,
@@ -727,7 +727,7 @@ Pucheglaz: {
 id: "Pucheglaz",
 name: "Пучеглазость",
 rarity: "Обычный",
-img: "../mellstrofight./mellstrofight/assets/images/пучеглазость.jpg",
+img: "../mellstrofight/mellstrofight/assets/images/пучеглазость.jpg",
 baseHp: 1500,
 hpPerLevel: 100,
 baseDmg: 90,  
@@ -740,7 +740,7 @@ Smena2: {
 id: "Smena2",
 name: "2 смена",
 rarity: "Обычный",
-img: "../mellstrofight./mellstrofight/assets/images/2 смена.jpg",
+img: "../mellstrofight/mellstrofight/assets/images/2 смена.jpg",
 baseHp: 1400,
 hpPerLevel: 90,
 baseDmg: 100,
@@ -753,7 +753,7 @@ Otstalost: {
 id: "Otstalost",
 name: "Отсталость",
 rarity: "Редкий",
-img: "../mellstrofight./mellstrofight/assets/images/отсталость.jpg",
+img: "../mellstrofight/mellstrofight/assets/images/отсталость.jpg",
 baseHp: 1700,
 hpPerLevel: 50,
 baseDmg: 40,
@@ -766,7 +766,7 @@ Pyramid: {
 id: "Pyramid",
 name: "Пирамида красности",
 rarity: "Редкий",
-img: "../mellstrofight./mellstrofight/assets/images/пирамида красности.jpg",
+img: "../mellstrofight/mellstrofight/assets/images/пирамида красности.jpg",
 baseHp: 1300,
 hpPerLevel: 100,
 baseDmg: 170,
@@ -779,7 +779,7 @@ Puglivost: {
 id: "Puglivost",
 name: "Пугливость",
 rarity: "Редкий",
-img: "../mellstrofight./mellstrofight/assets/images/страшность.jpg",
+img: "../mellstrofight/mellstrofight/assets/images/страшность.jpg",
 baseHp: 1000,
 hpPerLevel: 60,
 baseDmg: 80,
@@ -792,7 +792,7 @@ Soplya: {
 id: "Soplya",
 name: "Сопля",
 rarity: "Мифический",
-img: "../mellstrofight./mellstrofight/assets/images/сопля.jpg",
+img: "../mellstrofight/mellstrofight/assets/images/сопля.jpg",
 baseHp: 900,
 hpPerLevel: 100,
 baseDmg: 200,
@@ -805,7 +805,7 @@ Oglushaemost: {
 id: "Oglushaemost",
 name: "Оглушаемость",
 rarity: "Мифический",
-img: "../mellstrofight./mellstrofight/assets/images/оглушаемость.jpg",
+img: "../mellstrofight/mellstrofight/assets/images/оглушаемость.jpg",
 baseHp: 1300,
 hpPerLevel: 100,
 baseDmg: 10,
@@ -818,7 +818,7 @@ Syr: {
 id: "Syr",
 name: "Сыр",
 rarity: "Особый",
-img: "../mellstrofight./mellstrofight/assets/images/сыр.jpg",
+img: "../mellstrofight/mellstrofight/assets/images/сыр.jpg",
 baseHp: 800,
 hpPerLevel: 300,
 baseDmg: 500,
@@ -831,7 +831,7 @@ Omaygad: {
 id: "Omaygad",
 name: "Омайгад",
 rarity: "Особый",
-img: "../mellstrofight./mellstrofight/assets/images/омайгад.jpg",
+img: "../mellstrofight/mellstrofight/assets/images/омайгад.jpg",
 baseHp: 1600,
 hpPerLevel: 120,
 baseDmg: 120,
@@ -902,7 +902,7 @@ if (activeHeroNameElem) {
   }
 }
 document.getElementById('selectedHeroNameLabel').innerText = hero.name;
-document.getElementById('selectedHeroImg').src = hero.img || "../mellstrofight./mellstrofight/assets/images/мелл.jpg";
+document.getElementById('selectedHeroImg').src = hero.img || "../mellstrofight/mellstrofight/assets/images/мелл.jpg";
 const curDmg = hero.baseDmg + (lv - 1) * hero.dmgPerLevel;
 document.getElementById('heroPowerTitle').innerText = `СИЛА: ${hero.rarity.toUpperCase()} (УРОВЕНЬ ${lv}) - Сила: ${curDmg}`;
 if (lv >= 9) {
@@ -920,10 +920,10 @@ document.getElementById('selectedLocDisplay').innerText = locNames[gameState.cur
 const locBtnBg = document.getElementById('locationBtnBg');
 const locBtnLabel = document.getElementById('locationBtnLabel');
 if (gameState.currentLocation.startsWith('Murino')) {
-locBtnBg.style.backgroundImage = "url('../mellstrofight./mellstrofight/assets/images/мурино1.jpg')";
+locBtnBg.style.backgroundImage = "url('../mellstrofight/mellstrofight/assets/images/мурино1.jpg')";
 locBtnLabel.innerText = `ВЫБРАТЬ ЛОКАЦИЮ (${locNames[gameState.currentLocation].toUpperCase()})`;
 } else {
-locBtnBg.style.backgroundImage = "url('../mellstrofight./mellstrofight/assets/images/армия.jpg')";
+locBtnBg.style.backgroundImage = "url('../mellstrofight/mellstrofight/assets/images/армия.jpg')";
 locBtnLabel.innerText = "ВЫБРАТЬ ЛОКАЦИЮ (АРМИЯ)";
 }
 const buyHyperBtn = document.getElementById('buyHyperBtn');
@@ -1022,7 +1022,7 @@ const imgDiv = document.createElement('div');
 imgDiv.className = "w-14 h-14 rounded-full overflow-hidden border border-slate-700 bg-slate-800 relative flex items-center justify-center";
 if (isUnlocked) {
 const img = document.createElement('img');
-img.src = hero.img || "../mellstrofight./mellstrofight/assets/images/мелл.jpg";
+img.src = hero.img || "../mellstrofight/mellstrofight/assets/images/мелл.jpg";
 img.className = "w-full h-full object-cover";
 imgDiv.appendChild(img);
 } else {
@@ -1362,36 +1362,36 @@ const V_HEIGHT = 600;
 let canvasScaleX = 1;
 let canvasScaleY = 1;
 const imgPreload = {
-Mell: "../mellstrofight./mellstrofight/assets/images/мелл.jpg",
-Pucheglaz: "../mellstrofight./mellstrofight/assets/images/пучеглазость.jpg",
-Smena2: "../mellstrofight./mellstrofight/assets/images/2 смена.jpg",
-Otstalost: "../mellstrofight./mellstrofight/assets/images/отсталость.jpg",
-Pyramid: "../mellstrofight./mellstrofight/assets/images/пирамида красности.jpg",
-Puglivost: "../mellstrofight./mellstrofight/assets/images/страшность.jpg",
-Soplya: "../mellstrofight./mellstrofight/assets/images/сопля.jpg",
-Oglushaemost: "../mellstrofight./mellstrofight/assets/images/оглушаемость.jpg",
-Syr: "../mellstrofight./mellstrofight/assets/images/сыр.jpg",
-Omaygad: "../mellstrofight./mellstrofight/assets/images/омайгад.jpg",
-vodka: "../mellstrofight./mellstrofight/assets/images/пузырь.png",
-ArmyBg: "../mellstrofight./mellstrofight/assets/images/армия.jpg",
-Murino1Bg: "../mellstrofight./mellstrofight/assets/images/мурино1.jpg",
-Murino2Bg: "../mellstrofight./mellstrofight/assets/images/мурино2.jpg",
-Murino3Bg: "../mellstrofight./mellstrofight/assets/images/подвал.jpg",
-helper: "../mellstrofight./mellstrofight/assets/images/военные.png",
-commander: "../mellstrofight./mellstrofight/assets/images/начальник.png",
-general: "../mellstrofight./mellstrofight/assets/images/генерал.png",
-skromnik: "../mellstrofight./mellstrofight/assets/images/скромник.png",
-mimic_true: "../mellstrofight./mellstrofight/assets/images/скромник.png",
-fog_creature: "../mellstrofight./mellstrofight/assets/images/тень.png",
-drun: "../mellstrofight./mellstrofight/assets/images/друн.jpg",
-corridor_monster: "../mellstrofight./mellstrofight/assets/images/прыгающий монстр.jpe",
-skrut: "../mellstrofight./mellstrofight/assets/images/скромник.png",
-red_beast: "../mellstrofight./mellstrofight/assets/images/прыгающий монстр.jpe",
-spring_monster: "../mellstrofight./mellstrofight/assets/images/прыгающий монстр.jpe",
-shadow_creature: "../mellstrofight./mellstrofight/assets/images/тень.png",
-trap_item: "../mellstrofight./mellstrofight/assets/images/капкан.png",
-flashlight_item: "../mellstrofight./mellstrofight/assets/images/капкан.png",
-knife_asset: "../mellstrofight./mellstrofight/assets/images/военные.png"
+Mell: "../mellstrofight/mellstrofight/assets/images/мелл.jpg",
+Pucheglaz: "../mellstrofight/mellstrofight/assets/images/пучеглазость.jpg",
+Smena2: "../mellstrofight/mellstrofight/assets/images/2 смена.jpg",
+Otstalost: "../mellstrofight/mellstrofight/assets/images/отсталость.jpg",
+Pyramid: "../mellstrofight/mellstrofight/assets/images/пирамида красности.jpg",
+Puglivost: "../mellstrofight/mellstrofight/assets/images/страшность.jpg",
+Soplya: "../mellstrofight/mellstrofight/assets/images/сопля.jpg",
+Oglushaemost: "../mellstrofight/mellstrofight/assets/images/оглушаемость.jpg",
+Syr: "../mellstrofight/mellstrofight/assets/images/сыр.jpg",
+Omaygad: "../mellstrofight/mellstrofight/assets/images/омайгад.jpg",
+vodka: "../mellstrofight/mellstrofight/assets/images/пузырь.png",
+ArmyBg: "../mellstrofight/mellstrofight/assets/images/армия.jpg",
+Murino1Bg: "../mellstrofight/mellstrofight/assets/images/мурино1.jpg",
+Murino2Bg: "../mellstrofight/mellstrofight/assets/images/мурино2.jpg",
+Murino3Bg: "../mellstrofight/mellstrofight/assets/images/подвал.jpg",
+helper: "../mellstrofight/mellstrofight/assets/images/военные.png",
+commander: "../mellstrofight/mellstrofight/assets/images/начальник.png",
+general: "../mellstrofight/mellstrofight/assets/images/генерал.png",
+skromnik: "../mellstrofight/mellstrofight/assets/images/скромник.png",
+mimic_true: "../mellstrofight/mellstrofight/assets/images/скромник.png",
+fog_creature: "../mellstrofight/mellstrofight/assets/images/тень.png",
+drun: "../mellstrofight/mellstrofight/assets/images/друн.jpg",
+corridor_monster: "../mellstrofight/mellstrofight/assets/images/прыгающий монстр.jpe",
+skrut: "../mellstrofight/mellstrofight/assets/images/скромник.png",
+red_beast: "../mellstrofight/mellstrofight/assets/images/прыгающий монстр.jpe",
+spring_monster: "../mellstrofight/mellstrofight/assets/images/прыгающий монстр.jpe",
+shadow_creature: "../mellstrofight/mellstrofight/assets/images/тень.png",
+trap_item: "../mellstrofight/mellstrofight/assets/images/капкан.png",
+flashlight_item: "../mellstrofight/mellstrofight/assets/images/капкан.png",
+knife_asset: "../mellstrofight/mellstrofight/assets/images/военные.png"
 };
 const cachedImages = {};
 const FALLBACK_IMAGE_SRC = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
@@ -3854,7 +3854,7 @@ battleState.shadowDotTimer = 1.0;
 battleState.lightningTimer = 2.0;
 battleState.shadowSpawnTimer = 0;
 battleState.player = new Player();
-document.getElementById('battlePlayerImg').src = battleState.player.heroInfo.img || "../mellstrofight./mellstrofight/assets/images/мелл.jpg";
+document.getElementById('battlePlayerImg').src = battleState.player.heroInfo.img || "../mellstrofight/mellstrofight/assets/images/мелл.jpg";
 document.getElementById('battlePlayerName').innerText = battleState.player.heroInfo.name;
 const omayHUD = document.getElementById('omaygadChargeHUD');
 if (battleState.player.heroInfo.id === 'Omaygad') {
