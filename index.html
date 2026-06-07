@@ -99,12 +99,16 @@ MELLSTROY FIGHT
 <button onclick="startGame()" class="bg-red-600 hover:bg-red-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-red-500/50 transform hover:-translate-y-1 transition text-lg uppercase tracking-wider gaming-font text-[12px]">
 СТАРТ
 </button>
+<button onclick="showAuthModal()" class="bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold py-3 px-8 rounded-xl shadow border border-cyan-700 transform hover:-translate-y-1 transition text-sm uppercase tracking-wider gaming-font text-[10px]">
+ВХОД
+</button>
 <button onclick="showCredits()" class="bg-gray-900 hover:bg-gray-800 text-gray-300 font-bold py-3 px-8 rounded-xl shadow border border-gray-700 transform hover:-translate-y-1 transition text-sm uppercase tracking-wider gaming-font text-[10px]">
 CREDITS
 </button>
+<div id="splashAuthStatus" class="text-[10px] text-gray-500 mt-2 min-h-[18px]">Войдите, чтобы начать игру</div>
 </div>
 </div>
-<div class="absolute bottom-4 text-xs text-gray-600">v3.8.2 - Мурино 2: новая фаза теней и фото Скромника</div>
+<div class="absolute bottom-4 text-xs text-gray-600">v3.8.1 - Мурино 2: фазы, награды и хитбокс приседа</div>
 </div>
 <!-- Окно Credits -->
 <div id="creditsModal" class="hidden absolute inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
@@ -128,12 +132,38 @@ CREDITS
 </button>
 </div>
 </div>
+<!-- Окно входа и регистрации -->
+<div id="authModal" class="hidden absolute inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+<div class="bg-slate-900 border-2 border-cyan-600 rounded-2xl p-6 w-[340px] max-w-full text-center relative shadow-[0_0_35px_rgba(8,145,178,0.45)]">
+<button onclick="hideAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
+<i class="fas fa-times text-xl"></i>
+</button>
+<h2 class="gaming-font text-cyan-400 text-sm mb-5">АККАУНТ</h2>
+<div class="grid grid-cols-2 gap-2 mb-4">
+<button id="authLoginTab" onclick="setAuthMode('login')" class="bg-cyan-600 text-white py-2 rounded-lg gaming-font text-[9px]">ВХОД</button>
+<button id="authRegisterTab" onclick="setAuthMode('register')" class="bg-slate-800 text-gray-300 py-2 rounded-lg gaming-font text-[9px]">РЕГИСТРАЦИЯ</button>
+</div>
+<div id="authNicknameWrap" class="hidden mb-3">
+<input id="authNicknameInput" type="text" maxlength="18" placeholder="Никнейм" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm text-white outline-none focus:border-cyan-500">
+</div>
+<input id="authEmailInput" type="email" placeholder="Почта" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm text-white outline-none focus:border-cyan-500 mb-3">
+<input id="authPasswordInput" type="password" placeholder="Пароль" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm text-white outline-none focus:border-cyan-500 mb-4">
+<button id="authMainBtn" onclick="submitAuthForm()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl uppercase gaming-font text-[10px] transition">ВОЙТИ</button>
+<div id="authMessage" class="text-[11px] text-gray-400 min-h-[36px] mt-4 leading-5"></div>
+<div id="authLoggedInfo" class="hidden bg-slate-950/80 border border-slate-800 rounded-xl p-3 mt-2 text-[10px] text-gray-300 leading-5">
+<div>Ник: <span id="authLoggedNick" class="text-cyan-400 font-bold">—</span></div>
+<div>Почта: <span id="authLoggedEmail" class="text-amber-400 font-bold">—</span></div>
+<button onclick="logoutAccount()" class="mt-3 w-full bg-red-700 hover:bg-red-600 text-white py-2 rounded-lg gaming-font text-[9px]">ВЫЙТИ</button>
+</div>
+</div>
+</div>
 <!-- СЦЕНА 2: Главное Меню -->
 <div id="menuScene" class="hidden absolute inset-0 bg-slate-950 flex flex-col justify-between p-6 z-30">
 <!-- Верхняя панель статистики -->
 <div class="flex justify-between items-center bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-<div class="flex items-center gap-4">
-<span class="gaming-font text-[9px] text-gray-400">Игрок: <span id="activeHeroName" class="text-red-400">Mell</span></span>
+<div class="flex flex-col gap-1">
+<span class="gaming-font text-[9px] text-gray-400">Герой: <span id="activeHeroName" class="text-red-400">Mell</span></span>
+<span class="gaming-font text-[8px] text-gray-500">Ник: <span id="accountNicknameDisplay" class="text-cyan-400">не вошли</span> · Почта: <span id="accountEmailDisplay" class="text-amber-400">—</span></span>
 </div>
 <div class="flex items-center gap-6">
 <button onclick="exchangePointsForCoins()" class="bg-purple-900/80 hover:bg-purple-800 text-white text-[9px] px-3 py-1.5 rounded-lg border border-purple-600 gaming-font flex items-center gap-1 transition">
@@ -284,7 +314,7 @@ CREDITS
 <div class="grid grid-cols-3 gap-6 my-auto max-w-4xl mx-auto w-full">
 <!-- Часть 1: Улица -->
 <button onclick="selectMurinoPart('Murino_1', true)" class="h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group">
-<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://i.ibb.co/n8fXG6c3/scromnik.png')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://static.wikia.nocookie.net/fantasticbeings/images/1/13/IMG_9765.JPG/revision/latest/scale-to-width-down/536?cb=20170913095609&path-prefix=ru')"></div>
 <div class="absolute inset-0 bg-slate-950/50"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span class="bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ДОСТУПНО</span>
@@ -388,6 +418,9 @@ CREDITS
 <div class="flex justify-between items-center border-b border-slate-800 pb-3">
 <div class="flex items-center gap-4">
 <h2 class="gaming-font text-xs text-amber-500">МАГАЗИН БОКСОВ И ГИПЕРСИЛЫ</h2>
+<div class="bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 text-xs text-amber-500 font-bold flex items-center gap-1">
+<i class="fas fa-coins"></i> <span id="shopCoinsDisplay">0</span>
+</div>
 <div class="bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 text-xs text-cyan-400 font-bold flex items-center gap-1">
 <i class="fas fa-gem"></i> <span id="shopCrystalsDisplay">0</span>
 </div>
@@ -397,7 +430,7 @@ CREDITS
 </button>
 </div>
 <!-- Товары в магазине -->
-<div class="grid grid-cols-5 gap-3 my-auto">
+<div class="grid grid-cols-6 gap-3 my-auto">
 <!-- Бокс 1 -->
 <div class="bg-slate-900 border-2 border-slate-800 rounded-2xl p-4 flex flex-col justify-between items-center text-center relative hover:border-slate-700 transition">
 <span class="bg-gray-500 text-white font-bold text-[8px] px-2 py-1 rounded gaming-font absolute top-3">ОБЫЧНЫЙ</span>
@@ -452,6 +485,21 @@ CREDITS
 </div>
 <button onclick="buyDiamondChest()" class="w-full mt-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-2 rounded-lg transition text-[11px] flex items-center justify-center gap-1">
 <span>90</span> <i class="fas fa-gem text-black"></i>
+</button>
+</div>
+<!-- Случайное снаряжение -->
+<div class="bg-slate-900 border-2 border-violet-800 rounded-2xl p-4 flex flex-col justify-between items-center text-center relative hover:border-violet-600 transition">
+<span class="bg-violet-700 text-white font-bold text-[8px] px-2 py-1 rounded gaming-font absolute top-3">СЕКРЕТ</span>
+<div class="w-16 h-16 my-4 flex items-center justify-center text-violet-400">
+<i id="gearCubeIcon" class="fas fa-cube text-5xl text-violet-400 drop-shadow-[0_0_12px_rgba(139,92,246,0.7)]"></i>
+</div>
+<div>
+<h3 class="font-bold text-white text-xs">Секретный куб</h3>
+<p class="text-[8px] text-gray-400 mt-1">Случайное снаряжение в Q/R. До 2 предметов.</p>
+<p id="gearSlotsLabel" class="text-[8px] text-violet-300 mt-1">Слоты: 0/2</p>
+</div>
+<button onclick="buyRandomGear()" class="w-full mt-3 bg-violet-700 hover:bg-violet-600 text-white font-bold py-2 rounded-lg transition text-[11px] flex items-center justify-center gap-1">
+<span>2500</span> <i class="fas fa-coins text-amber-500"></i>
 </button>
 </div>
 <!-- Товар 4: Навсегда Гиперсила -->
@@ -853,10 +901,31 @@ Mell: 1, Pucheglaz: 1, Smena2: 1, Otstalost: 1, Pyramid: 1, Puglivost: 1, Soplya
 unlockedHeroes: ['Mell'],
 hyperUnlocked: false,
 hyperCharges: 0,
-hyperPrice: 3
+hyperPrice: 3,
+preBattleEquipment: {
+Q: null,
+R: null
+}
 };
+function ensureGameStateShape() {
+if (!gameState.heroLevels) gameState.heroLevels = {};
+if (!Array.isArray(gameState.unlockedHeroes)) gameState.unlockedHeroes = ['Mell'];
+if (!Array.isArray(gameState.completedLocations)) gameState.completedLocations = [];
+if (!gameState.preBattleEquipment) gameState.preBattleEquipment = { Q: null, R: null };
+if (!('Q' in gameState.preBattleEquipment)) gameState.preBattleEquipment.Q = null;
+if (!('R' in gameState.preBattleEquipment)) gameState.preBattleEquipment.R = null;
+if (typeof gameState.coins !== 'number') gameState.coins = 1000;
+if (typeof gameState.points !== 'number') gameState.points = 0;
+if (typeof gameState.crystals !== 'number') gameState.crystals = 0;
+if (!gameState.currentLocation) gameState.currentLocation = 'Army';
+if (!gameState.selectedHero) gameState.selectedHero = 'Mell';
+}
 function saveGameState() {
+ensureGameStateShape();
 localStorage.setItem('MellstroFight_v3_state_h', JSON.stringify(gameState));
+if (typeof window.queueMellstroCloudSave === 'function') {
+window.queueMellstroCloudSave(JSON.parse(JSON.stringify(gameState)));
+}
 }
 function loadGameState() {
 const saved = localStorage.getItem('MellstroFight_v3_state_h');
@@ -867,8 +936,34 @@ gameState = JSON.parse(saved);
 console.error(e);
 }
 }
+ensureGameStateShape();
 updateUI();
 }
+window.getMellstroGameState = function() {
+ensureGameStateShape();
+return JSON.parse(JSON.stringify(gameState));
+};
+window.applyMellstroCloudProgress = function(progress) {
+if (!progress || typeof progress !== 'object') return;
+gameState = Object.assign({}, gameState, progress);
+ensureGameStateShape();
+updateUI();
+renderHeroesScreen();
+};
+function updateAccountLabels() {
+const profile = window.mellstroAuthProfile || null;
+const nickname = profile && profile.nickname ? profile.nickname : 'не вошли';
+const email = profile && profile.email ? profile.email : '—';
+const nickEls = ['accountNicknameDisplay', 'authLoggedNick'];
+const emailEls = ['accountEmailDisplay', 'authLoggedEmail'];
+nickEls.forEach(id => { const el = document.getElementById(id); if (el) el.innerText = nickname; });
+emailEls.forEach(id => { const el = document.getElementById(id); if (el) el.innerText = email; });
+const splashStatus = document.getElementById('splashAuthStatus');
+if (splashStatus) splashStatus.innerText = profile ? `Вы вошли как ${nickname}` : 'Войдите, чтобы начать игру';
+const loggedInfo = document.getElementById('authLoggedInfo');
+if (loggedInfo) loggedInfo.classList.toggle('hidden', !profile);
+}
+window.updateMellstroAccountLabels = updateAccountLabels;
 function exchangePointsForCoins() {
 if (gameState.points >= 2000) {
 gameState.points -= 2000;
@@ -884,10 +979,19 @@ showFloatingMessage("Недостаточно очков! Требуется 200
 }
 function updateUI() {
 saveGameState();
+ensureGameStateShape();
 document.getElementById('scoreDisplay').innerText = gameState.points;
 document.getElementById('coinsDisplay').innerText = gameState.coins;
 document.getElementById('crystalsDisplay').innerText = gameState.crystals;
+const shopCoinsEl = document.getElementById('shopCoinsDisplay');
+if (shopCoinsEl) shopCoinsEl.innerText = gameState.coins;
 document.getElementById('shopCrystalsDisplay').innerText = gameState.crystals;
+const gearSlotsLabel = document.getElementById('gearSlotsLabel');
+if (gearSlotsLabel) {
+const filledSlots = ['Q', 'R'].filter(slot => gameState.preBattleEquipment[slot]).length;
+gearSlotsLabel.innerText = `Слоты: ${filledSlots}/2`;
+}
+updateAccountLabels();
 const hero = HEROES_DB[gameState.selectedHero] || HEROES_DB.Mell;
 const lv = gameState.heroLevels[hero.id] || 1;
 document.getElementById('activeHeroName').innerText = hero.name;
@@ -1102,6 +1206,12 @@ showFloatingMessage("Недостаточно монет для улучшени
 }
 }
 function startGame() {
+if (typeof window.isMellstroAccountReady === 'function' && !window.isMellstroAccountReady()) {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Сначала войдите в подтвержденный аккаунт!");
+if (typeof window.showAuthModal === 'function') window.showAuthModal();
+return;
+}
 playSynthesizedSound(400, 0.15);
 const splash = document.getElementById('splashScene');
 splash.classList.add('opacity-0');
@@ -1124,6 +1234,15 @@ document.getElementById('creditsModal').classList.remove('hidden');
 function hideCredits() {
 playSynthesizedSound(200, 0.1);
 document.getElementById('creditsModal').classList.add('hidden');
+}
+function showAuthModal() {
+const modal = document.getElementById('authModal');
+if (modal) modal.classList.remove('hidden');
+if (typeof window.setAuthMode === 'function') window.setAuthMode('login');
+}
+function hideAuthModal() {
+const modal = document.getElementById('authModal');
+if (modal) modal.classList.add('hidden');
 }
 function backToMenu() {
 playSynthesizedSound(200, 0.1);
@@ -1281,6 +1400,71 @@ playSynthesizedSound(150, 0.3, 'sawtooth');
 showFloatingMessage("Недостаточно алмазов! Нужно 90 штук.");
 }
 }
+
+const EQUIPMENT_DETAILS = {
+shield: { name: "Щит", icon: "🛡️", chance: 35 },
+heal: { name: "Исцеление", icon: "✚", chance: 30 },
+trap: { name: "Капкан", icon: "⚙️", chance: 15 },
+poison: { name: "Бутыль с ядом", icon: "🧪", chance: 12 },
+flashlight: { name: "Фонарик", icon: "🔦", chance: 8 }
+};
+function countPreBattleEquipment() {
+ensureGameStateShape();
+return ['Q', 'R'].filter(slot => gameState.preBattleEquipment[slot]).length;
+}
+function rollRandomEquipment() {
+const roll = Math.random() * 100;
+let acc = 0;
+for (const [id, data] of Object.entries(EQUIPMENT_DETAILS)) {
+acc += data.chance;
+if (roll < acc) return id;
+}
+return 'flashlight';
+}
+function addPreBattleEquipment(itemId) {
+ensureGameStateShape();
+const slot = !gameState.preBattleEquipment.Q ? 'Q' : (!gameState.preBattleEquipment.R ? 'R' : null);
+if (!slot) return false;
+gameState.preBattleEquipment[slot] = itemId;
+return slot;
+}
+function buyRandomGear() {
+ensureGameStateShape();
+const filledSlots = countPreBattleEquipment();
+if (filledSlots >= 2) {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Обе ячейки снаряжения заполнены! Сначала потратьте предмет в бою.");
+return;
+}
+if (gameState.coins < 2500) {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Недостаточно монет! Секретный куб стоит 2500 монет.");
+return;
+}
+gameState.coins -= 2500;
+const icon = document.getElementById('gearCubeIcon');
+if (icon) icon.classList.add('shake-element');
+playSynthesizedSound(180, 0.4, 'sawtooth');
+showFloatingMessage("Черный секретный куб растворяется...");
+setTimeout(() => {
+if (icon) icon.classList.remove('shake-element');
+const itemId = rollRandomEquipment();
+const slot = addPreBattleEquipment(itemId);
+const info = EQUIPMENT_DETAILS[itemId];
+if (!slot) {
+showFloatingMessage("Нет свободной ячейки для снаряжения!");
+return;
+}
+playLevelUpSound();
+const rewardIcon = document.getElementById('revealIcon');
+if (rewardIcon) rewardIcon.className = 'fas fa-cube animate-bounce text-violet-400';
+document.getElementById('rewardText').innerText = `${info.icon} ${info.name} → слот ${slot}`;
+document.getElementById('rewardModal').classList.remove('hidden');
+showFloatingMessage(`Выпало: ${info.name}. В начале боя будет в слоте ${slot}!`);
+updateUI();
+}, 1200);
+updateUI();
+}
 function revealBoxReward(type) {
 let rewardMsg = "";
 let rewardVal = 0;
@@ -1370,7 +1554,7 @@ Murino3Bg: 'https://cs6.pikabu.ru/video/2017/09/01/4/og_og_1504239048317731297.j
 helper: 'https://s10.iimage.su/s/30/th_gYuXKdxxVePCgH7whlrLwbQMgak5jUzcl2G8Mz7BS.png',
 commander: 'https://s10.iimage.su/s/30/th_gNjDNFWxdsGNNl8udIDUXlRbD8ZSkmmMJn1wdywph.png',
 general: 'https://s10.iimage.su/s/30/th_gIQwNyQxtiO2lpCyfdvt9Vh1OjlGcwpbRutAj1lGD.png',
-skromnik: 'https://i.ibb.co/n8fXG6c3/scromnik.png',
+skromnik: 'https://static.wikia.nocookie.net/fantasticbeings/images/1/13/IMG_9765.JPG/revision/latest/scale-to-width-down/536?cb=20170913095609&path-prefix=ru',
 mimic_true: 'https://i.pinimg.com/originals/d9/62/30/d96230c1b8282a419aaffd6109fb90f4.jpg?nii=t',
 fog_creature: 'https://avatars.mds.yandex.net/i?id=503a24b487f8f83ff015f57a6f8a60ef2e3b9e7a-10150478-images-thumbs&n=13',
 drun: 'https://i.ibb.co/pD5wY3B/channels4-profile.jpg',
@@ -1460,6 +1644,10 @@ battleInventory: {
 Q: null, 
 R: null
 },
+battleInventorySource: {
+Q: null,
+R: null
+},
 playerShieldTimer: 0,
 playerRegenTimer: 0,
 throwAimActive: false,
@@ -1492,9 +1680,6 @@ shadowDotTimer: 1.0,
 // Новые таймеры и переменные для фаз
 lightningTimer: 2.0, 
 shadowSpawnTimer: 0,
-shadowPairTimer: 0,
-shadowPairTransitionLock: false,
-shadowPairCounter: 0,
 murino2FinalRewardCoins: 0,
 murino2FinalRewardPoints: 0
 };
@@ -1518,31 +1703,6 @@ resetAllPhaseEffects();
 if (battleState.player) {
 battleState.player.lightningDebuff = false;
 }
-}
-
-function getAliveShadowCreatures() {
-return battleState.enemies.filter(e => e.type === 'shadow_creature' && e.hp > 0);
-}
-function spawnShadowPair(reasonText = '') {
-if (!battleState.active || battleState.phase !== 'shadows_invasion') return;
-battleState.shadowPairCounter = (battleState.shadowPairCounter || 0) + 1;
-battleState.shadowPairTimer = 8.0;
-battleState.shadowSpawnTimer = 0;
-battleState.shadowPairTransitionLock = false;
-battleState.enemies.push(new Enemy('shadow_creature', -50, 355));
-battleState.enemies.push(new Enemy('shadow_creature', V_WIDTH + 50, 355));
-playSynthesizedSound(200, 0.1, 'sawtooth');
-if (reasonText) showFloatingMessage(reasonText);
-document.getElementById('battleStatusMsg').innerText = `ТЕНИ: СВЕДИТЕ ИХ ЗА ${Math.ceil(battleState.shadowPairTimer)} СЕК.`;
-}
-function markShadowPairTouch(x, y) {
-if (battleState.phase !== 'shadows_invasion' || battleState.shadowPairTransitionLock) return;
-battleState.shadowPairTransitionLock = true;
-battleState.shadowSpawnTimer = 0.35;
-battleState.shadowPairTimer = 8.0;
-createSlamImpact(x, y, '#a855f7');
-showFloatingMessage("Тени коснулись друг друга и исчезли! Новая пара идет с боков!");
-playExplosionSound();
 }
 function checkCircleRectCollision(circle, rect) {
 let closestX = Math.max(rect.x, Math.min(circle.x, rect.x + rect.w));
@@ -1636,6 +1796,20 @@ return;
 this.blackCircleDebuff = 0;
 this.blackCircleTarget = null;
 }
+}
+if (battleState.phase === 'drun_rescue') {
+this.vx = 0;
+this.facingLeft = false;
+this.vy += 0.8;
+this.y += this.vy;
+if (this.y + this.height >= 450) {
+this.y = 450 - this.height;
+this.vy = 0;
+this.grounded = true;
+}
+if (this.attackCooldown > 0) this.attackCooldown--;
+if (this.fistExtension > 0) this.fistExtension -= 7;
+return;
 }
 const isCrouching = keys.ShiftLeft || keys.ShiftRight;
 // Реальный присед: уменьшаем физический хитбокс и держим ноги на полу.
@@ -2012,20 +2186,27 @@ return;
 }
 if (this.type === 'shadow_creature') {
 this.facingLeft = player.x < this.x;
-// В новой фазе теней тени должны идти к игроку, чтобы игрок мог свести их друг с другом.
+// ЗАМЕДЛЕНЫ: скорость теней снижена с 4.0 до 1.8
 const shadowSpeed = 1.8;
 this.vx = player.x > this.x ? shadowSpeed : -shadowSpeed;
 this.x += this.vx;
-// В этой версии тень не вселяется в игрока при касании: задача фазы — столкнуть тени между собой за 8 секунд.
+const distToPlayer = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
+if (distToPlayer < 45 && Math.abs(player.y - this.y) < 60) {
+this.hp = 0; 
+battleState.shadowsInsideCount++; 
+battleState.shadowDotTimer = 1.0;
+showFloatingMessage(`Тень вселилась! Текущих стаков: ${battleState.shadowsInsideCount}`);
+playSynthesizedSound(190, 0.25, 'sawtooth');
+}
 for (let other of battleState.enemies) {
 if (other !== this && other.type === 'shadow_creature' && other.hp > 0) {
-const distToOther = Math.abs((other.x + other.width / 2) - (this.x + this.width / 2));
-if (distToOther < 42) {
-const hitX = (this.x + other.x) / 2 + this.width / 2;
-const hitY = this.y + this.height / 2;
+const distToOther = Math.abs(other.x - this.x);
+if (distToOther < 40) {
 this.hp = 0;
 other.hp = 0;
-markShadowPairTouch(hitX, hitY);
+createSlamImpact(this.x + 20, this.y + 20, '#a855f7');
+showFloatingMessage("Тени столкнулись и аннигилировали!");
+playExplosionSound();
 }
 }
 }
@@ -2898,8 +3079,6 @@ battleState.introDrunAnimTimer = 5.0;
 battleState.drunsBled = false;
 battleState.lootSpawned = false;
 document.getElementById('battleLootHUD').classList.remove('hidden');
-battleState.battleInventory.Q = null;
-battleState.battleInventory.R = null;
 updateLootInventoryHUD();
 }
 function updateLootInventoryHUD() {
@@ -2933,16 +3112,22 @@ for (let i = battleState.drunLootContainers.length - 1; i >= 0; i--) {
 const box = battleState.drunLootContainers[i];
 const dist = Math.abs((battleState.player.x + battleState.player.width/2) - box.x);
 if (dist < 80) {
+const emptySlots = ['Q', 'R'].filter(slot => !battleState.battleInventory[slot]);
+if (emptySlots.length === 0) {
+showFloatingMessage("Инвентарь заполнен! Сначала используйте Q или R.");
+playSynthesizedSound(150, 0.3, 'sawtooth');
+return;
+}
 const pool = ['shield', 'heal', 'poison', 'trap', 'flashlight'];
-let p1 = pool[Math.floor(Math.random() * 4)]; 
-let p2 = pool[Math.floor(Math.random() * 4)];
-if (Math.random() < 0.15) p1 = 'flashlight';
-if (Math.random() < 0.15) p2 = 'flashlight';
-battleState.battleInventory.Q = p1;
-battleState.battleInventory.R = p2;
+emptySlots.forEach(slot => {
+let item = pool[Math.floor(Math.random() * 4)];
+if (Math.random() < 0.15) item = 'flashlight';
+battleState.battleInventory[slot] = item;
+battleState.battleInventorySource[slot] = 'drun';
+});
 updateLootInventoryHUD();
 playLevelUpSound();
-showFloatingMessage("Снаряжение Друнов подобрано! Активация на Q и R!");
+showFloatingMessage(`Снаряжение Друнов подобрано! Заполнено слотов: ${emptySlots.length}. Активация на Q/R!`);
 battleState.drunLootContainers.splice(i, 1);
 }
 }
@@ -2980,8 +3165,14 @@ blindedCount++;
 playLaserSound();
 showFloatingMessage(blindedCount > 0 ? "Скрут временно ослеплен излучателем!" : "Ультрафиолетовый излучатель активирован!");
 }
+if (battleState.battleInventorySource[slot] === 'shop') {
+gameState.preBattleEquipment[slot] = null;
+saveGameState();
+}
 battleState.battleInventory[slot] = null;
+battleState.battleInventorySource[slot] = null;
 updateLootInventoryHUD();
+updateUI();
 }
 function executePoisonBottleThrow(tx, ty) {
 battleState.throwAimActive = false;
@@ -3031,6 +3222,23 @@ createSlamImpact(enemy.x, enemy.y + 50, '#eab308');
 }
 playLevelUpSound();
 showFloatingMessage("УСПЕШНОЕ ПАРИРОВАНИЕ! СКРУТ ОГЛУШЕН НА 4 СЕКУНДЫ!");
+}
+function generateReachableGoldenKeys() {
+const keys = [];
+const yChoices = [410, 390, 370, 345, 320, 305];
+let attempts = 0;
+while (keys.length < 3 && attempts < 200) {
+attempts++;
+const x = 120 + Math.random() * (V_WIDTH - 240);
+const y = yChoices[Math.floor(Math.random() * yChoices.length)];
+const farEnough = keys.every(k => Math.abs(k.x - x) > 210);
+if (!farEnough) continue;
+keys.push({ x, y, collected: false });
+}
+while (keys.length < 3) {
+keys.push({ x: 180 + keys.length * 360 + Math.random() * 90, y: yChoices[Math.floor(Math.random() * yChoices.length)], collected: false });
+}
+return keys;
 }
 function checkBossPhase() {
 if (gameState.currentLocation !== 'Murino_2') return;
@@ -3114,18 +3322,14 @@ if (battleState.phase === 'spring_boss_fight' && activeCombatants.length === 0) 
 gameState.coins += 500;
 gameState.points += 2000;
 updateUI();
-transitionBattlePhase('shadows_invasion', 'ТЕНИ: СВЕДИТЕ ИХ ЗА 8 СЕК.');
-battleState.fogRadius = 340; // Свет сужается, но боковые спавны остаются видимыми
+transitionBattlePhase('shadows_invasion', 'THE FOG IS COMING...');
+battleState.fogRadius = 340; // Радиус света увеличен, чтобы в фазе теней было видно игрока и боковые спавны
 battleState.fogPhaseTimer = 15.0; // Фаза теней идет ровно 15 секунд
 battleState.shadowsInsideCount = 0;
 battleState.superPressSequence = 0;
 battleState.shadowDotTimer = 1.0;
-battleState.shadowSpawnTimer = 0;
-battleState.shadowPairTimer = 0;
-battleState.shadowPairTransitionLock = false;
-battleState.shadowPairCounter = 0;
-spawnShadowPair("Сведите две тени друг с другом за 8 секунд!");
-triggerBossDialogue("THE FOG IS COMING... СВЕДИ ТЕНИ ДРУГ С ДРУГОМ!");
+battleState.shadowSpawnTimer = 0; // Сброс спавнера теней
+triggerBossDialogue("THE FOG IS COMING... ТЕНИ ИДУТ!");
 const fogSnd = document.getElementById('soundFogIsComing');
 if (fogSnd) {
 fogSnd.currentTime = 0;
@@ -3148,11 +3352,8 @@ if (!battleState.active) return;
 transitionBattlePhase('fruit_rain_active', 'ВКУСНОСТЬ ДОЖДЬ!');
 triggerBossDialogue("ПОПРОБУЙ УКЛОНИТЬСЯ ОТ ФРУКТОВЫХ КАПЕЛЬ!");
 battleState.keysCollected = 0;
-battleState.goldenKeys = [
-{ x: 250, y: 410, collected: false },
-{ x: 600, y: 300, collected: false }, 
-{ x: 950, y: 410, collected: false }
-];
+battleState.goldenKeys = generateReachableGoldenKeys();
+showFloatingMessage("Золотые ключи появились в случайных местах. До каждого можно допрыгнуть!");
 }, 5000); // Передышка ровно 5 секунд
 return;
 }
@@ -3613,24 +3814,15 @@ showFloatingMessage("ВАС УДАРИЛО МОЛНИЕЙ! Заморозка 3 
 }
 }
 
-// Логика новой фазы теней: одна пара с боков, 8 секунд на столкновение, общая длительность 15 секунд
+// Логика спавна теней по бокам попарно
 if (battleState.phase === 'shadows_invasion' && battleState.active) {
-const aliveShadows = getAliveShadowCreatures();
-if (battleState.shadowPairTransitionLock) {
 battleState.shadowSpawnTimer -= 0.016;
 if (battleState.shadowSpawnTimer <= 0) {
-spawnShadowPair("Новая пара теней идет с боков!");
-}
-} else if (aliveShadows.length === 0) {
-spawnShadowPair("Тени исчезли. Новая пара идет с боков!");
-} else {
-battleState.shadowPairTimer -= 0.016;
-const secondsLeft = Math.max(0, Math.ceil(battleState.shadowPairTimer));
-document.getElementById('battleStatusMsg').innerText = `ТЕНИ: СВЕДИТЕ ИХ ЗА ${secondsLeft} СЕК.`;
-if (battleState.shadowPairTimer <= 0) {
-battleState.shadowPairTimer = 8.0;
-spawnShadowPair("Вы не успели за 8 секунд — еще две тени появились по бокам!");
-}
+battleState.shadowSpawnTimer = 1.5; // Спавн каждые 1.5 секунды
+// Спавним слева и справа одновременно по паре
+battleState.enemies.push(new Enemy('shadow_creature', -50, 355));
+battleState.enemies.push(new Enemy('shadow_creature', V_WIDTH + 50, 355));
+playSynthesizedSound(200, 0.1, 'sawtooth');
 }
 }
 
@@ -3771,7 +3963,16 @@ if (battleState.playerRegenTimer > 0) {
 battleState.playerRegenTimer -= 0.016;
 battleState.player.hp = Math.min(battleState.player.maxHp, battleState.player.hp + 50 * 0.016); 
 }
-// В обновленной фазе теней нет эффекта вселения и DOT-урона: цель — успеть столкнуть тени друг с другом.
+// DOT урон от теней
+if (battleState.shadowsInsideCount > 0 && battleState.phase === 'shadows_invasion') {
+battleState.shadowDotTimer -= 0.016;
+if (battleState.shadowDotTimer <= 0) {
+const dotDmg = battleState.shadowsInsideCount * 150;
+battleState.player.takeDamage(dotDmg);
+battleState.shadowDotTimer = 1.0;
+showFloatingMessage(`Тени внутри наносят ${dotDmg} урона!`);
+}
+}
 if (battleState.phase === 'shadows_invasion') {
 battleState.fogPhaseTimer -= 0.016;
 }
@@ -3804,6 +4005,12 @@ ctx.fillText("FOG IS COMING", V_WIDTH/2, V_HEIGHT/2);
 requestAnimationFrame(gameLoop);
 }
 function startFight() {
+if (typeof window.isMellstroAccountReady === 'function' && !window.isMellstroAccountReady()) {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("В бой можно только после входа в аккаунт!");
+if (typeof window.showAuthModal === 'function') window.showAuthModal();
+return;
+}
 playSynthesizedSound(500, 0.3);
 document.getElementById('menuScene').classList.add('hidden');
 document.getElementById('battleScene').classList.remove('hidden');
@@ -3829,8 +4036,11 @@ battleState.hyperTime = 0;
 battleState.hyperCooldown = 0;
 battleState.hyperUsedThisGame = false;
 battleState.drunLootContainers = [];
-battleState.battleInventory.Q = null;
-battleState.battleInventory.R = null;
+ensureGameStateShape();
+battleState.battleInventory.Q = gameState.preBattleEquipment.Q || null;
+battleState.battleInventory.R = gameState.preBattleEquipment.R || null;
+battleState.battleInventorySource.Q = gameState.preBattleEquipment.Q ? 'shop' : null;
+battleState.battleInventorySource.R = gameState.preBattleEquipment.R ? 'shop' : null;
 battleState.playerShieldTimer = 0;
 battleState.playerRegenTimer = 0;
 battleState.throwAimActive = false;
@@ -3847,9 +4057,6 @@ battleState.fogPhaseTimer = 0;
 battleState.shadowDotTimer = 1.0;
 battleState.lightningTimer = 2.0;
 battleState.shadowSpawnTimer = 0;
-battleState.shadowPairTimer = 0;
-battleState.shadowPairTransitionLock = false;
-battleState.shadowPairCounter = 0;
 battleState.murino2FinalRewardCoins = 0;
 battleState.murino2FinalRewardPoints = 0;
 battleState.player = new Player();
@@ -3870,6 +4077,12 @@ document.getElementById('hyperStatusText').className = "text-green-400 font-bold
 } else {
 hyperHUD.classList.add('hidden');
 }
+if (battleState.battleInventory.Q || battleState.battleInventory.R) {
+document.getElementById('battleLootHUD').classList.remove('hidden');
+} else {
+document.getElementById('battleLootHUD').classList.add('hidden');
+}
+updateLootInventoryHUD();
 const introOverlay = document.getElementById('battleIntroOverlay');
 const countdownEl = document.getElementById('battleCountdown');
 introOverlay.classList.remove('opacity-0', 'pointer-events-none');
@@ -4291,5 +4504,220 @@ window.onload = function() {
 loadGameState();
 }
 </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-analytics.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  sendEmailVerification,
+  updateProfile,
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAt9RopDjGhGarn-NxlH1Uzf2PFtcQ14Ds",
+  authDomain: "relook-a0a12.firebaseapp.com",
+  projectId: "relook-a0a12",
+  storageBucket: "relook-a0a12.firebasestorage.app",
+  messagingSenderId: "199638240697",
+  appId: "1:199638240697:web:c7bca3f27737057f37ba68",
+  measurementId: "G-J633VVYTF7"
+};
+
+const app = initializeApp(firebaseConfig);
+try { getAnalytics(app); } catch (e) { console.warn("Analytics unavailable:", e); }
+const auth = getAuth(app);
+const db = getFirestore(app);
+await setPersistence(auth, browserLocalPersistence);
+
+let authMode = 'login';
+let cloudSaveTimer = null;
+let cloudReady = false;
+let currentUid = null;
+window.mellstroAuthProfile = null;
+
+function normalizeNick(nick) {
+  return (nick || '').trim().toLowerCase().replace(/\s+/g, '_');
+}
+function setAuthMessage(text, type = 'info') {
+  const el = document.getElementById('authMessage');
+  if (!el) return;
+  el.innerText = text;
+  el.className = `text-[11px] min-h-[36px] mt-4 leading-5 ${type === 'error' ? 'text-red-400' : type === 'success' ? 'text-emerald-400' : 'text-gray-400'}`;
+}
+window.setAuthMode = function(mode) {
+  authMode = mode === 'register' ? 'register' : 'login';
+  const nickWrap = document.getElementById('authNicknameWrap');
+  const loginTab = document.getElementById('authLoginTab');
+  const registerTab = document.getElementById('authRegisterTab');
+  const mainBtn = document.getElementById('authMainBtn');
+  if (nickWrap) nickWrap.classList.toggle('hidden', authMode !== 'register');
+  if (loginTab) loginTab.className = authMode === 'login' ? 'bg-cyan-600 text-white py-2 rounded-lg gaming-font text-[9px]' : 'bg-slate-800 text-gray-300 py-2 rounded-lg gaming-font text-[9px]';
+  if (registerTab) registerTab.className = authMode === 'register' ? 'bg-cyan-600 text-white py-2 rounded-lg gaming-font text-[9px]' : 'bg-slate-800 text-gray-300 py-2 rounded-lg gaming-font text-[9px]';
+  if (mainBtn) mainBtn.innerText = authMode === 'login' ? 'ВОЙТИ' : 'ОТПРАВИТЬ ПИСЬМО';
+  setAuthMessage(authMode === 'login' ? 'Введите почту и пароль.' : 'Введите уникальный ник, почту и пароль. После письма аккаунт появится в базе только после подтверждения почты.');
+};
+window.showAuthModal = function() {
+  document.getElementById('authModal')?.classList.remove('hidden');
+  window.setAuthMode(authMode);
+};
+window.hideAuthModal = function() {
+  document.getElementById('authModal')?.classList.add('hidden');
+};
+window.isMellstroAccountReady = function() {
+  return !!(auth.currentUser && auth.currentUser.emailVerified && window.mellstroAuthProfile);
+};
+window.logoutAccount = async function() {
+  try {
+    await signOut(auth);
+    cloudReady = false;
+    currentUid = null;
+    window.mellstroAuthProfile = null;
+    window.updateMellstroAccountLabels?.();
+    setAuthMessage('Вы вышли из аккаунта. Теперь можно войти под другой почтой.', 'success');
+  } catch (e) {
+    setAuthMessage('Не получилось выйти: ' + e.message, 'error');
+  }
+};
+
+async function nicknameTaken(nickKey) {
+  const snap = await getDoc(doc(db, 'nicknames', nickKey));
+  return snap.exists();
+}
+async function createProfileAfterVerification(user) {
+  const userRef = doc(db, 'users', user.uid);
+  const userSnap = await getDoc(userRef);
+  if (userSnap.exists()) {
+    const data = userSnap.data();
+    window.mellstroAuthProfile = { nickname: data.nickname || user.displayName || 'Игрок', email: user.email, uid: user.uid };
+    cloudReady = true;
+    currentUid = user.uid;
+    if (data.progress) window.applyMellstroCloudProgress?.(data.progress);
+    window.updateMellstroAccountLabels?.();
+    setAuthMessage(`Вы вошли как ${window.mellstroAuthProfile.nickname}.`, 'success');
+    return;
+  }
+  const nick = user.displayName || localStorage.getItem(`MellstroFight_pendingNick_${user.uid}`) || 'Игрок';
+  const nickKey = normalizeNick(nick);
+  if (!nickKey || await nicknameTaken(nickKey)) {
+    setAuthMessage('Этот никнейм уже занят. Зарегистрируйтесь заново с уникальным ником.', 'error');
+    await signOut(auth);
+    return;
+  }
+  const progress = window.getMellstroGameState?.() || {};
+  await setDoc(doc(db, 'nicknames', nickKey), { uid: user.uid, nickname: nick, createdAt: serverTimestamp() });
+  await setDoc(userRef, {
+    uid: user.uid,
+    nickname: nick,
+    email: user.email,
+    progress,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+  localStorage.removeItem(`MellstroFight_pendingNick_${user.uid}`);
+  window.mellstroAuthProfile = { nickname: nick, email: user.email, uid: user.uid };
+  cloudReady = true;
+  currentUid = user.uid;
+  window.updateMellstroAccountLabels?.();
+  setAuthMessage(`Почта подтверждена. Аккаунт ${nick} сохранен в базе.`, 'success');
+}
+
+window.submitAuthForm = async function() {
+  const email = document.getElementById('authEmailInput')?.value.trim();
+  const password = document.getElementById('authPasswordInput')?.value;
+  const nickname = document.getElementById('authNicknameInput')?.value.trim();
+  if (!email || !password || (authMode === 'register' && !nickname)) {
+    setAuthMessage('Заполните все поля.', 'error');
+    return;
+  }
+  try {
+    if (authMode === 'login') {
+      setAuthMessage('Проверяем аккаунт...');
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      await cred.user.reload();
+      if (!cred.user.emailVerified) {
+        await signOut(auth);
+        setAuthMessage('Почта не подтверждена. Проверьте письмо и перейдите по ссылке.', 'error');
+        return;
+      }
+      await createProfileAfterVerification(cred.user);
+      window.hideAuthModal();
+    } else {
+      const nickKey = normalizeNick(nickname);
+      if (nickKey.length < 3) {
+        setAuthMessage('Никнейм должен быть минимум 3 символа.', 'error');
+        return;
+      }
+      if (await nicknameTaken(nickKey)) {
+        setAuthMessage('Никнейм занят. Выберите уникальный ник, которого ни у кого нет.', 'error');
+        return;
+      }
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(cred.user, { displayName: nickname });
+      localStorage.setItem(`MellstroFight_pendingNick_${cred.user.uid}`, nickname);
+      await sendEmailVerification(cred.user);
+      await signOut(auth);
+      setAuthMessage('Письмо отправлено. Аккаунт появится в базе только после подтверждения почты и входа.', 'success');
+      window.setAuthMode('login');
+    }
+  } catch (e) {
+    let msg = e.message;
+    if (e.code === 'auth/email-already-in-use') msg = 'Эта почта уже зарегистрирована. Используйте вход.';
+    if (e.code === 'auth/invalid-credential') msg = 'Неверная почта или пароль.';
+    if (e.code === 'auth/weak-password') msg = 'Пароль слишком слабый. Нужно минимум 6 символов.';
+    setAuthMessage(msg, 'error');
+  }
+};
+
+window.queueMellstroCloudSave = function(progress) {
+  if (!cloudReady || !currentUid || !auth.currentUser?.emailVerified) return;
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = setTimeout(async () => {
+    try {
+      await setDoc(doc(db, 'users', currentUid), {
+        progress,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    } catch (e) {
+      console.warn('Cloud save failed:', e);
+    }
+  }, 700);
+};
+
+onAuthStateChanged(auth, async (user) => {
+  cloudReady = false;
+  currentUid = null;
+  window.mellstroAuthProfile = null;
+  window.updateMellstroAccountLabels?.();
+  if (!user) return;
+  await user.reload();
+  if (!user.emailVerified) {
+    setAuthMessage('Вы зарегистрированы, но почта еще не подтверждена. Подтвердите письмо, затем войдите.', 'error');
+    return;
+  }
+  try {
+    await createProfileAfterVerification(user);
+  } catch (e) {
+    setAuthMessage('Ошибка загрузки профиля: ' + e.message, 'error');
+  }
+});
+
+window.setAuthMode('login');
+window.updateMellstroAccountLabels?.();
+</script>
+
 </body>
 </html>
