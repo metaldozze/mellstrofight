@@ -1554,7 +1554,7 @@ Murino3Bg: 'https://cs6.pikabu.ru/video/2017/09/01/4/og_og_1504239048317731297.j
 helper: 'https://s10.iimage.su/s/30/th_gYuXKdxxVePCgH7whlrLwbQMgak5jUzcl2G8Mz7BS.png',
 commander: 'https://s10.iimage.su/s/30/th_gNjDNFWxdsGNNl8udIDUXlRbD8ZSkmmMJn1wdywph.png',
 general: 'https://s10.iimage.su/s/30/th_gIQwNyQxtiO2lpCyfdvt9Vh1OjlGcwpbRutAj1lGD.png',
-skromnik: 'https://static.wikia.nocookie.net/fantasticbeings/images/1/13/IMG_9765.JPG/revision/latest/scale-to-width-down/536?cb=20170913095609&path-prefix=ru',
+skromnik: 'https://i.ibb.co/n8fXG6c3/scromnik.png',
 mimic_true: 'https://i.pinimg.com/originals/d9/62/30/d96230c1b8282a419aaffd6109fb90f4.jpg?nii=t',
 fog_creature: 'https://avatars.mds.yandex.net/i?id=503a24b487f8f83ff015f57a6f8a60ef2e3b9e7a-10150478-images-thumbs&n=13',
 drun: 'https://i.ibb.co/pD5wY3B/channels4-profile.jpg',
@@ -1680,6 +1680,10 @@ shadowDotTimer: 1.0,
 // Новые таймеры и переменные для фаз
 lightningTimer: 2.0, 
 shadowSpawnTimer: 0,
+murino2ShadowPhaseElapsed: 0,
+murino2ShadowPairId: 0,
+murino2ActivePairId: 0,
+murino2LastKilledPairId: 0,
 murino2FinalRewardCoins: 0,
 murino2FinalRewardPoints: 0
 };
@@ -2185,6 +2189,45 @@ if (this.y >= 430) this.y = 430;
 return;
 }
 if (this.type === 'shadow_creature') {
+this.facingLeft = player.x < this.x;
+
+// Новая фаза теней в Мурино 2: тени не убиваются атаками и погибают только при столкновении друг с другом.
+if (gameState.currentLocation === 'Murino_2' && battleState.phase === 'shadows_invasion') {
+const shadowSpeed = 2.25;
+if (this.murino2Side === 'left') {
+this.vx = shadowSpeed;
+} else if (this.murino2Side === 'right') {
+this.vx = -shadowSpeed;
+} else {
+this.vx = player.x > this.x ? shadowSpeed : -shadowSpeed;
+}
+this.x += this.vx;
+this.y = 345;
+
+const playerBox = { x: player.x, y: player.y, width: player.width, height: player.height, w: player.width, h: player.height };
+if (checkRectCollision(this, playerBox)) {
+const pushDir = this.x < player.x ? 1 : -1;
+player.x = Math.max(20, Math.min(V_WIDTH - player.width - 20, player.x + pushDir * 1.8));
+}
+
+for (let other of battleState.enemies) {
+if (other !== this && other.type === 'shadow_creature' && other.hp > 0) {
+const dx = Math.abs((other.x + other.width/2) - (this.x + this.width/2));
+const dy = Math.abs((other.y + other.height/2) - (this.y + this.height/2));
+if (dx < 58 && dy < 80) {
+this.hp = 0;
+other.hp = 0;
+const killedPair = Math.max(this.murino2PairId || 0, other.murino2PairId || 0);
+if (killedPair === battleState.murino2ActivePairId) battleState.murino2LastKilledPairId = killedPair;
+createSlamImpact((this.x + other.x) / 2 + 40, this.y + 45, '#a855f7');
+showFloatingMessage("Тени коснулись друг друга и исчезли!");
+playExplosionSound();
+}
+}
+}
+return;
+}
+
 this.facingLeft = player.x < this.x;
 // ЗАМЕДЛЕНЫ: скорость теней снижена с 4.0 до 1.8
 const shadowSpeed = 1.8;
@@ -3240,6 +3283,22 @@ keys.push({ x: 180 + keys.length * 360 + Math.random() * 90, y: yChoices[Math.fl
 }
 return keys;
 }
+function spawnMurino2ShadowPair() {
+if (!battleState.active || gameState.currentLocation !== 'Murino_2' || battleState.phase !== 'shadows_invasion') return;
+battleState.murino2ShadowPairId = (battleState.murino2ShadowPairId || 0) + 1;
+battleState.murino2ActivePairId = battleState.murino2ShadowPairId;
+battleState.murino2LastKilledPairId = 0;
+battleState.shadowSpawnTimer = 7.0;
+const leftShadow = new Enemy('shadow_creature', -70, 345);
+const rightShadow = new Enemy('shadow_creature', V_WIDTH + 20, 345);
+leftShadow.murino2PairId = battleState.murino2ActivePairId;
+rightShadow.murino2PairId = battleState.murino2ActivePairId;
+leftShadow.murino2Side = 'left';
+rightShadow.murino2Side = 'right';
+battleState.enemies.push(leftShadow, rightShadow);
+playSynthesizedSound(200, 0.1, 'sawtooth');
+}
+
 function checkBossPhase() {
 if (gameState.currentLocation !== 'Murino_2') return;
 const activeCombatants = battleState.enemies.filter(e => e.hp > 0);
@@ -3316,20 +3375,25 @@ battleState.springState = 'idle';
 triggerBossDialogue("Я раздавлю тебя сверху!");
 return;
 }
-// Прыгающий монстр повержен -> Свет сужается (Радиус 260), Начинается фаза с тенями по бокам попарно
+// Прыгающий монстр повержен -> Новая 20-секундная фаза теней: свет сужается по бокам, тени должны коснуться друг друга.
 if (battleState.phase === 'spring_boss_fight' && activeCombatants.length === 0) {
 // НАГРАДА: Прыгающий монстр = 500 монет и 2000 поинтов
 gameState.coins += 500;
 gameState.points += 2000;
 updateUI();
-transitionBattlePhase('shadows_invasion', 'THE FOG IS COMING...');
-battleState.fogRadius = 340; // Радиус света увеличен, чтобы в фазе теней было видно игрока и боковые спавны
-battleState.fogPhaseTimer = 15.0; // Фаза теней идет ровно 15 секунд
+transitionBattlePhase('shadows_invasion', 'ФАЗА ТЕНЕЙ: СВЕДИ ИХ ВМЕСТЕ');
+battleState.fogRadius = 9999;
+battleState.fogPhaseTimer = 20.0;
+battleState.murino2ShadowPhaseElapsed = 0;
 battleState.shadowsInsideCount = 0;
 battleState.superPressSequence = 0;
 battleState.shadowDotTimer = 1.0;
-battleState.shadowSpawnTimer = 0; // Сброс спавнера теней
-triggerBossDialogue("THE FOG IS COMING... ТЕНИ ИДУТ!");
+battleState.shadowSpawnTimer = 7.0;
+battleState.murino2ShadowPairId = 0;
+battleState.murino2ActivePairId = 0;
+battleState.murino2LastKilledPairId = 0;
+triggerBossDialogue("Свет сжимается... Сведи тени вместе за 7 секунд!");
+spawnMurino2ShadowPair();
 const fogSnd = document.getElementById('soundFogIsComing');
 if (fogSnd) {
 fogSnd.currentTime = 0;
@@ -3337,24 +3401,20 @@ fogSnd.play().catch(e => {});
 }
 return;
 }
-// Завершение Фазы Тумана (Теней) по таймеру ровно через 15 сек -> передышка 5 сек и финальный фруктовый дождь
+// Завершение новой фазы теней через 20 сек -> сразу начинается дождь.
 if (battleState.phase === 'shadows_invasion' && battleState.fogPhaseTimer <= 0) {
 // НАГРАДА: Фаза с тенями = 1200 монет и 2300 поинтов
 gameState.coins += 1200;
 gameState.points += 2300;
 updateUI();
-battleState.fogRadius = 9999; // Возвращаем свет
-battleState.shadowsInsideCount = 0; // Сбрасываем дебафф теней
-battleState.enemies = []; // Очищаем оставшиеся тени
-transitionBattlePhase('fruit_rain_prep', 'ПЕРЕРЫВ ПЕРЕД ВКУСНЫМ ДОЖДЕМ');
-setTimeout(() => {
-if (!battleState.active) return;
+battleState.fogRadius = 9999;
+battleState.shadowsInsideCount = 0;
+battleState.enemies = battleState.enemies.filter(e => e.type !== 'shadow_creature');
 transitionBattlePhase('fruit_rain_active', 'ВКУСНОСТЬ ДОЖДЬ!');
 triggerBossDialogue("ПОПРОБУЙ УКЛОНИТЬСЯ ОТ ФРУКТОВЫХ КАПЕЛЬ!");
 battleState.keysCollected = 0;
 battleState.goldenKeys = generateReachableGoldenKeys();
-showFloatingMessage("Золотые ключи появились в случайных местах. До каждого можно допрыгнуть!");
-}, 5000); // Передышка ровно 5 секунд
+showFloatingMessage("Фаза теней прошла. Начался дождь!");
 return;
 }
 }
@@ -3814,16 +3874,17 @@ showFloatingMessage("ВАС УДАРИЛО МОЛНИЕЙ! Заморозка 3 
 }
 }
 
-// Логика спавна теней по бокам попарно
+// Новая логика фазы теней: первая пара появляется сразу, затем каждые 7 секунд или сразу после столкновения текущей пары.
 if (battleState.phase === 'shadows_invasion' && battleState.active) {
 battleState.shadowSpawnTimer -= 0.016;
-if (battleState.shadowSpawnTimer <= 0) {
-battleState.shadowSpawnTimer = 1.5; // Спавн каждые 1.5 секунды
-// Спавним слева и справа одновременно по паре
-battleState.enemies.push(new Enemy('shadow_creature', -50, 355));
-battleState.enemies.push(new Enemy('shadow_creature', V_WIDTH + 50, 355));
-playSynthesizedSound(200, 0.1, 'sawtooth');
+battleState.murino2ShadowPhaseElapsed = (battleState.murino2ShadowPhaseElapsed || 0) + 0.016;
+const currentPairCleared = battleState.murino2ActivePairId > 0 && battleState.murino2LastKilledPairId === battleState.murino2ActivePairId;
+if (battleState.fogPhaseTimer > 0.25 && (battleState.shadowSpawnTimer <= 0 || currentPairCleared)) {
+spawnMurino2ShadowPair();
 }
+const remain = Math.max(0, battleState.fogPhaseTimer).toFixed(1);
+const pairRemain = Math.max(0, battleState.shadowSpawnTimer).toFixed(1);
+document.getElementById('battleStatusMsg').innerText = `ФАЗА ТЕНЕЙ ${remain}с | новая пара через ${pairRemain}с`;
 }
 
 if (battleState.phase === 'fruit_rain_active') {
@@ -3933,7 +3994,36 @@ ctx.stroke();
 ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
 ctx.fill();
 }
-if (battleState.fogRadius < 9999) {
+if (gameState.currentLocation === 'Murino_2' && battleState.phase === 'shadows_invasion') {
+ctx.save();
+const phaseTotal = 20.0;
+const progress = Math.min(1, Math.max(0, (battleState.murino2ShadowPhaseElapsed || 0) / phaseTotal));
+const centerX = battleState.player.x + battleState.player.width / 2;
+const halfLight = Math.max(240, 420 - progress * 140);
+const leftDarkEnd = Math.max(0, centerX - halfLight);
+const rightDarkStart = Math.min(V_WIDTH, centerX + halfLight);
+ctx.fillStyle = 'rgba(2, 6, 23, 0.96)';
+ctx.fillRect(0, 0, leftDarkEnd, V_HEIGHT);
+ctx.fillRect(rightDarkStart, 0, V_WIDTH - rightDarkStart, V_HEIGHT);
+const leftGrad = ctx.createLinearGradient(leftDarkEnd - 90, 0, leftDarkEnd + 70, 0);
+leftGrad.addColorStop(0, 'rgba(2, 6, 23, 0.98)');
+leftGrad.addColorStop(1, 'rgba(2, 6, 23, 0.0)');
+ctx.fillStyle = leftGrad;
+ctx.fillRect(Math.max(0, leftDarkEnd - 90), 0, 170, V_HEIGHT);
+const rightGrad = ctx.createLinearGradient(rightDarkStart - 70, 0, rightDarkStart + 90, 0);
+rightGrad.addColorStop(0, 'rgba(2, 6, 23, 0.0)');
+rightGrad.addColorStop(1, 'rgba(2, 6, 23, 0.98)');
+ctx.fillStyle = rightGrad;
+ctx.fillRect(rightDarkStart - 80, 0, 180, V_HEIGHT);
+ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+ctx.fillRect(0, 0, V_WIDTH, 70);
+ctx.fillRect(0, 505, V_WIDTH, 95);
+ctx.fillStyle = '#e9d5ff';
+ctx.font = 'bold 10px "Press Start 2P", monospace';
+ctx.textAlign = 'center';
+ctx.fillText('СВЕДИ ТЕНИ ДРУГ К ДРУГУ', V_WIDTH / 2, 86);
+ctx.restore();
+} else if (battleState.fogRadius < 9999) {
 ctx.save();
 const pX = battleState.player.x + battleState.player.width/2;
 const pY = battleState.player.y + battleState.player.height/2;
@@ -3963,8 +4053,8 @@ if (battleState.playerRegenTimer > 0) {
 battleState.playerRegenTimer -= 0.016;
 battleState.player.hp = Math.min(battleState.player.maxHp, battleState.player.hp + 50 * 0.016); 
 }
-// DOT урон от теней
-if (battleState.shadowsInsideCount > 0 && battleState.phase === 'shadows_invasion') {
+// DOT урон от теней оставлен для старых механик, но в новой фазе Мурино 2 тени убиваются только столкновением друг с другом.
+if (!(gameState.currentLocation === 'Murino_2' && battleState.phase === 'shadows_invasion') && battleState.shadowsInsideCount > 0 && battleState.phase === 'shadows_invasion') {
 battleState.shadowDotTimer -= 0.016;
 if (battleState.shadowDotTimer <= 0) {
 const dotDmg = battleState.shadowsInsideCount * 150;
@@ -4057,6 +4147,10 @@ battleState.fogPhaseTimer = 0;
 battleState.shadowDotTimer = 1.0;
 battleState.lightningTimer = 2.0;
 battleState.shadowSpawnTimer = 0;
+battleState.murino2ShadowPhaseElapsed = 0;
+battleState.murino2ShadowPairId = 0;
+battleState.murino2ActivePairId = 0;
+battleState.murino2LastKilledPairId = 0;
 battleState.murino2FinalRewardCoins = 0;
 battleState.murino2FinalRewardPoints = 0;
 battleState.player = new Player();
