@@ -6143,5 +6143,46 @@ function m3DrawHeroFallback() {
 
 </script>
 
+
+<script>
+let attackWarnCooldown = 0;
+function canPlayerAttack() {
+    if (gameState.currentLocation !== 'Murino_3') return true;
+    const m3 = m3ensure ? m3ensure() : null;
+    if (!m3) return false;
+    const combatPhases = [
+        'guard_fight',
+        'rabbit_fight',
+        'rabbit_orbs',
+        'black_drops',
+        'skromnik_waves',
+        'squeezer',
+        'red_crosshairs',
+        'fog_boss'
+    ];
+    return combatPhases.includes(m3.phase);
+}
+function handleAttackAttempt() {
+    if (!canPlayerAttack()) {
+        if (Date.now() > attackWarnCooldown) {
+            attackWarnCooldown = Date.now() + 1500;
+            showFloatingMessage("Атаковать можно только когда начнется бой!");
+        }
+        return false;
+    }
+    return true;
+}
+</script>
+
+<script>
+document.addEventListener('mousedown', function(e){
+    if (!handleAttackAttempt()) e.stopPropagation();
+});
+document.addEventListener('keydown', function(e){
+    if (['x','X','z','Z'].includes(e.key)) {
+        if (!handleAttackAttempt()) e.preventDefault();
+    }
+});
+</script>
 </body>
 </html>
