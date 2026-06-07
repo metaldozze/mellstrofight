@@ -336,15 +336,15 @@ CREDITS
 </div>
 </div>
 </button>
-<!-- Часть 3: Туман (FOG) - Заблокировано -->
-<button onclick="showFloatingMessage('Локация временно закрыта согласно сюжету!')" class="h-48 rounded-xl bg-slate-900 border-2 border-red-900/60 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-30 cursor-not-allowed">
-<div class="absolute inset-0 bg-cover bg-center opacity-5 filter blur-[1px]" style="background-image: url('https://cs6.pikabu.ru/video/2017/09/01/4/og_og_1504239048317731297.jpg')"></div>
+<!-- Часть 3: Туман (FOG) -->
+<button id="murinoPart3Btn" onclick="selectMurinoPart('Murino_3', gameState.completedLocations.includes('Murino_2'))" class="h-48 rounded-xl bg-slate-900 border-2 border-red-900/60 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-50">
+<div class="absolute inset-0 bg-cover bg-center opacity-10 filter blur-[1px]" style="background-image: url('https://cs6.pikabu.ru/video/2017/09/01/4/og_og_1504239048317731297.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/90"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
-<span class="bg-red-900 text-red-200 font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ЗАБЛОКИРОВАНО</span>
+<span id="murinoPart3Badge" class="bg-red-900 text-red-200 font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ЗАКРЫТО</span>
 <div class="text-left mt-auto">
-<h3 class="font-bold text-lg text-red-700/80">Часть 3: Туман</h3>
-<p class="text-[10px] text-gray-600">Заблокировано разработчиком</p>
+<h3 id="murinoPart3Title" class="font-bold text-lg text-red-700/80">Часть 3: Туман</h3>
+<p id="murinoPart3Desc" class="text-[10px] text-gray-600">Пройдите Часть 2</p>
 </div>
 </div>
 </button>
@@ -1039,7 +1039,7 @@ function updateLocationButtons() {
 const isArmyPassed = gameState.completedLocations.includes('Army');
 const isMur1Passed = gameState.completedLocations.includes('Murino_1');
 const isMur2Passed = gameState.completedLocations.includes('Murino_2');
-const isMur3Passed = false; 
+const isMur3Passed = gameState.completedLocations.includes('Murino_3'); 
 const locMurinoBtn = document.getElementById('locMurinoBtn');
 const locMurinoBadge = document.getElementById('locMurinoBadge');
 const locMurinoPoints = document.getElementById('locMurinoPoints');
@@ -1340,7 +1340,7 @@ let isAllowed = defaultAllowed;
 const isArmyPassed = gameState.completedLocations.includes('Army');
 const isMur1Passed = gameState.completedLocations.includes('Murino_1');
 const isMur2Passed = gameState.completedLocations.includes('Murino_2');
-const isMur3Passed = false; 
+const isMur3Passed = gameState.completedLocations.includes('Murino_3'); 
 if (locName === 'Murino' && isArmyPassed) isAllowed = true;
 if (locName === 'Molochnoe' && isArmyPassed && isMur1Passed && isMur2Passed && isMur3Passed) isAllowed = true;
 if (isAllowed) {
@@ -5563,22 +5563,40 @@ function m3Frame() {
 // UI unlocks and wrappers
 function m3UpdatePartButton() {
   const modal = document.getElementById('murinoPartsModal');
-  if (!modal) return;
-  const buttons = [...modal.querySelectorAll('button')];
-  const part3Btn = buttons.find(b => b.textContent.includes('Часть 3'));
+  if (!modal || !window.gameState) return;
+
+  const passed2 = Array.isArray(gameState.completedLocations) && gameState.completedLocations.includes('Murino_2');
+  const part3Btn = document.getElementById('murinoPart3Btn') || [...modal.querySelectorAll('button')].find(b => b.textContent.includes('Часть 3'));
   if (!part3Btn) return;
+
   part3Btn.id = 'murinoPart3Btn';
-  part3Btn.onclick = () => selectMurinoPart('Murino_3', gameState.completedLocations.includes('Murino_2'));
-  const passed2 = gameState.completedLocations.includes('Murino_2');
+  part3Btn.onclick = () => selectMurinoPart('Murino_3', passed2);
+  part3Btn.disabled = false;
   part3Btn.className = passed2
-    ? 'h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-100'
+    ? 'h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-100 hover:scale-[1.02]'
     : 'h-48 rounded-xl bg-slate-900 border-2 border-red-900/60 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-50';
-  const badge = part3Btn.querySelector('span');
-  const title = part3Btn.querySelector('h3');
-  const desc = part3Btn.querySelector('p');
-  if (badge) { badge.className = passed2 ? 'bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font' : 'bg-red-900 text-red-200 font-bold text-[8px] px-2 py-1 rounded w-max gaming-font'; badge.textContent = passed2 ? 'ДОСТУПНО' : 'ЗАКРЫТО'; }
-  if (title) { title.className = passed2 ? 'font-bold text-lg text-white' : 'font-bold text-lg text-red-700/80'; title.textContent = 'Часть 3: Туман'; }
-  if (desc) { desc.className = passed2 ? 'text-[10px] text-emerald-400' : 'text-[10px] text-gray-600'; desc.textContent = passed2 ? 'Стражи, Заяц, Сжимающий и THE FOG' : 'Пройдите Часть 2'; }
+
+  const badge = document.getElementById('murinoPart3Badge') || part3Btn.querySelector('span');
+  const title = document.getElementById('murinoPart3Title') || part3Btn.querySelector('h3');
+  const desc = document.getElementById('murinoPart3Desc') || part3Btn.querySelector('p');
+
+  if (badge) {
+    badge.id = 'murinoPart3Badge';
+    badge.className = passed2
+      ? 'bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font'
+      : 'bg-red-900 text-red-200 font-bold text-[8px] px-2 py-1 rounded w-max gaming-font';
+    badge.textContent = passed2 ? 'ДОСТУПНО' : 'ЗАКРЫТО';
+  }
+  if (title) {
+    title.id = 'murinoPart3Title';
+    title.className = passed2 ? 'font-bold text-lg text-white' : 'font-bold text-lg text-red-700/80';
+    title.textContent = 'Часть 3: Туман';
+  }
+  if (desc) {
+    desc.id = 'murinoPart3Desc';
+    desc.className = passed2 ? 'text-[10px] text-emerald-400' : 'text-[10px] text-gray-600';
+    desc.textContent = passed2 ? 'Стражи, Заяц, Сжимающий и THE FOG' : 'Пройдите Часть 2';
+  }
 }
 const m3OldOpenMurino = openMurinoSubparts;
 openMurinoSubparts = function() { m3OldOpenMurino(); setTimeout(m3UpdatePartButton, 0); };
@@ -5636,10 +5654,26 @@ endBattleSequence = function(isWin) {
     updateUI();
     return;
   }
+  if (isWin && gameState.currentLocation === 'Murino_2' && !gameState.completedLocations.includes('Murino_2')) {
+    gameState.completedLocations.push('Murino_2');
+    saveGameState();
+  }
   m3OldEndBattle(isWin);
+  if (isWin && gameState.currentLocation === 'Murino_2') {
+    setTimeout(() => { m3UpdatePartButton(); updateUI(); }, 0);
+  }
 };
 const m3OldExitBattle = exitBattle;
-exitBattle = function(isWin) { const fogMusic = document.getElementById('soundFogIsComing'); if (fogMusic) { fogMusic.loop = false; fogMusic.pause(); } m3OldExitBattle(isWin); };
+exitBattle = function(isWin) {
+  const fogMusic = document.getElementById('soundFogIsComing');
+  if (fogMusic) { fogMusic.loop = false; fogMusic.pause(); }
+  if (isWin && gameState.currentLocation === 'Murino_2' && !gameState.completedLocations.includes('Murino_2')) {
+    gameState.completedLocations.push('Murino_2');
+    saveGameState();
+  }
+  m3OldExitBattle(isWin);
+  setTimeout(() => { m3UpdatePartButton(); updateUI(); }, 0);
+};
 const m3OldPlayMusic = playCurrentStageMusic;
 playCurrentStageMusic = function() {
   const fogMusic = document.getElementById('soundFogIsComing');
