@@ -104,7 +104,7 @@ CREDITS
 </button>
 </div>
 </div>
-<div class="absolute bottom-4 text-xs text-gray-600">v3.8.1 - Мурино 2: фазы, награды и хитбокс приседа</div>
+<div class="absolute bottom-4 text-xs text-gray-600">v3.8.2 - Мурино 2: новая фаза теней и фото Скромника</div>
 </div>
 <!-- Окно Credits -->
 <div id="creditsModal" class="hidden absolute inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
@@ -284,7 +284,7 @@ CREDITS
 <div class="grid grid-cols-3 gap-6 my-auto max-w-4xl mx-auto w-full">
 <!-- Часть 1: Улица -->
 <button onclick="selectMurinoPart('Murino_1', true)" class="h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group">
-<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://static.wikia.nocookie.net/fantasticbeings/images/1/13/IMG_9765.JPG/revision/latest/scale-to-width-down/536?cb=20170913095609&path-prefix=ru')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://i.ibb.co/n8fXG6c3/scromnik.png')"></div>
 <div class="absolute inset-0 bg-slate-950/50"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span class="bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ДОСТУПНО</span>
@@ -1370,7 +1370,7 @@ Murino3Bg: 'https://cs6.pikabu.ru/video/2017/09/01/4/og_og_1504239048317731297.j
 helper: 'https://s10.iimage.su/s/30/th_gYuXKdxxVePCgH7whlrLwbQMgak5jUzcl2G8Mz7BS.png',
 commander: 'https://s10.iimage.su/s/30/th_gNjDNFWxdsGNNl8udIDUXlRbD8ZSkmmMJn1wdywph.png',
 general: 'https://s10.iimage.su/s/30/th_gIQwNyQxtiO2lpCyfdvt9Vh1OjlGcwpbRutAj1lGD.png',
-skromnik: 'https://static.wikia.nocookie.net/fantasticbeings/images/1/13/IMG_9765.JPG/revision/latest/scale-to-width-down/536?cb=20170913095609&path-prefix=ru',
+skromnik: 'https://i.ibb.co/n8fXG6c3/scromnik.png',
 mimic_true: 'https://i.pinimg.com/originals/d9/62/30/d96230c1b8282a419aaffd6109fb90f4.jpg?nii=t',
 fog_creature: 'https://avatars.mds.yandex.net/i?id=503a24b487f8f83ff015f57a6f8a60ef2e3b9e7a-10150478-images-thumbs&n=13',
 drun: 'https://i.ibb.co/pD5wY3B/channels4-profile.jpg',
@@ -1492,6 +1492,9 @@ shadowDotTimer: 1.0,
 // Новые таймеры и переменные для фаз
 lightningTimer: 2.0, 
 shadowSpawnTimer: 0,
+shadowPairTimer: 0,
+shadowPairTransitionLock: false,
+shadowPairCounter: 0,
 murino2FinalRewardCoins: 0,
 murino2FinalRewardPoints: 0
 };
@@ -1515,6 +1518,31 @@ resetAllPhaseEffects();
 if (battleState.player) {
 battleState.player.lightningDebuff = false;
 }
+}
+
+function getAliveShadowCreatures() {
+return battleState.enemies.filter(e => e.type === 'shadow_creature' && e.hp > 0);
+}
+function spawnShadowPair(reasonText = '') {
+if (!battleState.active || battleState.phase !== 'shadows_invasion') return;
+battleState.shadowPairCounter = (battleState.shadowPairCounter || 0) + 1;
+battleState.shadowPairTimer = 8.0;
+battleState.shadowSpawnTimer = 0;
+battleState.shadowPairTransitionLock = false;
+battleState.enemies.push(new Enemy('shadow_creature', -50, 355));
+battleState.enemies.push(new Enemy('shadow_creature', V_WIDTH + 50, 355));
+playSynthesizedSound(200, 0.1, 'sawtooth');
+if (reasonText) showFloatingMessage(reasonText);
+document.getElementById('battleStatusMsg').innerText = `ТЕНИ: СВЕДИТЕ ИХ ЗА ${Math.ceil(battleState.shadowPairTimer)} СЕК.`;
+}
+function markShadowPairTouch(x, y) {
+if (battleState.phase !== 'shadows_invasion' || battleState.shadowPairTransitionLock) return;
+battleState.shadowPairTransitionLock = true;
+battleState.shadowSpawnTimer = 0.35;
+battleState.shadowPairTimer = 8.0;
+createSlamImpact(x, y, '#a855f7');
+showFloatingMessage("Тени коснулись друг друга и исчезли! Новая пара идет с боков!");
+playExplosionSound();
 }
 function checkCircleRectCollision(circle, rect) {
 let closestX = Math.max(rect.x, Math.min(circle.x, rect.x + rect.w));
@@ -1984,27 +2012,20 @@ return;
 }
 if (this.type === 'shadow_creature') {
 this.facingLeft = player.x < this.x;
-// ЗАМЕДЛЕНЫ: скорость теней снижена с 4.0 до 1.8
+// В новой фазе теней тени должны идти к игроку, чтобы игрок мог свести их друг с другом.
 const shadowSpeed = 1.8;
 this.vx = player.x > this.x ? shadowSpeed : -shadowSpeed;
 this.x += this.vx;
-const distToPlayer = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
-if (distToPlayer < 45 && Math.abs(player.y - this.y) < 60) {
-this.hp = 0; 
-battleState.shadowsInsideCount++; 
-battleState.shadowDotTimer = 1.0;
-showFloatingMessage(`Тень вселилась! Текущих стаков: ${battleState.shadowsInsideCount}`);
-playSynthesizedSound(190, 0.25, 'sawtooth');
-}
+// В этой версии тень не вселяется в игрока при касании: задача фазы — столкнуть тени между собой за 8 секунд.
 for (let other of battleState.enemies) {
 if (other !== this && other.type === 'shadow_creature' && other.hp > 0) {
-const distToOther = Math.abs(other.x - this.x);
-if (distToOther < 40) {
+const distToOther = Math.abs((other.x + other.width / 2) - (this.x + this.width / 2));
+if (distToOther < 42) {
+const hitX = (this.x + other.x) / 2 + this.width / 2;
+const hitY = this.y + this.height / 2;
 this.hp = 0;
 other.hp = 0;
-createSlamImpact(this.x + 20, this.y + 20, '#a855f7');
-showFloatingMessage("Тени столкнулись и аннигилировали!");
-playExplosionSound();
+markShadowPairTouch(hitX, hitY);
 }
 }
 }
@@ -3093,14 +3114,18 @@ if (battleState.phase === 'spring_boss_fight' && activeCombatants.length === 0) 
 gameState.coins += 500;
 gameState.points += 2000;
 updateUI();
-transitionBattlePhase('shadows_invasion', 'THE FOG IS COMING...');
-battleState.fogRadius = 340; // Радиус света увеличен, чтобы в фазе теней было видно игрока и боковые спавны
+transitionBattlePhase('shadows_invasion', 'ТЕНИ: СВЕДИТЕ ИХ ЗА 8 СЕК.');
+battleState.fogRadius = 340; // Свет сужается, но боковые спавны остаются видимыми
 battleState.fogPhaseTimer = 15.0; // Фаза теней идет ровно 15 секунд
 battleState.shadowsInsideCount = 0;
 battleState.superPressSequence = 0;
 battleState.shadowDotTimer = 1.0;
-battleState.shadowSpawnTimer = 0; // Сброс спавнера теней
-triggerBossDialogue("THE FOG IS COMING... ТЕНИ ИДУТ!");
+battleState.shadowSpawnTimer = 0;
+battleState.shadowPairTimer = 0;
+battleState.shadowPairTransitionLock = false;
+battleState.shadowPairCounter = 0;
+spawnShadowPair("Сведите две тени друг с другом за 8 секунд!");
+triggerBossDialogue("THE FOG IS COMING... СВЕДИ ТЕНИ ДРУГ С ДРУГОМ!");
 const fogSnd = document.getElementById('soundFogIsComing');
 if (fogSnd) {
 fogSnd.currentTime = 0;
@@ -3588,15 +3613,24 @@ showFloatingMessage("ВАС УДАРИЛО МОЛНИЕЙ! Заморозка 3 
 }
 }
 
-// Логика спавна теней по бокам попарно
+// Логика новой фазы теней: одна пара с боков, 8 секунд на столкновение, общая длительность 15 секунд
 if (battleState.phase === 'shadows_invasion' && battleState.active) {
+const aliveShadows = getAliveShadowCreatures();
+if (battleState.shadowPairTransitionLock) {
 battleState.shadowSpawnTimer -= 0.016;
 if (battleState.shadowSpawnTimer <= 0) {
-battleState.shadowSpawnTimer = 1.5; // Спавн каждые 1.5 секунды
-// Спавним слева и справа одновременно по паре
-battleState.enemies.push(new Enemy('shadow_creature', -50, 355));
-battleState.enemies.push(new Enemy('shadow_creature', V_WIDTH + 50, 355));
-playSynthesizedSound(200, 0.1, 'sawtooth');
+spawnShadowPair("Новая пара теней идет с боков!");
+}
+} else if (aliveShadows.length === 0) {
+spawnShadowPair("Тени исчезли. Новая пара идет с боков!");
+} else {
+battleState.shadowPairTimer -= 0.016;
+const secondsLeft = Math.max(0, Math.ceil(battleState.shadowPairTimer));
+document.getElementById('battleStatusMsg').innerText = `ТЕНИ: СВЕДИТЕ ИХ ЗА ${secondsLeft} СЕК.`;
+if (battleState.shadowPairTimer <= 0) {
+battleState.shadowPairTimer = 8.0;
+spawnShadowPair("Вы не успели за 8 секунд — еще две тени появились по бокам!");
+}
 }
 }
 
@@ -3737,16 +3771,7 @@ if (battleState.playerRegenTimer > 0) {
 battleState.playerRegenTimer -= 0.016;
 battleState.player.hp = Math.min(battleState.player.maxHp, battleState.player.hp + 50 * 0.016); 
 }
-// DOT урон от теней
-if (battleState.shadowsInsideCount > 0 && battleState.phase === 'shadows_invasion') {
-battleState.shadowDotTimer -= 0.016;
-if (battleState.shadowDotTimer <= 0) {
-const dotDmg = battleState.shadowsInsideCount * 150;
-battleState.player.takeDamage(dotDmg);
-battleState.shadowDotTimer = 1.0;
-showFloatingMessage(`Тени внутри наносят ${dotDmg} урона!`);
-}
-}
+// В обновленной фазе теней нет эффекта вселения и DOT-урона: цель — успеть столкнуть тени друг с другом.
 if (battleState.phase === 'shadows_invasion') {
 battleState.fogPhaseTimer -= 0.016;
 }
@@ -3822,6 +3847,9 @@ battleState.fogPhaseTimer = 0;
 battleState.shadowDotTimer = 1.0;
 battleState.lightningTimer = 2.0;
 battleState.shadowSpawnTimer = 0;
+battleState.shadowPairTimer = 0;
+battleState.shadowPairTransitionLock = false;
+battleState.shadowPairCounter = 0;
 battleState.murino2FinalRewardCoins = 0;
 battleState.murino2FinalRewardPoints = 0;
 battleState.player = new Player();
