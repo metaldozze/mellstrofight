@@ -71,15 +71,14 @@ pointer-events: none;
 z-index: 25;
 }
 </style>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%2303050a%22/%3E%3Ctext x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22%23ef4444%22%3EM%3C/text%3E%3C/svg%3E">
 </head>
 <body class="w-screen h-screen flex items-center justify-center relative select-none">
-<audio id="bgMusicMenu" loop src="../mellstrofight/mellstrofight/assets/audio/главное_меню.mp3"></audio>
-<audio id="bgMusicArmy" loop src="../mellstrofight/mellstrofight/assets/audio/армия.mp3"></audio>
-<audio id="bgMusicMurino1" loop src="../mellstrofight/mellstrofight/assets/audio/мурино1.mp3"></audio>
-<audio id="bgMusicMurino2" loop src="../mellstrofight/mellstrofight/assets/audio/мурино2.mp3"></audio>
-<audio id="soundScaryMurino" src="../mellstrofight../mellstrofight/mellstrofight/assets/audio/fog.mp3"></audio>
-<audio id="soundFogIsComing" src="../mellstrofight../mellstrofight/mellstrofight/assets/audio/fog.mp3"></audio>
+<audio id="bgMusicMenu" loop src="https://www.image2url.com/r2/default/audio/1780179647396-169283b7-f9b0-4282-898b-084eccec0a81.mp3"></audio>
+<audio id="bgMusicArmy" loop src="https://www.image2url.com/r2/default/files/1780179166383-74227762-5a4f-4955-a06e-b01658622c52.mp3"></audio>
+<audio id="bgMusicMurino1" loop src="https://fine.sunproxy.net/file/dVhoK0hDL2dMOGZlK3o3dVQwNElwRTJkYm1Ba2xNbmNINmh0TDl0M3JINktNVlpIaEQzRjJ3ZzJsTWNUaU5XWnFXbm1YbXJqbGMra2p2Ky9FemdkNW50b0dQTHJCOWplWTJuM1g4djlCTDA9/instupendo_-_six_forty_seven_(SkySound.cc).mp3"></audio>
+<audio id="bgMusicMurino2" loop src="https://muzpab.я.ws/media/music/48/48105_7a4d9b6a436862612c2da65fe6a7ddb2.mp3?The%20Caretaker%20-%20It%27s%20Just%20A%20Burning%20Memory.mp3"></audio>
+<audio id="soundScaryMurino" src="https://www.image2url.com/r2/default/audio/1780178878223-ba13f36c-f6fd-46c5-aca2-9f30a8160dba.mp3"></audio>
+<audio id="soundFogIsComing" src="https://www.myinstants.com/media/sounds/the-fog-is-coming.mp3"></audio>
 <div class="absolute top-4 right-4 z-50 flex gap-2">
 <button id="musicToggleBtn" onclick="toggleMusic()" class="bg-slate-900/90 hover:bg-slate-800 text-white p-3 rounded-full border border-slate-700 transition shadow-lg flex items-center justify-center w-12 h-12">
 <i id="musicIcon" class="fas fa-music text-red-500"></i>
@@ -105,7 +104,7 @@ CREDITS
 </button>
 </div>
 </div>
-<div class="absolute bottom-4 text-xs text-gray-600">v3.8.1 - Мурино 2: финальные фазы и честный присед</div>
+<div class="absolute bottom-4 text-xs text-gray-600">v3.8.1 - Мурино 2: фазы, награды и хитбокс приседа</div>
 </div>
 <!-- Окно Credits -->
 <div id="creditsModal" class="hidden absolute inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
@@ -185,7 +184,7 @@ CREDITS
 </div>
 <!-- Картинка героя -->
 <div class="w-44 h-44 rounded-full overflow-hidden border-4 border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.4)] my-6 relative bg-slate-800 flex items-center justify-center">
-<img id="selectedHeroImg" src="../mellstrofight/mellstrofight/assets/images/мелл.jpg" alt="Mell" class="w-full h-full object-cover">
+<img id="selectedHeroImg" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeYnkXnb1ypzbGzYabcpPt7hWLDHUktc_BIQ&s" alt="Mell" class="w-full h-full object-cover">
 </div>
 <div id="heroSpecialsLabel" class="text-xs text-gray-400 text-center px-4">
 Супер-способность: <span class="text-red-500 font-bold">Прыжок Смерти (X)</span> - разблокируется на 9 ур.
@@ -206,7 +205,7 @@ CREDITS
 <!-- Выбор локации -->
 <div class="w-full">
 <button onclick="openLocationSelect()" class="w-full h-16 rounded-xl overflow-hidden relative group border-2 border-slate-700 hover:border-red-500 transition">
-<div id="locationBtnBg" class="absolute inset-0 bg-cover bg-center filter grayscale opacity-40 contrast-125" style="background-image: url('../mellstrofight/mellstrofight/assets/images/армия.jpg')"></div>
+<div id="locationBtnBg" class="absolute inset-0 bg-cover bg-center filter grayscale opacity-40 contrast-125" style="background-image: url('https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/70 group-hover:bg-red-950/40 transition"></div>
 <div class="absolute inset-0 flex items-center justify-center gap-3">
 <i class="fas fa-map-marked-alt text-xl text-red-500"></i>
@@ -226,7 +225,7 @@ CREDITS
 <!-- Сетка локаций -->
 <div class="grid grid-cols-4 gap-4 my-auto">
 <button onclick="selectLocation('Army', 0, true)" class="h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group">
-<div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('../mellstrofight/mellstrofight/assets/images/армия.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/50"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span class="bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">СТАРТОВАЯ</span>
@@ -237,7 +236,7 @@ CREDITS
 </div>
 </button>
 <button id="locMurinoBtn" onclick="openMurinoSubparts()" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-60">
-<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('../mellstrofight/mellstrofight/assets/images/мурино1.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('https://avatars.mds.yandex.net/i?id=368eca4c07965278b14cd8e894bac250_l-5642274-images-thumbs&n=13')"></div>
 <div class="absolute inset-0 bg-slate-950/85"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span id="locMurinoBadge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font"><i class="fas fa-lock mr-1"></i> ЗАКРЫТО</span>
@@ -248,7 +247,7 @@ CREDITS
 </div>
 </button>
 <button id="locMolochnoeBtn" onclick="selectLocation('Molochnoe', 0, false)" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-60">
-<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('../mellstrofight/mellstrofight/assets/images/мелл.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('https://placehold.co/300x200/111827/ffffff?text=Selo')"></div>
 <div class="absolute inset-0 bg-slate-950/85"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span id="locMolochnoeBadge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font"><i class="fas fa-lock mr-1"></i> ЗАКРЫТО</span>
@@ -259,7 +258,7 @@ CREDITS
 </div>
 </button>
 <button id="locMytishchiBtn" onclick="selectLocation('Mytishchi', 0, false)" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-60">
-<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('../mellstrofight/mellstrofight/assets/images/мелл.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-15 filter grayscale" style="background-image: url('https://placehold.co/300x200/111827/ffffff?text=Mytishchi')"></div>
 <div class="absolute inset-0 bg-slate-950/85"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span id="locMytishchiBadge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font"><i class="fas fa-lock mr-1"></i> ЗАКРЫТО</span>
@@ -285,7 +284,7 @@ CREDITS
 <div class="grid grid-cols-3 gap-6 my-auto max-w-4xl mx-auto w-full">
 <!-- Часть 1: Улица -->
 <button onclick="selectMurinoPart('Murino_1', true)" class="h-48 rounded-xl bg-slate-900 border-2 border-emerald-500 p-4 flex flex-col justify-between relative overflow-hidden transition group">
-<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('../mellstrofight/mellstrofight/assets/images/мурино1.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://static.wikia.nocookie.net/fantasticbeings/images/1/13/IMG_9765.JPG/revision/latest/scale-to-width-down/536?cb=20170913095609&path-prefix=ru')"></div>
 <div class="absolute inset-0 bg-slate-950/50"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span class="bg-emerald-500 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ДОСТУПНО</span>
@@ -297,7 +296,7 @@ CREDITS
 </button>
 <!-- Часть 2: Дом и Подвал -->
 <button id="murinoPart2Btn" onclick="selectMurinoPart('Murino_2', false)" class="h-48 rounded-xl bg-slate-900 border-2 border-slate-800 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-50">
-<div class="absolute inset-0 bg-cover bg-center opacity-15" style="background-image: url('../mellstrofight/mellstrofight/assets/images/мурино2.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-15" style="background-image: url('https://cdnb.artstation.com/p/assets/images/images/053/848/533/large/infinity-vision-dark-cooridoor-preview01.jpg?1663165516')"></div>
 <div class="absolute inset-0 bg-slate-950/85"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span id="murinoPart2Badge" class="bg-red-600 text-white font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ЗАКРЫТО</span>
@@ -309,7 +308,7 @@ CREDITS
 </button>
 <!-- Часть 3: Туман (FOG) - Заблокировано -->
 <button onclick="showFloatingMessage('Локация временно закрыта согласно сюжету!')" class="h-48 rounded-xl bg-slate-900 border-2 border-red-900/60 p-4 flex flex-col justify-between relative overflow-hidden transition group opacity-30 cursor-not-allowed">
-<div class="absolute inset-0 bg-cover bg-center opacity-5 filter blur-[1px]" style="background-image: url('../mellstrofight/mellstrofight/assets/images/подвал.jpg')"></div>
+<div class="absolute inset-0 bg-cover bg-center opacity-5 filter blur-[1px]" style="background-image: url('https://cs6.pikabu.ru/video/2017/09/01/4/og_og_1504239048317731297.jpg')"></div>
 <div class="absolute inset-0 bg-slate-950/90"></div>
 <div class="relative z-10 flex flex-col justify-between h-full w-full">
 <span class="bg-red-900 text-red-200 font-bold text-[8px] px-2 py-1 rounded w-max gaming-font">ЗАБЛОКИРОВАНО</span>
@@ -714,7 +713,7 @@ Mell: {
 id: "Mell",
 name: "Mell",
 rarity: "Стартовый",
-img: "../mellstrofight/mellstrofight/assets/images/мелл.jpg",
+img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeYnkXnb1ypzbGzYabcpPt7hWLDHUktc_BIQ&s",
 baseHp: 1500,
 hpPerLevel: 150,
 baseDmg: 100,
@@ -727,7 +726,7 @@ Pucheglaz: {
 id: "Pucheglaz",
 name: "Пучеглазость",
 rarity: "Обычный",
-img: "../mellstrofight/mellstrofight/assets/images/пучеглазость.jpg",
+img: "https://s10.iimage.su/s/30/gwwpDxexycPhaWfrfzO9g8aYvWRj1BfKXBfpQmQhv.jpg",
 baseHp: 1500,
 hpPerLevel: 100,
 baseDmg: 90,  
@@ -740,7 +739,7 @@ Smena2: {
 id: "Smena2",
 name: "2 смена",
 rarity: "Обычный",
-img: "../mellstrofight/mellstrofight/assets/images/2 смена.jpg",
+img: "https://s10.iimage.su/s/30/th_gNzlEc1x44I93mIjLqiVa9SXRBJ1kXOFdzUSKQP12.jpg",
 baseHp: 1400,
 hpPerLevel: 90,
 baseDmg: 100,
@@ -753,7 +752,7 @@ Otstalost: {
 id: "Otstalost",
 name: "Отсталость",
 rarity: "Редкий",
-img: "../mellstrofight/mellstrofight/assets/images/отсталость.jpg",
+img: "https://s10.iimage.su/s/30/th_gI0sZqkxuzRKyJMQYkwf7km6Q7IIbu6Xnn7Gagb3f.jpg",
 baseHp: 1700,
 hpPerLevel: 50,
 baseDmg: 40,
@@ -766,7 +765,7 @@ Pyramid: {
 id: "Pyramid",
 name: "Пирамида красности",
 rarity: "Редкий",
-img: "../mellstrofight/mellstrofight/assets/images/пирамида красности.jpg",
+img: "https://s10.iimage.su/s/30/th_gvRmx8ex77f78qPLFSpFMpTMsfRQEbTCTctnSkj76.jpg",
 baseHp: 1300,
 hpPerLevel: 100,
 baseDmg: 170,
@@ -779,7 +778,7 @@ Puglivost: {
 id: "Puglivost",
 name: "Пугливость",
 rarity: "Редкий",
-img: "../mellstrofight/mellstrofight/assets/images/страшность.jpg",
+img: "https://i.ibb.co/jPvLP2CP/photo-2026-05-31-06-46-39.jpg",
 baseHp: 1000,
 hpPerLevel: 60,
 baseDmg: 80,
@@ -792,7 +791,7 @@ Soplya: {
 id: "Soplya",
 name: "Сопля",
 rarity: "Мифический",
-img: "../mellstrofight/mellstrofight/assets/images/сопля.jpg",
+img: "https://s10.iimage.su/s/30/th_gO5pi7lxjPSXKglgKP5Hfca2odIAb5RwQK7HBDIyF.jpg",
 baseHp: 900,
 hpPerLevel: 100,
 baseDmg: 200,
@@ -805,7 +804,7 @@ Oglushaemost: {
 id: "Oglushaemost",
 name: "Оглушаемость",
 rarity: "Мифический",
-img: "../mellstrofight/mellstrofight/assets/images/оглушаемость.jpg",
+img: "https://s10.iimage.su/s/30/th_gOr2OsGx78XX3GjaX9attU6B7XwWy5kCOf2gD2bz6.jpg",
 baseHp: 1300,
 hpPerLevel: 100,
 baseDmg: 10,
@@ -818,7 +817,7 @@ Syr: {
 id: "Syr",
 name: "Сыр",
 rarity: "Особый",
-img: "../mellstrofight/mellstrofight/assets/images/сыр.jpg",
+img: "https://s10.iimage.su/s/30/th_gZtt9LPxYeyoZczvYNw6UYTbhz7Ez6ozLDQKQwYJi.jpg",
 baseHp: 800,
 hpPerLevel: 300,
 baseDmg: 500,
@@ -831,7 +830,7 @@ Omaygad: {
 id: "Omaygad",
 name: "Омайгад",
 rarity: "Особый",
-img: "../mellstrofight/mellstrofight/assets/images/омайгад.jpg",
+img: "https://i.ibb.co/4wYq62sh/photo-2026-05-31-05-14-58.jpg",
 baseHp: 1600,
 hpPerLevel: 120,
 baseDmg: 120,
@@ -858,7 +857,6 @@ hyperPrice: 3
 };
 function saveGameState() {
 localStorage.setItem('MellstroFight_v3_state_h', JSON.stringify(gameState));
-if (window.queueFirebaseSave) window.queueFirebaseSave();
 }
 function loadGameState() {
 const saved = localStorage.getItem('MellstroFight_v3_state_h');
@@ -892,17 +890,9 @@ document.getElementById('crystalsDisplay').innerText = gameState.crystals;
 document.getElementById('shopCrystalsDisplay').innerText = gameState.crystals;
 const hero = HEROES_DB[gameState.selectedHero] || HEROES_DB.Mell;
 const lv = gameState.heroLevels[hero.id] || 1;
-const activeHeroNameElem = document.getElementById('activeHeroName');
-if (activeHeroNameElem) {
-  const userHeader = window.getUserHeaderHtml ? window.getUserHeaderHtml() : '';
-  if (userHeader) {
-    activeHeroNameElem.innerHTML = userHeader;
-  } else {
-    activeHeroNameElem.innerText = hero.name;
-  }
-}
+document.getElementById('activeHeroName').innerText = hero.name;
 document.getElementById('selectedHeroNameLabel').innerText = hero.name;
-document.getElementById('selectedHeroImg').src = hero.img || "../mellstrofight/mellstrofight/assets/images/мелл.jpg";
+document.getElementById('selectedHeroImg').src = hero.img || "https://placehold.co/150";
 const curDmg = hero.baseDmg + (lv - 1) * hero.dmgPerLevel;
 document.getElementById('heroPowerTitle').innerText = `СИЛА: ${hero.rarity.toUpperCase()} (УРОВЕНЬ ${lv}) - Сила: ${curDmg}`;
 if (lv >= 9) {
@@ -920,10 +910,10 @@ document.getElementById('selectedLocDisplay').innerText = locNames[gameState.cur
 const locBtnBg = document.getElementById('locationBtnBg');
 const locBtnLabel = document.getElementById('locationBtnLabel');
 if (gameState.currentLocation.startsWith('Murino')) {
-locBtnBg.style.backgroundImage = "url('../mellstrofight/mellstrofight/assets/images/мурино1.jpg')";
+locBtnBg.style.backgroundImage = "url('https://avatars.mds.yandex.net/i?id=368eca4c07965278b14cd8e894bac250_l-5642274-images-thumbs&n=13')";
 locBtnLabel.innerText = `ВЫБРАТЬ ЛОКАЦИЮ (${locNames[gameState.currentLocation].toUpperCase()})`;
 } else {
-locBtnBg.style.backgroundImage = "url('../mellstrofight/mellstrofight/assets/images/армия.jpg')";
+locBtnBg.style.backgroundImage = "url('https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg')";
 locBtnLabel.innerText = "ВЫБРАТЬ ЛОКАЦИЮ (АРМИЯ)";
 }
 const buyHyperBtn = document.getElementById('buyHyperBtn');
@@ -1022,7 +1012,7 @@ const imgDiv = document.createElement('div');
 imgDiv.className = "w-14 h-14 rounded-full overflow-hidden border border-slate-700 bg-slate-800 relative flex items-center justify-center";
 if (isUnlocked) {
 const img = document.createElement('img');
-img.src = hero.img || "../mellstrofight/mellstrofight/assets/images/мелл.jpg";
+img.src = hero.img || "https://placehold.co/150";
 img.className = "w-full h-full object-cover";
 imgDiv.appendChild(img);
 } else {
@@ -1111,7 +1101,7 @@ playSynthesizedSound(150, 0.3, 'sawtooth');
 showFloatingMessage("Недостаточно монет для улучшения героя!");
 }
 }
-function startGameOriginal() {
+function startGame() {
 playSynthesizedSound(400, 0.15);
 const splash = document.getElementById('splashScene');
 splash.classList.add('opacity-0');
@@ -1362,61 +1352,40 @@ const V_HEIGHT = 600;
 let canvasScaleX = 1;
 let canvasScaleY = 1;
 const imgPreload = {
-Mell: "../mellstrofight/mellstrofight/assets/images/мелл.jpg",
-Pucheglaz: "../mellstrofight/mellstrofight/assets/images/пучеглазость.jpg",
-Smena2: "../mellstrofight/mellstrofight/assets/images/2 смена.jpg",
-Otstalost: "../mellstrofight/mellstrofight/assets/images/отсталость.jpg",
-Pyramid: "../mellstrofight/mellstrofight/assets/images/пирамида красности.jpg",
-Puglivost: "../mellstrofight/mellstrofight/assets/images/страшность.jpg",
-Soplya: "../mellstrofight/mellstrofight/assets/images/сопля.jpg",
-Oglushaemost: "../mellstrofight/mellstrofight/assets/images/оглушаемость.jpg",
-Syr: "../mellstrofight/mellstrofight/assets/images/сыр.jpg",
-Omaygad: "../mellstrofight/mellstrofight/assets/images/омайгад.jpg",
-vodka: "../mellstrofight/mellstrofight/assets/images/пузырь.png",
-ArmyBg: "../mellstrofight/mellstrofight/assets/images/армия.jpg",
-Murino1Bg: "../mellstrofight/mellstrofight/assets/images/мурино1.jpg",
-Murino2Bg: "../mellstrofight/mellstrofight/assets/images/мурино2.jpg",
-Murino3Bg: "../mellstrofight/mellstrofight/assets/images/подвал.jpg",
-helper: "../mellstrofight/mellstrofight/assets/images/военные.png",
-commander: "../mellstrofight/mellstrofight/assets/images/начальник.png",
-general: "../mellstrofight/mellstrofight/assets/images/генерал.png",
-skromnik: "../mellstrofight/mellstrofight/assets/images/скромник.png",
-mimic_true: "../mellstrofight/mellstrofight/assets/images/скромник.png",
-fog_creature: "../mellstrofight/mellstrofight/assets/images/тень.png",
-drun: "../mellstrofight/mellstrofight/assets/images/друн.jpg",
-corridor_monster: "../mellstrofight/mellstrofight/assets/images/прыгающий монстр.jpe",
-skrut: "../mellstrofight/mellstrofight/assets/images/скромник.png",
-red_beast: "../mellstrofight/mellstrofight/assets/images/прыгающий монстр.jpe",
-spring_monster: "../mellstrofight/mellstrofight/assets/images/прыгающий монстр.jpe",
-shadow_creature: "../mellstrofight/mellstrofight/assets/images/тень.png",
-trap_item: "../mellstrofight/mellstrofight/assets/images/капкан.png",
-flashlight_item: "../mellstrofight/mellstrofight/assets/images/капкан.png",
-knife_asset: "../mellstrofight/mellstrofight/assets/images/военные.png"
+Mell: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeYnkXnb1ypzbGzYabcpPt7hWLDHUktc_BIQ&s",
+Pucheglaz: "https://s10.iimage.su/s/30/gwwpDxexycPhaWfrfzO9g8aYvWRj1BfKXBfpQmQhv.jpg",
+Smena2: "https://s10.iimage.su/s/30/th_gNzlEc1x44I93mIjLqiVa9SXRBJ1kXOFdzUSKQP12.jpg",
+Otstalost: "https://s10.iimage.su/s/30/th_gI0sZqkxuzRKyJMQYkwf7km6Q7IIbu6Xnn7Gagb3f.jpg",
+Pyramid: "https://s10.iimage.su/s/30/th_gvRmx8ex77f78qPLFSpFMpTMsfRQEbTCTctnSkj76.jpg",
+Puglivost: "https://i.ibb.co/jPvLP2CP/photo-2026-05-31-06-46-39.jpg",
+Soplya: "https://s10.iimage.su/s/30/th_gO5pi7lxjPSXKglgKP5Hfca2odIAb5RwQK7HBDIyF.jpg",
+Oglushaemost: "https://s10.iimage.su/s/30/th_gOr2OsGx78XX3GjaX9attU6B7XwWy5kCOf2gD2bz6.jpg",
+Syr: "https://s10.iimage.su/s/30/th_gZtt9LPxYeyoZczvYNw6UYTbhz7Ez6ozLDQKQwYJi.jpg",
+Omaygad: "https://i.ibb.co/4wYq62sh/photo-2026-05-31-05-14-58.jpg",
+vodka: "https://s10.iimage.su/s/30/th_g6y6qLwxv95nuJcbeYLmjiCEJePIHz5Z8sCIBYIwS.png",
+ArmyBg: 'https://user30547.clients-cdnnow.ru/wp-content/uploads/2025/12/1-960x540.jpg',
+Murino1Bg: 'https://avatars.mds.yandex.net/i?id=368eca4c07965278b14cd8e894bac250_l-5642274-images-thumbs&n=13',
+Murino2Bg: 'https://cdnb.artstation.com/p/assets/images/images/053/848/533/large/infinity-vision-dark-cooridoor-preview01.jpg?1663165516',
+Murino3Bg: 'https://cs6.pikabu.ru/video/2017/09/01/4/og_og_1504239048317731297.jpg',
+helper: 'https://s10.iimage.su/s/30/th_gYuXKdxxVePCgH7whlrLwbQMgak5jUzcl2G8Mz7BS.png',
+commander: 'https://s10.iimage.su/s/30/th_gNjDNFWxdsGNNl8udIDUXlRbD8ZSkmmMJn1wdywph.png',
+general: 'https://s10.iimage.su/s/30/th_gIQwNyQxtiO2lpCyfdvt9Vh1OjlGcwpbRutAj1lGD.png',
+skromnik: 'https://static.wikia.nocookie.net/fantasticbeings/images/1/13/IMG_9765.JPG/revision/latest/scale-to-width-down/536?cb=20170913095609&path-prefix=ru',
+mimic_true: 'https://i.pinimg.com/originals/d9/62/30/d96230c1b8282a419aaffd6109fb90f4.jpg?nii=t',
+fog_creature: 'https://avatars.mds.yandex.net/i?id=503a24b487f8f83ff015f57a6f8a60ef2e3b9e7a-10150478-images-thumbs&n=13',
+drun: 'https://i.ibb.co/pD5wY3B/channels4-profile.jpg',
+corridor_monster: 'https://i.pinimg.com/1200x/04/22/22/042222bf7b945078bfb6a5bfbfe3b96d.jpg',
+skrut: 'https://i.pinimg.com/736x/c3/fe/8a/c3fe8a0d6bcbcdeeb4d310e4f5e598e4.jpg',
+red_beast: 'https://i.pinimg.com/originals/2f/ea/d2/2fead28a9cd651e86988518cb8de60bb.png',
+spring_monster: 'https://i.ibb.co/tThrkDCF/i.jpg',
+shadow_creature: 'https://i.ibb.co/5m1VNkJ/7188eedc53c4bde8686236bbafa539f2-no-bg-preview-carve-photos.png',
+trap_item: 'https://i.ibb.co/HT9trWzs/istockphoto-483767002-612x612-no-bg-preview-carve-photos.png',
+flashlight_item: 'https://i.ibb.co/p6wDyCTk/orig-1-no-bg-preview-carve-photos.png',
+knife_asset: 'https://i.ibb.co/8T9p91x/Gemini-Generated-Image-u6ltxau6ltxau6lt-no-bg-preview-carve-photos.png'
 };
 const cachedImages = {};
-const FALLBACK_IMAGE_SRC = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
-  <rect width="128" height="128" fill="#111827"/>
-  <circle cx="64" cy="64" r="44" fill="#334155"/>
-  <text x="64" y="72" text-anchor="middle" font-size="14" fill="#f8fafc" font-family="Arial">IMG</text>
-</svg>`);
-function imageReady(img) {
-  return !!(img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0);
-}
-function drawImageSafe(img, x, y, w, h, fallbackColor = '#334155') {
-  if (imageReady(img)) {
-    ctx.drawImage(img, x, y, w, h);
-  } else {
-    ctx.fillStyle = fallbackColor;
-    ctx.fillRect(x, y, w, h);
-  }
-}
 Object.entries(imgPreload).forEach(([k, url]) => {
 const img = new Image();
-img.onerror = () => {
-  img.onerror = null;
-  img.src = FALLBACK_IMAGE_SRC;
-};
 img.src = url;
 cachedImages[k] = img;
 });
@@ -1522,7 +1491,9 @@ fogPhaseTimer: 0,
 shadowDotTimer: 1.0,
 // Новые таймеры и переменные для фаз
 lightningTimer: 2.0, 
-shadowSpawnTimer: 0
+shadowSpawnTimer: 0,
+murino2FinalRewardCoins: 0,
+murino2FinalRewardPoints: 0
 };
 function resetAllPhaseEffects() {
 battleState.toxicFloorActive = false;
@@ -1639,16 +1610,18 @@ this.blackCircleTarget = null;
 }
 }
 const isCrouching = keys.ShiftLeft || keys.ShiftRight;
-// ИСПРАВЛЕНИЕ: Изменяем и физическую высоту (height), и позицию по Y (y), 
-// чтобы хитбокс действительно опускался ниже
+// Реальный присед: уменьшаем физический хитбокс и держим ноги на полу.
+// Теперь снаряды, летящие на уровне стоящего персонажа, пролетают над присевшим героем.
 if (isCrouching) {
-if (this.height === this.baseHeight) {
-this.height = this.baseHeight * 0.55;
-this.y += (this.baseHeight - this.height); // опускаем вниз при усадке
+if (Math.abs(this.height - this.baseHeight) < 0.01) {
+const newHeight = this.baseHeight * 0.55;
+this.y += (this.baseHeight - newHeight);
+this.height = newHeight;
 }
 } else {
-if (this.height !== this.baseHeight) {
-this.y -= (this.baseHeight - this.height); // поднимаем обратно
+if (Math.abs(this.height - this.baseHeight) > 0.01) {
+const oldHeight = this.height;
+this.y -= (this.baseHeight - oldHeight);
 this.height = this.baseHeight;
 }
 }
@@ -1820,13 +1793,12 @@ let img = cachedImages[this.heroInfo.id] || cachedImages.Mell;
 if (gameState.currentLocation === 'Murino_2' && battleState.mimicContamination > 0) {
 ctx.filter = `hue-rotate(${battleState.mimicContamination * 60}deg) saturate(1.8) invert(0.2)`;
 }
-// Рисуем героя строго по реальному хитбоксу: при приседе картинка и коллизия опускаются вместе.
 if (this.facingLeft) {
 ctx.translate(this.x + this.width, this.y);
 ctx.scale(-1, 1);
-drawImageSafe(img, 0, 0, this.width, this.height);
+ctx.drawImage(img, 0, 0, this.width, this.height);
 } else {
-drawImageSafe(img, this.x, this.y, this.width, this.height);
+ctx.drawImage(img, this.x, this.y, this.width, this.height);
 }
 ctx.restore();
 if (this.heroInfo.attackType === 'melee_fist' && this.fistExtension > 0) {
@@ -1899,8 +1871,8 @@ this.x = x;
 this.y = y;
 // УВЕЛИЧЕННЫЕ РАЗМЕРЫ ВРАГОВ НА CANVAS (+15%)
 const mult = 1.15;
-this.width = type === 'mine' ? 52 : (type === 'skromnik' ? 92 : (type === 'shadow_creature' ? 80 : (type === 'small_skrut' ? 54 : 98)));
-this.height = type === 'mine' ? 52 : (type === 'skromnik' ? 138 : (type === 'shadow_creature' ? 109 : (type === 'small_skrut' ? 67 : 121)));
+this.width = type === 'mine' ? 52 : (type === 'small_skrut' ? 54 : (type === 'skromnik' ? 92 : (type === 'shadow_creature' ? 80 : 98)));
+this.height = type === 'mine' ? 52 : (type === 'small_skrut' ? 67 : (type === 'skromnik' ? 138 : (type === 'shadow_creature' ? 109 : 121)));
 // БАЛАНС HP И УРОНА ДЛЯ МУРИНО 2
 let hpMap = {
 helper: 1500, commander: 2500, commander_rage: 1200, general: 4000, mine: 200,
@@ -2485,7 +2457,7 @@ ctx.stroke();
 if (this.trappedTimer > 0) {
 ctx.shadowColor = '#f59e0b';
 ctx.shadowBlur = 15;
-drawImageSafe(cachedImages.trap_item, this.x + this.width/2 - 25, this.y + this.height - 25, 50, 30, '#f59e0b');
+ctx.drawImage(cachedImages.trap_item, this.x + this.width/2 - 25, this.y + this.height - 25, 50, 30);
 }
 if (this.blindTimer > 0) {
 ctx.fillStyle = '#fef08a';
@@ -2518,16 +2490,12 @@ useImg = cachedImages.shadow_creature;
 }
 let renderW = this.width;
 let renderH = this.height;
-if (this.type === 'small_skrut') {
-renderW = this.width;
-renderH = this.height;
-}
 if (!this.facingLeft) {
 ctx.translate(this.x + renderW, this.y);
 ctx.scale(-1, 1);
-drawImageSafe(useImg, 0, 0, renderW, renderH);
+ctx.drawImage(useImg, 0, 0, renderW, renderH);
 } else {
-drawImageSafe(useImg, this.x, this.y, renderW, renderH);
+ctx.drawImage(useImg, this.x, this.y, renderW, renderH);
 }
 ctx.restore();
 }
@@ -2648,11 +2616,9 @@ if (dist < (player.width/2 + this.width/2)) {
 // Если игрок присел, его Y смещен вниз, и снаряды, летящие выше, не должны его ранить.
 let hitPossible = true;
 if (this.type === 'stick' || this.type === 'cap_green' || this.type === 'laser') {
-// Атаки летят на уровне груди/головы стоящего героя. При приседе реальный хитбокс ниже,
-// поэтому такие снаряды должны пролетать над игроком, даже если старая круговая проверка почти зацепила край.
-const projectileMidY = this.y + this.height / 2;
-const playerIsCrouching = player.height < player.baseHeight;
-if (this.y + this.height <= player.y || (playerIsCrouching && projectileMidY < player.y + 18)) {
+// атаки летят на высоте ~370-390. Если игрок присел на Shift, его player.y становится ~415. 
+// Снаряд пролетает выше головы (его Y меньше player.y)
+if (this.y + this.height < player.y) {
 hitPossible = false;
 }
 }
@@ -2784,7 +2750,7 @@ ctx.fill();
 } else if (this.type === 'vodka_bottle') {
 const img = cachedImages.vodka;
 if (img && img.complete) {
-drawImageSafe(img, this.x, this.y, this.width, this.height);
+ctx.drawImage(img, this.x, this.y, this.width, this.height);
 } else {
 ctx.fillStyle = '#f59e0b';
 ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -3080,29 +3046,30 @@ transitionBattlePhase('skrut_fight', 'ФАЗА 1: СКРУТ');
 battleState.enemies.push(new Enemy('skrut', V_WIDTH - 150, 325));
 triggerBossDialogue("Я чувствую силу ваших вещей! Отдай их мне!");
 }, 4000);
+return;
 }
 }
 // Фаза Большого Скрута окончена -> Спавн 2 Маленьких Скрутов (Они идут быстрее, стреляет молния)
 if (battleState.phase === 'skrut_fight' && !hasSkruts) {
-// Награда за большого скрута начисляется после победы над обоими маленькими, одной общей суммой.
-transitionBattlePhase('skrut_division', 'ФАЗА 2: МАЛЕНЬКИЕ СКРУТЫ');
+// Награда за большого скрута (начисляется позже за всю фазу скрутов)
+transitionBattlePhase('skrut_division', 'ФАЗА 2: РАЗДЕЛЕНИЕ');
 triggerBossDialogue("Думаешь, это конец? Мы разделимся!");
 battleState.enemies.push(new Enemy('small_skrut', 300, 350));
 battleState.enemies.push(new Enemy('small_skrut', 900, 350));
 battleState.lightningTimer = 1.5; // Сброс таймера молнии
 return;
 }
-// Фаза с маленькими скрутами закончилась -> Перерыв 3с с надписью "Когда же все это закончится."
+// Фаза с маленькими скрутами закончилась -> Перерыв 3с с надписью "Когда же все это закончится..."
 if (battleState.phase === 'skrut_division' && !hasSkruts) {
 // НАГРАДА: Большой + маленькие скруты = 700 монет и 1500 поинтов
 gameState.coins += 700;
 gameState.points += 1500;
 updateUI();
-transitionBattlePhase('scru_break', 'КОГДА ЖЕ ВСЕ ЭТО ЗАКОНЧИТСЯ.');
-triggerBossDialogue("Когда же все это закончится.");
+transitionBattlePhase('scru_break', 'КОГДА ЖЕ ВСЕ ЭТО ЗАКОНЧИТСЯ...');
+triggerBossDialogue("Когда же все это закончится...");
 setTimeout(() => {
-if (!battleState.active || battleState.phase !== 'scru_break') return;
-transitionBattlePhase('skromnik_fight', 'СКРОМНИК');
+if (!battleState.active) return;
+transitionBattlePhase('skromnik_fight', 'СМУТНЫЙ СКРОМНИК');
 battleState.enemies.push(new Enemy('skromnik', 100, 320));
 triggerBossDialogue("ГРРРААААХ!");
 }, 3000);
@@ -3126,8 +3093,8 @@ if (battleState.phase === 'spring_boss_fight' && activeCombatants.length === 0) 
 gameState.coins += 500;
 gameState.points += 2000;
 updateUI();
-transitionBattlePhase('shadows_invasion', 'ФАЗА С ТЕНЯМИ');
-battleState.fogRadius = 260; // Радиус увеличен, чтобы было видно игрока и опасность вокруг
+transitionBattlePhase('shadows_invasion', 'THE FOG IS COMING...');
+battleState.fogRadius = 340; // Радиус света увеличен, чтобы в фазе теней было видно игрока и боковые спавны
 battleState.fogPhaseTimer = 15.0; // Фаза теней идет ровно 15 секунд
 battleState.shadowsInsideCount = 0;
 battleState.superPressSequence = 0;
@@ -3150,9 +3117,9 @@ updateUI();
 battleState.fogRadius = 9999; // Возвращаем свет
 battleState.shadowsInsideCount = 0; // Сбрасываем дебафф теней
 battleState.enemies = []; // Очищаем оставшиеся тени
-transitionBattlePhase('fruit_rain_prep', 'ПЕРЕДЫШКА 5 СЕКУНД');
+transitionBattlePhase('fruit_rain_prep', 'ПЕРЕРЫВ ПЕРЕД ВКУСНЫМ ДОЖДЕМ');
 setTimeout(() => {
-if (!battleState.active || battleState.phase !== 'fruit_rain_prep') return;
+if (!battleState.active) return;
 transitionBattlePhase('fruit_rain_active', 'ВКУСНОСТЬ ДОЖДЬ!');
 triggerBossDialogue("ПОПРОБУЙ УКЛОНИТЬСЯ ОТ ФРУКТОВЫХ КАПЕЛЬ!");
 battleState.keysCollected = 0;
@@ -3241,7 +3208,7 @@ updateUI();
 // Завершаем локацию - запускаем финальные титры с надписями и черным экраном
 battleState.fallingFruits = [];
 battleState.enemies = [];
-transitionBattlePhase('fog_ending', 'fog is coming');
+transitionBattlePhase('fog_ending', 'FOG IS COMING');
 saveGameState();
 
 // Черный экран и титры в конце 2 части
@@ -3250,8 +3217,10 @@ if (!battleState.active) return;
 playSynthesizedSound(100, 2.5, 'sawtooth');
 // Финал - Нокаут и начисление финишного супербонуса
 // НАГРАДА: Финал = 3000 монет и 5000 поинтов за эту часть
-gameState.coins += 3000;
-gameState.points += 5000;
+battleState.murino2FinalRewardCoins = 3000;
+battleState.murino2FinalRewardPoints = 5000;
+gameState.coins += battleState.murino2FinalRewardCoins;
+gameState.points += battleState.murino2FinalRewardPoints;
 if (!gameState.completedLocations.includes('Murino_2')) {
 gameState.completedLocations.push('Murino_2');
 }
@@ -3545,7 +3514,7 @@ bgImg = cachedImages.Murino1Bg;
 } else if (gameState.currentLocation === 'Murino_2') {
 bgImg = cachedImages.Murino2Bg;
 }
-drawImageSafe(bgImg, 0, 0, V_WIDTH, V_HEIGHT, '#020617');
+ctx.drawImage(bgImg, 0, 0, V_WIDTH, V_HEIGHT);
 if (battleState.toxicFloorActive) {
 ctx.fillStyle = 'rgba(34, 197, 94, 0.25)';
 ctx.fillRect(0, 440, V_WIDTH, 160);
@@ -3580,7 +3549,7 @@ ctx.fillText("ЛУТ [E]", box.x - box.width/2 - 5, box.y - box.height - 5);
 for (let i = battleState.projectiles.length - 1; i >= 0; i--) {
 const proj = battleState.projectiles[i];
 if (proj.type === 'placed_trap') {
-drawImageSafe(cachedImages.trap_item, proj.x, proj.y, 35, 20, '#f59e0b');
+ctx.drawImage(cachedImages.trap_item, proj.x, proj.y, 35, 20);
 for (let enemy of battleState.enemies) {
 if (enemy.hp <= 0) continue;
 const dist = Math.abs((enemy.x + enemy.width/2) - (proj.x + 17));
@@ -3804,7 +3773,7 @@ ctx.fillRect(0, 0, V_WIDTH, V_HEIGHT);
 ctx.fillStyle = '#ef4444';
 ctx.font = 'bold 32px "Press Start 2P", monospace';
 ctx.textAlign = 'center';
-ctx.fillText("fog is coming", V_WIDTH/2, V_HEIGHT/2);
+ctx.fillText("FOG IS COMING", V_WIDTH/2, V_HEIGHT/2);
 }
 
 requestAnimationFrame(gameLoop);
@@ -3853,8 +3822,10 @@ battleState.fogPhaseTimer = 0;
 battleState.shadowDotTimer = 1.0;
 battleState.lightningTimer = 2.0;
 battleState.shadowSpawnTimer = 0;
+battleState.murino2FinalRewardCoins = 0;
+battleState.murino2FinalRewardPoints = 0;
 battleState.player = new Player();
-document.getElementById('battlePlayerImg').src = battleState.player.heroInfo.img || "../mellstrofight/mellstrofight/assets/images/мелл.jpg";
+document.getElementById('battlePlayerImg').src = battleState.player.heroInfo.img || "https://placehold.co/150";
 document.getElementById('battlePlayerName').innerText = battleState.player.heroInfo.name;
 const omayHUD = document.getElementById('omaygadChargeHUD');
 if (battleState.player.heroInfo.id === 'Omaygad') {
@@ -4240,13 +4211,18 @@ if (isWin) {
 let coinReward = 1500;
 let ptReward = 1200;
 // В зависимости от локации, финальные награды
+let grantEndReward = true;
 if (gameState.currentLocation === 'Murino_2') {
-// Завершение всей 2-й части Мурино даёт супербонус наград:
-coinReward = 0; // Награды за фазы уже начислены в процессе, чтобы не дублировать
-ptReward = 0;
+// В Мурино 2 награды за фазы и финальный бонус уже начисляются во время боя.
+// Здесь только показываем финальный бонус в окне НОКАУТ, без повторного начисления.
+coinReward = battleState.murino2FinalRewardCoins || 3000;
+ptReward = battleState.murino2FinalRewardPoints || 5000;
+grantEndReward = false;
 }
+if (grantEndReward) {
 gameState.points += ptReward;
 gameState.coins += coinReward;
+}
 if (!gameState.completedLocations.includes(gameState.currentLocation)) {
 gameState.completedLocations.push(gameState.currentLocation);
 }
@@ -4287,636 +4263,5 @@ window.onload = function() {
 loadGameState();
 }
 </script>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  signOut,
-  onAuthStateChanged,
-  EmailAuthProvider,
-  linkWithCredential,
-  updatePassword
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAt9RopDjGhGarn-NxlH1Uzf2PFtcQ14Ds",
-  authDomain: "relook-a0a12.firebaseapp.com",
-  projectId: "relook-a0a12",
-  storageBucket: "relook-a0a12.firebasestorage.app",
-  messagingSenderId: "199638240697",
-  appId: "1:199638240697:web:c7bca3f27737057f37ba68",
-  measurementId: "G-J633VVYTF7"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
-
-window.currentUser = null;
-window.currentUserProfile = null;
-window.firebaseProfileLoaded = false;
-window.firebaseApplyingRemote = false;
-window.pendingGoogleUser = null;
-let saveTimer = null;
-
-function authOverlay() {
-  return document.getElementById('firebaseAuthOverlay');
-}
-
-function removeAuthOverlay() {
-  const old = authOverlay();
-  if (old) old.remove();
-}
-
-function escapeHtml(value) {
-  return String(value || '').replace(/[&<>"']/g, (ch) => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;'
-  }[ch]));
-}
-
-window.getUserHeaderHtml = function() {
-  if (!window.currentUser) return '';
-  if (window.currentUser.email === 'sobakastalina123@gmail.com') {
-    return '<span class="rainbow-dev-title">Разработчик</span>';
-  }
-  const nick = window.currentUserProfile?.nick || window.currentUser.displayName || window.currentUser.email || 'Игрок';
-  return escapeHtml(nick);
-};
-
-function setAuthError(id, text) {
-  const el = document.getElementById(id);
-  if (el) el.innerText = text || '';
-}
-
-function getDefaultGameStateSnapshot() {
-  const fallback = {
-    coins: 1000,
-    points: 0,
-    crystals: 0,
-    currentLocation: 'Army',
-    selectedHero: 'Mell',
-    completedLocations: [],
-    heroLevels: {
-      Mell: 1, Pucheglaz: 1, Smena2: 1, Otstalost: 1, Pyramid: 1,
-      Puglivost: 1, Soplya: 1, Oglushaemost: 1, Syr: 1, Omaygad: 1
-    },
-    unlockedHeroes: ['Mell'],
-    hyperUnlocked: false,
-    hyperCharges: 0,
-    hyperPrice: 3
-  };
-  try {
-    return JSON.parse(JSON.stringify(typeof gameState !== 'undefined' ? gameState : fallback));
-  } catch {
-    return fallback;
-  }
-}
-
-function rememberLastProfile(profile, user) {
-  try {
-    localStorage.setItem('MellstroFight_lastProfile', JSON.stringify({
-      nick: profile?.nick || user?.displayName || 'Игрок',
-      email: user?.email || profile?.email || '',
-      points: (typeof gameState !== 'undefined' ? gameState.points : (profile?.gameState?.points || 0)) || 0
-    }));
-  } catch {}
-}
-
-async function loadUserData(user) {
-  const ref = doc(db, 'users', user.uid);
-  const snap = await getDoc(ref);
-
-  if (!snap.exists()) {
-    window.currentUser = user;
-    window.currentUserProfile = null;
-    window.firebaseProfileLoaded = false;
-    showGoogleSetupForm();
-    return false;
-  }
-
-  const profile = snap.data();
-  window.currentUser = user;
-  window.currentUserProfile = profile;
-  window.firebaseProfileLoaded = true;
-
-  if (profile.gameState && typeof gameState !== 'undefined') {
-    window.firebaseApplyingRemote = true;
-    Object.assign(gameState, getDefaultGameStateSnapshot(), profile.gameState);
-    localStorage.setItem('MellstroFight_v3_state_h', JSON.stringify(gameState));
-    window.firebaseApplyingRemote = false;
-  }
-
-  rememberLastProfile(profile, user);
-
-  if (typeof updateUI === 'function') updateUI();
-  if (typeof renderHeroesScreen === 'function') {
-    try { renderHeroesScreen(); } catch {}
-  }
-  return true;
-}
-
-window.queueFirebaseSave = function() {
-  if (!window.currentUser || !window.firebaseProfileLoaded || window.firebaseApplyingRemote) return;
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(async () => {
-    try {
-      const stateCopy = getDefaultGameStateSnapshot();
-      await setDoc(doc(db, 'users', window.currentUser.uid), {
-        uid: window.currentUser.uid,
-        email: window.currentUser.email || '',
-        nick: window.currentUserProfile?.nick || window.currentUser.displayName || window.currentUser.email || 'Игрок',
-        gameState: stateCopy,
-        updatedAt: serverTimestamp()
-      }, { merge: true });
-      rememberLastProfile(window.currentUserProfile, window.currentUser);
-    } catch (err) {
-      console.warn('Не удалось сохранить прогресс в Firebase:', err);
-    }
-  }, 600);
-};
-
-async function continueIntoGame(user) {
-  const loaded = await loadUserData(user);
-  if (!loaded) return;
-  removeAuthOverlay();
-  if (typeof startGameOriginal === 'function') {
-    startGameOriginal();
-  }
-}
-
-function lastProfileHtml() {
-  let last = null;
-  try { last = JSON.parse(localStorage.getItem('MellstroFight_lastProfile') || 'null'); } catch {}
-  if (!last?.email) return '';
-  return `
-    <div class="auth-last-card">
-      <div class="auth-last-title">Последний профиль</div>
-      <div class="auth-last-nick">${escapeHtml(last.nick || 'Игрок')}</div>
-      <div class="auth-last-email">${escapeHtml(last.email)}</div>
-      <div class="auth-last-points">Поинты: ${Number(last.points || 0)}</div>
-      <div class="auth-last-actions">
-        <button class="auth-small-btn auth-red" onclick="showLoginForm('${escapeHtml(last.email)}')">Войти в этот профиль</button>
-        <button class="auth-small-btn auth-gray" onclick="showLoginForm('')">Войти в другой</button>
-      </div>
-    </div>
-  `;
-}
-
-window.showAuthOverlay = function() {
-  removeAuthOverlay();
-  document.body.insertAdjacentHTML('beforeend', `
-    <div id="firebaseAuthOverlay" class="auth-overlay">
-      <div class="auth-modal">
-        <button class="auth-close" onclick="closeAuthOverlay()" aria-label="Закрыть">×</button>
-        <div class="auth-glow"></div>
-        <h2 class="gaming-font auth-title">Аккаунт игрока</h2>
-        <p class="auth-subtitle">Войдите или зарегистрируйтесь, чтобы прогресс сохранялся на всех устройствах.</p>
-        ${lastProfileHtml()}
-        <div class="auth-tabs">
-          <button class="auth-tab auth-tab-login" onclick="showLoginForm()">Вход</button>
-          <button class="auth-tab auth-tab-register" onclick="showRegisterForm()">Регистрация</button>
-        </div>
-        <div id="authFormContainer" class="auth-form-container"></div>
-      </div>
-    </div>
-  `);
-};
-
-window.closeAuthOverlay = function() {
-  removeAuthOverlay();
-};
-
-window.showLoginForm = function(prefilledEmail = '') {
-  const container = document.getElementById('authFormContainer');
-  if (!container) return;
-  container.innerHTML = `
-    <div class="auth-form">
-      <input type="email" id="loginEmail" placeholder="Почта" value="${escapeHtml(prefilledEmail)}" class="auth-input">
-      <input type="password" id="loginPass" placeholder="Пароль" class="auth-input">
-      <button onclick="loginUser()" class="auth-main-btn auth-red">Войти</button>
-      <button onclick="loginGoogle()" class="auth-main-btn auth-blue">Войти через Google</button>
-      <div id="loginError" class="auth-error"></div>
-    </div>
-  `;
-};
-
-window.showRegisterForm = function() {
-  const container = document.getElementById('authFormContainer');
-  if (!container) return;
-  container.innerHTML = `
-    <div class="auth-form">
-      <input type="text" id="regNick" placeholder="Никнейм" class="auth-input">
-      <input type="email" id="regEmail" placeholder="Почта" class="auth-input">
-      <input type="password" id="regPass" placeholder="Пароль" class="auth-input">
-      <input type="password" id="regPass2" placeholder="Повторите пароль" class="auth-input">
-      <button onclick="registerUser()" class="auth-main-btn auth-green">Отправить ссылку на почту</button>
-      <div id="regError" class="auth-error"></div>
-    </div>
-  `;
-};
-
-window.showGoogleSetupForm = function() {
-  const container = document.getElementById('authFormContainer');
-  if (!container) {
-    window.showAuthOverlay();
-    setTimeout(window.showGoogleSetupForm, 0);
-    return;
-  }
-  container.innerHTML = `
-    <div class="auth-form">
-      <div class="auth-info">Google подключен. Осталось выбрать свободный ник и пароль.</div>
-      <input type="text" id="googleNick" placeholder="Никнейм" class="auth-input">
-      <input type="password" id="googlePass" placeholder="Пароль" class="auth-input">
-      <input type="password" id="googlePass2" placeholder="Повторите пароль" class="auth-input">
-      <button onclick="finishGoogleRegistration()" class="auth-main-btn auth-green">Создать профиль</button>
-      <div id="googleError" class="auth-error"></div>
-    </div>
-  `;
-};
-
-async function usernameIsTaken(nickLower) {
-  const snap = await getDoc(doc(db, 'usernames', nickLower));
-  return snap.exists();
-}
-
-window.registerUser = async function() {
-  const nick = document.getElementById('regNick')?.value.trim();
-  const email = document.getElementById('regEmail')?.value.trim();
-  const pass = document.getElementById('regPass')?.value;
-  const pass2 = document.getElementById('regPass2')?.value;
-  setAuthError('regError', '');
-
-  if (!nick || !email || !pass) return setAuthError('regError', 'Заполните никнейм, почту и пароль.');
-  if (nick.length < 3) return setAuthError('regError', 'Никнейм должен быть минимум 3 символа.');
-  if (pass !== pass2) return setAuthError('regError', 'Пароли не совпадают.');
-  if (pass.length < 6) return setAuthError('regError', 'Пароль должен быть минимум 6 символов.');
-
-  const nickLower = nick.toLowerCase();
-  try {
-    if (await usernameIsTaken(nickLower)) {
-      return setAuthError('regError', 'Никнейм уже занят. Измените никнейм.');
-    }
-
-    const cred = await createUserWithEmailAndPassword(auth, email, pass);
-    await sendEmailVerification(cred.user);
-
-    const profile = {
-      uid: cred.user.uid,
-      nick,
-      nickLower,
-      email,
-      provider: 'password',
-      emailVerified: false,
-      gameState: getDefaultGameStateSnapshot(),
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    };
-
-    await setDoc(doc(db, 'users', cred.user.uid), profile);
-    await setDoc(doc(db, 'usernames', nickLower), {
-      uid: cred.user.uid,
-      nick,
-      email,
-      createdAt: serverTimestamp()
-    });
-
-    await signOut(auth);
-    setAuthError('regError', 'Ссылка отправлена на почту. Подтвердите email, потом войдите.');
-  } catch (err) {
-    setAuthError('regError', 'Ошибка регистрации: ' + (err.message || err.code));
-  }
-};
-
-window.loginUser = async function() {
-  const email = document.getElementById('loginEmail')?.value.trim();
-  const pass = document.getElementById('loginPass')?.value;
-  setAuthError('loginError', '');
-
-  if (!email || !pass) return setAuthError('loginError', 'Введите почту и пароль.');
-
-  try {
-    const cred = await signInWithEmailAndPassword(auth, email, pass);
-    if (!cred.user.emailVerified) {
-      await signOut(auth);
-      return setAuthError('loginError', 'Почта не подтверждена. Откройте ссылку из письма.');
-    }
-    await continueIntoGame(cred.user);
-  } catch (err) {
-    setAuthError('loginError', 'Такого пользователя нет или пароль неверный. Зарегистрируйтесь.');
-  }
-};
-
-window.loginGoogle = async function() {
-  try {
-    setAuthError('loginError', '');
-    const result = await signInWithPopup(auth, provider);
-    window.currentUser = result.user;
-
-    const profileSnap = await getDoc(doc(db, 'users', result.user.uid));
-    if (profileSnap.exists()) {
-      await continueIntoGame(result.user);
-    } else {
-      window.showAuthOverlay();
-      window.showGoogleSetupForm();
-    }
-  } catch (err) {
-    setAuthError('loginError', 'Ошибка Google входа: ' + (err.message || err.code));
-  }
-};
-
-window.finishGoogleRegistration = async function() {
-  const user = auth.currentUser || window.currentUser;
-  if (!user) return setAuthError('googleError', 'Сначала войдите через Google.');
-
-  const nick = document.getElementById('googleNick')?.value.trim();
-  const pass = document.getElementById('googlePass')?.value;
-  const pass2 = document.getElementById('googlePass2')?.value;
-  setAuthError('googleError', '');
-
-  if (!nick || !pass) return setAuthError('googleError', 'Введите никнейм и пароль.');
-  if (nick.length < 3) return setAuthError('googleError', 'Никнейм должен быть минимум 3 символа.');
-  if (pass !== pass2) return setAuthError('googleError', 'Пароли не совпадают.');
-  if (pass.length < 6) return setAuthError('googleError', 'Пароль должен быть минимум 6 символов.');
-
-  const nickLower = nick.toLowerCase();
-
-  try {
-    if (await usernameIsTaken(nickLower)) {
-      return setAuthError('googleError', 'Никнейм уже занят. Измените никнейм.');
-    }
-
-    try {
-      const credential = EmailAuthProvider.credential(user.email, pass);
-      await linkWithCredential(user, credential);
-    } catch {
-      try { await updatePassword(user, pass); } catch {}
-    }
-
-    const profile = {
-      uid: user.uid,
-      nick,
-      nickLower,
-      email: user.email || '',
-      provider: 'google',
-      emailVerified: true,
-      gameState: getDefaultGameStateSnapshot(),
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    };
-
-    await setDoc(doc(db, 'users', user.uid), profile);
-    await setDoc(doc(db, 'usernames', nickLower), {
-      uid: user.uid,
-      nick,
-      email: user.email || '',
-      createdAt: serverTimestamp()
-    });
-
-    await continueIntoGame(user);
-  } catch (err) {
-    setAuthError('googleError', 'Ошибка создания профиля: ' + (err.message || err.code));
-  }
-};
-
-window.startGame = function() {
-  if (!window.currentUser || !window.firebaseProfileLoaded) {
-    window.showAuthOverlay();
-    return;
-  }
-  if (typeof startGameOriginal === 'function') startGameOriginal();
-};
-
-onAuthStateChanged(auth, async (user) => {
-  try {
-    if (!user) {
-      window.currentUser = null;
-      window.currentUserProfile = null;
-      window.firebaseProfileLoaded = false;
-      if (typeof updateUI === 'function') updateUI();
-      return;
-    }
-
-    const isGoogleUser = user.providerData?.some((p) => p.providerId === 'google.com');
-    if (!user.emailVerified && !isGoogleUser) {
-      window.currentUser = null;
-      window.currentUserProfile = null;
-      window.firebaseProfileLoaded = false;
-      return;
-    }
-
-    await loadUserData(user);
-  } catch (err) {
-    console.warn('Firebase auth state error:', err);
-  }
-});
-</script>
-
-<style>
-.auth-overlay {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at center, rgba(127, 29, 29, 0.35), rgba(0, 0, 0, 0.88) 55%, rgba(0, 0, 0, 0.96));
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 99999;
-  padding: 20px;
-  backdrop-filter: blur(8px);
-}
-.auth-modal {
-  position: relative;
-  width: min(440px, 92vw);
-  max-height: 92vh;
-  overflow-y: auto;
-  background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(3, 7, 18, 0.98));
-  border: 1px solid rgba(239, 68, 68, 0.45);
-  border-radius: 24px;
-  box-shadow: 0 0 40px rgba(239, 68, 68, 0.22), 0 25px 80px rgba(0, 0, 0, 0.65);
-  padding: 34px 30px 28px;
-  color: #fff;
-  text-align: center;
-}
-.auth-glow {
-  position: absolute;
-  inset: -2px;
-  border-radius: 24px;
-  pointer-events: none;
-  box-shadow: inset 0 0 24px rgba(248, 113, 113, 0.12);
-}
-.auth-close {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  background: rgba(15, 23, 42, 0.9);
-  color: #cbd5e1;
-  font-size: 24px;
-  line-height: 28px;
-  cursor: pointer;
-  transition: 0.15s;
-}
-.auth-close:hover {
-  color: #fff;
-  background: rgba(220, 38, 38, 0.9);
-  transform: scale(1.06);
-}
-.auth-title {
-  font-size: 18px;
-  color: #f87171;
-  margin-bottom: 10px;
-  letter-spacing: 1px;
-}
-.auth-subtitle {
-  color: #cbd5e1;
-  font-size: 13px;
-  line-height: 1.45;
-  margin-bottom: 18px;
-}
-.auth-tabs {
-  display: flex;
-  gap: 12px;
-  margin: 18px 0;
-}
-.auth-tab, .auth-main-btn, .auth-small-btn {
-  border: 0;
-  border-radius: 14px;
-  color: #fff;
-  font-weight: 800;
-  cursor: pointer;
-  transition: transform 0.15s, filter 0.15s, box-shadow 0.15s;
-}
-.auth-tab {
-  flex: 1;
-  padding: 12px;
-  font-size: 14px;
-}
-.auth-tab:hover, .auth-main-btn:hover, .auth-small-btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.08);
-}
-.auth-tab-login, .auth-red {
-  background: linear-gradient(135deg, #dc2626, #f97316);
-  box-shadow: 0 8px 22px rgba(220, 38, 38, 0.22);
-}
-.auth-tab-register, .auth-green {
-  background: linear-gradient(135deg, #16a34a, #22c55e);
-  box-shadow: 0 8px 22px rgba(34, 197, 94, 0.18);
-}
-.auth-blue {
-  background: linear-gradient(135deg, #2563eb, #06b6d4);
-  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.18);
-}
-.auth-gray {
-  background: #334155;
-}
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.auth-input {
-  width: 100%;
-  border-radius: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  background: rgba(15, 23, 42, 0.95);
-  color: #fff;
-  padding: 13px 14px;
-  outline: none;
-}
-.auth-input:focus {
-  border-color: rgba(248, 113, 113, 0.75);
-  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12);
-}
-.auth-main-btn {
-  width: 100%;
-  padding: 13px 14px;
-  font-size: 14px;
-}
-.auth-error {
-  min-height: 20px;
-  color: #fca5a5;
-  font-size: 12px;
-  line-height: 1.35;
-  margin-top: 4px;
-}
-.auth-info {
-  color: #bfdbfe;
-  background: rgba(30, 64, 175, 0.25);
-  border: 1px solid rgba(96, 165, 250, 0.25);
-  border-radius: 14px;
-  padding: 10px;
-  font-size: 12px;
-}
-.auth-last-card {
-  background: rgba(15, 23, 42, 0.75);
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  border-radius: 18px;
-  padding: 14px;
-  margin-bottom: 16px;
-  text-align: left;
-}
-.auth-last-title {
-  color: #94a3b8;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.auth-last-nick {
-  color: #fff;
-  font-weight: 900;
-  margin-top: 4px;
-}
-.auth-last-email, .auth-last-points {
-  color: #cbd5e1;
-  font-size: 12px;
-  margin-top: 2px;
-}
-.auth-last-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
-}
-.auth-small-btn {
-  flex: 1;
-  padding: 9px 10px;
-  font-size: 12px;
-}
-.rainbow-dev-title {
-  font-weight: 900;
-  background: linear-gradient(90deg, #ff004c, #ff9f00, #fff200, #00ff85, #00c8ff, #8b5cf6, #ff00e5, #ff004c);
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: rainbowDevMove 2.2s linear infinite;
-  text-shadow: 0 0 14px rgba(255,255,255,0.15);
-}
-@keyframes rainbowDevMove {
-  from { background-position: 0% 50%; }
-  to { background-position: 300% 50%; }
-}
-</style>
-
 </body>
 </html>
