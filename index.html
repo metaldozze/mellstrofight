@@ -174,7 +174,10 @@ CREDITS
 <span class="gaming-font text-[9px] text-gray-400">Герой: <span id="activeHeroName" class="text-red-400">Mell</span></span>
 <span class="gaming-font text-[8px] text-gray-500">Ник: <span id="accountNicknameDisplay" class="text-cyan-400">не вошли</span> · Почта: <span id="accountEmailDisplay" class="text-amber-400">—</span></span>
 </div>
-<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<button onclick="openQuestsModal()" class="bg-emerald-900/80 hover:bg-emerald-800 text-emerald-200 text-[9px] px-3 py-1.5 rounded-lg border border-emerald-600 gaming-font flex items-center gap-1 transition">
+<i class="fas fa-scroll"></i> КОНТРАКТЫ
+</button>
 <button onclick="exchangePointsForCoins()" class="bg-purple-900/80 hover:bg-purple-800 text-white text-[9px] px-3 py-1.5 rounded-lg border border-purple-600 gaming-font flex items-center gap-1 transition">
 <i class="fas fa-sync-alt"></i> ОБМЕН (2000 ➔ 200)
 </button>
@@ -228,6 +231,7 @@ CREDITS
 <div id="heroSpecialsLabel" class="text-xs text-gray-400 text-center px-4">
 Супер-способность: <span class="text-red-500 font-bold">Прыжок Смерти (X)</span> - разблокируется на 9 ур.
 </div>
+<div id="activeRelicsBar" class="mt-3 flex flex-wrap justify-center gap-1.5 px-2 max-w-full"></div>
 </div>
 <!-- Правая часть: Старт боя и Информация -->
 <div class="col-span-3 flex flex-col justify-center items-center h-full">
@@ -448,7 +452,7 @@ CREDITS
 </div>
 <div>
 <h3 class="font-bold text-white text-xs">Обычный бокс</h3>
-<p class="text-[9px] text-gray-400 mt-1">1-3 Кристалла</p>
+<p class="text-[9px] text-gray-400 mt-1">Кристаллы / Талисманы / Герои</p>
 </div>
 <button onclick="buyBox('common', 300)" class="w-full mt-3 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded-lg transition text-[11px] flex items-center justify-center gap-1">
 <span>300</span> <i class="fas fa-coins text-amber-500"></i>
@@ -462,7 +466,7 @@ CREDITS
 </div>
 <div>
 <h3 class="font-bold text-white text-xs">Редкий бокс</h3>
-<p class="text-[9px] text-gray-400 mt-1">Кристаллы / Обычный / Редкий герой</p>
+<p class="text-[9px] text-gray-400 mt-1">Редкие герои / Талисманы / Кристаллы</p>
 </div>
 <button onclick="buyBox('rare', 800)" class="w-full mt-3 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-lg transition text-[11px] flex items-center justify-center gap-1">
 <span>800</span> <i class="fas fa-coins text-amber-500"></i>
@@ -476,7 +480,7 @@ CREDITS
 </div>
 <div>
 <h3 class="font-bold text-white text-xs">Супер бокс</h3>
-<p class="text-[9px] text-gray-400 mt-1">Кристаллы / Мифический / Легендарный герой</p>
+<p class="text-[9px] text-gray-400 mt-1">Мифики / Эпик-артефакты / Кристаллы</p>
 </div>
 <button onclick="buyBox('super', 1500)" class="w-full mt-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-2 rounded-lg transition text-[11px] flex items-center justify-center gap-1">
 <span>1500</span> <i class="fas fa-coins text-slate-950"></i>
@@ -678,6 +682,29 @@ WASD - Движение, Пробел - Прыжок, Мышь - Удар.<br>
 <button onclick="exitBattle(false)" class="bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-8 rounded-xl uppercase tracking-wider gaming-font text-xs transition">
 НАЧАТЬ ЗАНОВО
 </button>
+</div>
+<!-- Модальное окно контрактов (квестов) -->
+<div id="questsModal" class="hidden absolute inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+<div class="bg-slate-900 border-2 border-emerald-500 rounded-2xl p-6 max-w-lg w-full relative shadow-[0_0_40px_rgba(16,185,129,0.35)]">
+<button onclick="closeQuestsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+<h2 class="gaming-font text-emerald-400 text-xs mb-2">КОНТРАКТЫ МУРИНО</h2>
+<p class="text-xs text-gray-400 mb-4">Выполняйте задания в боях и забирайте редкие награды.</p>
+<div id="questsListContainer" class="space-y-3 max-h-72 overflow-y-auto pr-1"></div>
+</div>
+</div>
+<!-- Модальное окно головоломок Мурино -->
+<div id="murinoPuzzleModal" class="hidden absolute inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+<div class="bg-slate-950 border-2 border-amber-500 rounded-2xl p-6 max-w-md w-full text-center shadow-[0_0_50px_rgba(245,158,11,0.45)]">
+<div id="puzzleBadge" class="inline-block bg-amber-500/20 border border-amber-500 text-amber-300 gaming-font text-[8px] px-3 py-1 rounded-full mb-3">ГОЛОВОЛОМКА МУРИНО</div>
+<h3 id="puzzleTitle" class="gaming-font text-white text-xs mb-2">КОДОВЫЙ ЗАМОК ПОДЪЕЗДА</h3>
+<p id="puzzleDesc" class="text-xs text-gray-300 mb-4">Запомните комбинацию и повторите её!</p>
+<div id="puzzleDisplay" class="bg-slate-900 border border-slate-700 rounded-xl py-3 px-4 mb-4 gaming-font text-sm text-amber-400 tracking-widest min-h-[48px] flex items-center justify-center">---</div>
+<div id="puzzleControls" class="grid grid-cols-3 gap-2 mb-4"></div>
+<div class="flex justify-between items-center text-[10px] text-gray-400">
+<span>Осталось времени: <strong id="puzzleTimerText" class="text-red-400">12.0с</strong></span>
+<span id="puzzleStatusText" class="text-cyan-400">Подготовка...</span>
+</div>
+</div>
 </div>
 </div>
 <script>
@@ -914,9 +941,33 @@ hyperPrice: 3,
 preBattleEquipment: {
 Q: null,
 R: null
+},
+relics: {},
+questStats: {
+kills: 0,
+boxesOpened: 0,
+puzzlesSolved: 0,
+claimed: []
 }
 };
 window.gameState = gameState;
+const RELICS_DB = {
+vampire_fang: { id: 'vampire_fang', name: 'Клык Скрута', icon: '🧛', desc: '+4% вампиризма от нанесённого урона за уровень', maxLv: 5 },
+gold_magnet: { id: 'gold_magnet', name: 'Магнит Мелла', icon: '🧲', desc: '+15% монет и очков за победы за уровень', maxLv: 5 },
+iron_skin: { id: 'iron_skin', name: 'Панцирь Человейника', icon: '🛡️', desc: '-6% входящего урона за уровень', maxLv: 5 },
+crit_eye: { id: 'crit_eye', name: 'Око Пучеглаза', icon: '👁️', desc: '+8% шанс двойного крит-удара за уровень', maxLv: 5 },
+fog_heart: { id: 'fog_heart', name: 'Сердце Тумана', icon: '🌫️', desc: '+12% к максимальному HP героя за уровень', maxLv: 5 }
+};
+const QUESTS_DB = [
+{ id: 'q_kills_15', title: 'Зачистка периметра', desc: 'Победите 15 врагов в любых боях', stat: 'kills', target: 15, rewardCoins: 900, rewardCrystals: 4 },
+{ id: 'q_boxes_3', title: 'Охотник за лутом', desc: 'Откройте 3 любых бокса в магазине', stat: 'boxesOpened', target: 3, rewardCoins: 1200, rewardCrystals: 6 },
+{ id: 'q_puzzles_2', title: 'Взломщик Мурино', desc: 'Решите 2 головоломки в Мурино', stat: 'puzzlesSolved', target: 2, rewardCoins: 1800, rewardCrystals: 8 },
+{ id: 'q_kills_50', title: 'Легенда дворов', desc: 'Победите 50 врагов в любых боях', stat: 'kills', target: 50, rewardCoins: 3500, rewardCrystals: 15 }
+];
+function getRelicLevel(id) {
+ensureGameStateShape();
+return gameState.relics[id] || 0;
+}
 function ensureGameStateShape() {
 if (!gameState.heroLevels) gameState.heroLevels = {};
 if (!Array.isArray(gameState.unlockedHeroes)) gameState.unlockedHeroes = ['Mell'];
@@ -924,6 +975,9 @@ if (!Array.isArray(gameState.completedLocations)) gameState.completedLocations =
 if (!gameState.preBattleEquipment) gameState.preBattleEquipment = { Q: null, R: null };
 if (!('Q' in gameState.preBattleEquipment)) gameState.preBattleEquipment.Q = null;
 if (!('R' in gameState.preBattleEquipment)) gameState.preBattleEquipment.R = null;
+if (!gameState.relics || typeof gameState.relics !== 'object') gameState.relics = {};
+if (!gameState.questStats || typeof gameState.questStats !== 'object') gameState.questStats = { kills: 0, boxesOpened: 0, puzzlesSolved: 0, claimed: [] };
+if (!Array.isArray(gameState.questStats.claimed)) gameState.questStats.claimed = [];
 if (typeof gameState.coins !== 'number') gameState.coins = 1000;
 if (typeof gameState.points !== 'number') gameState.points = 0;
 if (typeof gameState.crystals !== 'number') gameState.crystals = 0;
@@ -1046,7 +1100,63 @@ buyHyperBtn.className = "w-full mt-3 bg-pink-600 hover:bg-pink-500 text-white fo
 document.getElementById('hyperPriceLabel').innerText = `Купить за ${gameState.hyperPrice}`;
 hyperDescText.innerText = `2 кулака по сторонам и х2 урон в бою на 3 секунды [Кнопка Z]. Действует 3 боя.`;
 }
+const relicsBar = document.getElementById('activeRelicsBar');
+if (relicsBar) {
+const owned = Object.entries(gameState.relics || {}).filter(([, lv]) => lv > 0);
+relicsBar.innerHTML = owned.length
+? owned.map(([id, lv]) => {
+const r = RELICS_DB[id];
+return r ? `<span title="${r.name}: ${r.desc}" class="bg-slate-950/90 border border-amber-500/50 text-amber-300 text-[9px] px-2 py-0.5 rounded-full">${r.icon} ${r.name} ур.${lv}</span>` : '';
+}).join('')
+: '<span class="text-[10px] text-gray-500">Талисманы не найдены — открывайте боксы!</span>';
+}
 updateLocationButtons();
+}
+function openQuestsModal() {
+playSynthesizedSound(320, 0.1);
+renderQuestsModal();
+document.getElementById('questsModal')?.classList.remove('hidden');
+}
+function closeQuestsModal() {
+document.getElementById('questsModal')?.classList.add('hidden');
+}
+function renderQuestsModal() {
+ensureGameStateShape();
+const container = document.getElementById('questsListContainer');
+if (!container) return;
+container.innerHTML = QUESTS_DB.map(q => {
+const cur = Math.min(q.target, gameState.questStats[q.stat] || 0);
+const claimed = gameState.questStats.claimed.includes(q.id);
+const ready = cur >= q.target && !claimed;
+const pct = Math.round((cur / q.target) * 100);
+return `
+<div class="bg-slate-950 border ${ready ? 'border-emerald-500' : 'border-slate-800'} rounded-xl p-3 flex items-center justify-between gap-3">
+<div class="flex-1">
+<div class="font-bold text-xs text-white">${q.title}</div>
+<div class="text-[10px] text-gray-400 mt-0.5">${q.desc}</div>
+<div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mt-2">
+<div class="bg-emerald-500 h-full" style="width:${pct}%"></div>
+</div>
+<div class="text-[9px] text-gray-400 mt-1">Прогресс: ${cur}/${q.target} · Награда: ${q.rewardCoins} монет + ${q.rewardCrystals} 💎</div>
+</div>
+<button ${ready ? '' : 'disabled'} onclick="claimQuestReward('${q.id}')" class="px-3 py-2 rounded-lg gaming-font text-[8px] ${claimed ? 'bg-slate-800 text-gray-500' : ready ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-slate-800 text-gray-400'}">
+${claimed ? 'ПОЛУЧЕНО' : ready ? 'ЗАБРАТЬ' : `${pct}%`}
+</button>
+</div>`;
+}).join('');
+}
+function claimQuestReward(questId) {
+ensureGameStateShape();
+const q = QUESTS_DB.find(item => item.id === questId);
+if (!q || gameState.questStats.claimed.includes(q.id)) return;
+if ((gameState.questStats[q.stat] || 0) < q.target) return;
+gameState.questStats.claimed.push(q.id);
+gameState.coins += q.rewardCoins;
+gameState.crystals += q.rewardCrystals;
+playLevelUpSound();
+showFloatingMessage(`Контракт выполнен! +${q.rewardCoins} монет и +${q.rewardCrystals} кристаллов!`);
+updateUI();
+renderQuestsModal();
 }
 function updateLocationButtons() {
 const isArmyPassed = gameState.completedLocations.includes('Army');
@@ -1439,85 +1549,85 @@ gameState.preBattleEquipment[slot] = itemId;
 return slot;
 }
 function buyRandomGear() {
+function grantRandomRelicOrBonus() {
 ensureGameStateShape();
-const filledSlots = countPreBattleEquipment();
-if (filledSlots >= 2) {
-playSynthesizedSound(150, 0.3, 'sawtooth');
-showFloatingMessage("Обе ячейки снаряжения заполнены! Сначала потратьте предмет в бою.");
-return;
+const ids = Object.keys(RELICS_DB);
+const upgradable = ids.filter(id => (gameState.relics[id] || 0) < RELICS_DB[id].maxLv);
+if (upgradable.length === 0) {
+gameState.coins += 650;
+return 'ВСЕ ТАЛИСМАНЫ МАКС. УРОВНЯ: +650 МОНЕТ';
 }
-if (gameState.coins < 2500) {
-playSynthesizedSound(150, 0.3, 'sawtooth');
-showFloatingMessage("Недостаточно монет! Секретный куб стоит 2500 монет.");
-return;
-}
-gameState.coins -= 2500;
-const icon = document.getElementById('gearCubeIcon');
-if (icon) icon.classList.add('shake-element');
-playSynthesizedSound(180, 0.4, 'sawtooth');
-showFloatingMessage("Черный секретный куб растворяется...");
-setTimeout(() => {
-if (icon) icon.classList.remove('shake-element');
-const itemId = rollRandomEquipment();
-const slot = addPreBattleEquipment(itemId);
-const info = EQUIPMENT_DETAILS[itemId];
-if (!slot) {
-showFloatingMessage("Нет свободной ячейки для снаряжения!");
-return;
-}
-playLevelUpSound();
-const rewardIcon = document.getElementById('revealIcon');
-if (rewardIcon) rewardIcon.className = 'fas fa-cube animate-bounce text-violet-400';
-document.getElementById('rewardText').innerText = `${info.icon} ${info.name} → слот ${slot}`;
-document.getElementById('rewardModal').classList.remove('hidden');
-showFloatingMessage(`Выпало: ${info.name}. В начале боя будет в слоте ${slot}!`);
-updateUI();
-}, 1200);
-updateUI();
+const chosen = upgradable[Math.floor(Math.random() * upgradable.length)];
+gameState.relics[chosen] = (gameState.relics[chosen] || 0) + 1;
+const r = RELICS_DB[chosen];
+return `ТАЛИСМАН: ${r.icon} ${r.name.toUpperCase()} (УР. ${gameState.relics[chosen]})`;
 }
 function revealBoxReward(type) {
+ensureGameStateShape();
+gameState.questStats.boxesOpened = (gameState.questStats.boxesOpened || 0) + 1;
 let rewardMsg = "";
 let rewardVal = 0;
 const revealIcon = document.getElementById('revealIcon');
+const roll = Math.random();
 if (type === 'common') {
-rewardVal = Math.floor(Math.random() * 3) + 1;
+if (roll < 0.35) {
+rewardMsg = grantRandomRelicOrBonus();
+revealIcon.className = "fas fa-dharmachakra text-amber-400 text-5xl animate-bounce";
+} else if (roll < 0.50) {
+const pools = ['Pucheglaz', 'Smena2'];
+const chosen = pools[Math.floor(Math.random() * pools.length)];
+if (!gameState.unlockedHeroes.includes(chosen)) {
+gameState.unlockedHeroes.push(chosen);
+rewardMsg = `ГЕРОЙ: ${HEROES_DB[chosen].name.toUpperCase()}!`;
+} else {
+gameState.coins += 250;
+rewardMsg = `ДУБЛИКАТ ${HEROES_DB[chosen].name.toUpperCase()}: +250 МОНЕТ`;
+}
+revealIcon.className = "fas fa-user-ninja text-emerald-400 text-5xl animate-bounce";
+} else {
+rewardVal = Math.floor(Math.random() * 4) + 2;
 gameState.crystals += rewardVal;
 rewardMsg = `${rewardVal} КРИСТАЛЛОВ`;
 revealIcon.className = "fas fa-gem text-cyan-400 text-5xl animate-bounce";
 }
+}
 else if (type === 'rare') {
-const luck = Math.random();
-if (luck > 0.5) {
+if (roll < 0.45) {
 const pools = ['Pucheglaz', 'Smena2', 'Otstalost', 'Pyramid', 'Puglivost'];
 const chosen = pools[Math.floor(Math.random() * pools.length)];
 if (!gameState.unlockedHeroes.includes(chosen)) {
 gameState.unlockedHeroes.push(chosen);
 rewardMsg = `НОВЫЙ ГЕРОЙ: ${HEROES_DB[chosen].name.toUpperCase()}!`;
 } else {
-gameState.coins += 200;
-rewardMsg = `ДУБЛИКАТ ${HEROES_DB[chosen].name.toUpperCase()}: +200 МОНЕТ`;
+gameState.coins += 450;
+rewardMsg = `ДУБЛИКАТ ${HEROES_DB[chosen].name.toUpperCase()}: +450 МОНЕТ`;
 }
 revealIcon.className = "fas fa-user-ninja text-blue-500 text-5xl animate-bounce";
+} else if (roll < 0.80) {
+rewardMsg = grantRandomRelicOrBonus();
+revealIcon.className = "fas fa-dharmachakra text-amber-400 text-5xl animate-bounce";
 } else {
-rewardVal = Math.floor(Math.random() * 6) + 5;
+rewardVal = Math.floor(Math.random() * 7) + 6;
 gameState.crystals += rewardVal;
 rewardMsg = `${rewardVal} КРИСТАЛЛОВ`;
 revealIcon.className = "fas fa-gem text-blue-400 text-5xl animate-bounce";
 }
 }
 else if (type === 'super') {
-const luck = Math.random();
-if (luck > 0.6) {
+if (roll < 0.45) {
 const pools = ['Soplya', 'Oglushaemost', 'Syr', 'Omaygad'];
 const chosen = pools[Math.floor(Math.random() * pools.length)];
 if (!gameState.unlockedHeroes.includes(chosen)) {
 gameState.unlockedHeroes.push(chosen);
 rewardMsg = `НОВЫЙ ГЕРОЙ: ${HEROES_DB[chosen].name.toUpperCase()}!`;
 } else {
-gameState.coins += 200;
-rewardMsg = `ДУБЛИКАТ ${HEROES_DB[chosen].name.toUpperCase()}: +200 МОНЕТ`;
+gameState.coins += 900;
+rewardMsg = `ДУБЛИКАТ ${HEROES_DB[chosen].name.toUpperCase()}: +900 МОНЕТ`;
 }
 revealIcon.className = "fas fa-user-ninja text-purple-500 text-5xl animate-bounce";
+} else if (roll < 0.82) {
+rewardMsg = grantRandomRelicOrBonus();
+revealIcon.className = "fas fa-dharmachakra text-yellow-400 text-5xl animate-bounce";
 } else {
 gameState.crystals += 25;
 rewardMsg = "25 КРИСТАЛЛОВ";
@@ -1740,12 +1850,14 @@ this.vy = 0;
 this.width = 86;
 this.height = 109;
 this.baseHeight = 109;
-this.maxHp = this.heroInfo.baseHp + (this.level - 1) * this.heroInfo.hpPerLevel;
+const hpMult = 1 + getRelicLevel('fog_heart') * 0.12;
+this.maxHp = Math.round((this.heroInfo.baseHp + (this.level - 1) * this.heroInfo.hpPerLevel) * hpMult);
 this.hp = this.maxHp;
 this.dmg = this.heroInfo.baseDmg + (this.level - 1) * this.heroInfo.dmgPerLevel;
 this.grounded = false;
 this.facingLeft = false;
 this.attackCooldown = 0;
+this.disarmedTimer = 0;
 this.fistExtension = 0;
 this.fistTargetX = 0;
 this.fistTargetY = 0;
@@ -1765,6 +1877,7 @@ this.blackCircleTarget = null;
 }
 update() {
 if (this.invulnTimer > 0) this.invulnTimer -= 0.016;
+if (this.disarmedTimer > 0) this.disarmedTimer -= 0.016;
 if (this.frozenTimer > 0) {
 this.frozenTimer -= 0.016;
 this.vx = 0;
@@ -1969,6 +2082,10 @@ amt *= 0.7;
 if (this.lightningDebuff) {
 amt *= 1.5;
 }
+const ironLv = getRelicLevel('iron_skin');
+if (ironLv > 0 && amt < 9000) {
+amt *= Math.max(0.55, 1 - ironLv * 0.06);
+}
 this.hp -= amt;
 this.invulnTimer = 0.4;
 playSynthesizedSound(160, 0.1, 'sawtooth');
@@ -2056,6 +2173,11 @@ ctx.fillStyle = '#60a5fa';
 ctx.font = 'bold 11px sans-serif';
 ctx.fillText('ЗАМОРОЖЕН!', this.x + 10, this.y - 15);
 }
+if (this.disarmedTimer > 0) {
+ctx.fillStyle = '#f43f5e';
+ctx.font = 'bold 11px sans-serif';
+ctx.fillText('ПАТРОНЫ УКРАДЕНЫ!', this.x - 10, this.y - 30);
+}
 if (this.blackCircleDebuff > 0) {
 ctx.fillStyle = '#4b0082';
 ctx.font = 'bold 11px sans-serif';
@@ -2107,6 +2229,8 @@ this.grounded = false;
 this.vy = 0;
 this.vx = 0;
 this.mimicHeroCopied = 'Mell';
+this.mimicCopiedAttackType = 'melee_fist';
+this.mimicStealTimer = 4.5;
 this.scruPauseTimer = 0;
 this.blindTimer = 0;
 this.trappedTimer = 0;
@@ -2186,32 +2310,10 @@ if (battleState.introDrunAnimTimer > 0 && battleState.phase === 'drun_intro_blee
 this.vy = 4;
 this.y += this.vy;
 if (this.y >= 430) this.y = 430;
-}
-return;
-}
-if (this.type === 'shadow_creature') {
-this.facingLeft = player.x < this.x;
-const shadowSpeed = 1.8;
-this.vx = player.x > this.x ? shadowSpeed : -shadowSpeed;
-this.x += this.vx;
-const distToPlayer = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
-if (battleState.phase !== 'shadows_invasion' && distToPlayer < 45 && Math.abs(player.y - this.y) < 60) {
-this.hp = 0; 
-battleState.shadowsInsideCount++; 
-battleState.shadowDotTimer = 1.0;
-showFloatingMessage(`Тень вселилась! Текущих стаков: ${battleState.shadowsInsideCount}`);
-playSynthesizedSound(190, 0.25, 'sawtooth');
-}
-for (let other of battleState.enemies) {
-if (other !== this && other.type === 'shadow_creature' && other.hp > 0) {
-const distToOther = Math.abs(other.x - this.x);
-if (distToOther < 40) {
-this.hp = 0;
-other.hp = 0;
-createSlamImpact(this.x + 20, this.y + 20, '#a855f7');
-showFloatingMessage("Тени столкнулись и аннигилировали!");
-playExplosionSound();
-}
+} else if (battleState.phase === 'mimic_talk_1' || battleState.phase === 'mimic_talk_2') {
+this.facingLeft = true;
+if (this.x > player.x + 140) {
+this.x -= 1.3;
 }
 }
 return;
@@ -2380,21 +2482,61 @@ if (this.type === 'mimic' || this.type === 'mimic_rage') {
 this.facingLeft = player.x < this.x;
 this.attackTimer += 0.016;
 if (this.type === 'mimic') {
-const chaseSpd = 3.5;
-if (Math.abs(player.x - this.x) > 120) {
+this.mimicStealTimer -= 0.016;
+if (this.mimicStealTimer <= 0) {
+this.mimicStealTimer = 6.5;
+if (Math.random() < 0.55) {
+player.disarmedTimer = 2.6;
+showFloatingMessage("ДРУН-МИМИК ОТОБРАЛ ПАТРОНЫ НА 2.6 СЕК!");
+playSynthesizedSound(180, 0.35, 'sawtooth');
+} else {
+player.frozenTimer = 1.6;
+showFloatingMessage("ДРУН-МИМИК ЗАМОРОЗИЛ ВАС НА 1.6 СЕК!");
+playSynthesizedSound(240, 0.35, 'sine');
+}
+}
+const copiedType = this.mimicCopiedAttackType || 'melee_fist';
+const isRangedCopy = copiedType !== 'melee_fist' && copiedType !== 'nose' && copiedType !== 'hands';
+const preferredDist = isRangedCopy ? 340 : 120;
+const chaseSpd = 2.8;
+const distX = Math.abs(player.x - this.x);
+if (distX > preferredDist) {
 this.vx = player.x > this.x ? chaseSpd : -chaseSpd;
+} else if (isRangedCopy && distX < 210) {
+this.vx = player.x > this.x ? -2.2 : 2.2;
 } else {
 this.vx = 0;
-if (this.attackTimer > 1.2) {
+if (this.attackTimer > 1.35) {
 this.attackTimer = 0;
+const dir = this.facingLeft ? -9 : 9;
+const sx = this.x + this.width / 2;
+const sy = this.y + 35;
+if (copiedType === 'soplya') {
+battleState.projectiles.push(new Projectile(sx, sy, dir, -3, 'enemy_soplya', this));
+playSynthesizedSound(380, 0.1, 'sine');
+} else if (copiedType === 'laser_pierce') {
+battleState.projectiles.push(new Projectile(sx, sy, dir * 1.35, 0, 'laser', this));
+playLaserSound();
+} else if (copiedType === 'eyes') {
+battleState.projectiles.push(new Projectile(sx, this.y + 22, dir, 0, 'enemy_eye', this));
+battleState.projectiles.push(new Projectile(sx, this.y + 52, dir, 0, 'enemy_eye', this));
+playSynthesizedSound(480, 0.1, 'sine');
+} else if (copiedType === 'pyramid') {
+battleState.projectiles.push(new Projectile(sx, sy, dir, -1.5, 'enemy_pyramid', this));
+playSynthesizedSound(340, 0.1, 'sawtooth');
+} else if (copiedType === 'syr') {
+battleState.projectiles.push(new Projectile(sx, sy, dir * 1.1, -2.5, 'enemy_vodka', this));
+playSynthesizedSound(340, 0.1, 'sawtooth');
+} else {
 playPunchSound();
-if (Math.abs(player.x - this.x) < 140) {
-player.takeDamage(200);
+if (Math.abs(player.x - this.x) < 145) {
+player.takeDamage(165);
 }
 }
 }
-this.x += this.vx;
-if (Math.random() < 0.01 && this.y >= 350) {
+}
+this.x = Math.max(20, Math.min(V_WIDTH - this.width - 20, this.x + this.vx));
+if (Math.random() < 0.008 && this.y >= 350) {
 this.vy = -12;
 }
 this.vy += 0.8;
@@ -2404,12 +2546,12 @@ this.y = 450 - this.height;
 this.vy = 0;
 }
 } else {
-this.vx = this.facingLeft ? -8 : 8;
+this.vx = this.facingLeft ? -6.5 : 6.5;
 this.x += this.vx;
 if (this.x < 10) { this.x = 10; this.facingLeft = false; }
 if (this.x > V_WIDTH - 90) { this.x = V_WIDTH - 90; this.facingLeft = true; }
 if (Math.abs(player.x - this.x) < 80) {
-player.takeDamage(1000 * 0.016);
+player.takeDamage(550 * 0.016);
 }
 }
 return;
@@ -2628,9 +2770,24 @@ this.hp = 0;
 }
 takeDamage(amt) {
 if (this.type === 'drun') return;
-if (this.type === 'shadow_creature') return; 
+if (this.type === 'shadow_creature') return;
+const critLv = getRelicLevel('crit_eye');
+if (critLv > 0 && Math.random() < critLv * 0.08) {
+amt *= 2;
+}
+const vampLv = getRelicLevel('vampire_fang');
+if (vampLv > 0 && battleState.player && battleState.player.hp > 0) {
+battleState.player.hp = Math.min(battleState.player.maxHp, battleState.player.hp + amt * (vampLv * 0.04));
+}
+const wasAlive = this.hp > 0;
 this.hp -= amt;
-if (this.hp < 0) this.hp = 0;
+if (this.hp <= 0) {
+this.hp = 0;
+if (wasAlive) {
+ensureGameStateShape();
+gameState.questStats.kills = (gameState.questStats.kills || 0) + 1;
+}
+}
 for (let i = 0; i < 6; i++) {
 battleState.particles.push(new Particle(this.x + this.width/2, this.y + this.height/2, (Math.random() - 0.5) * 7, (Math.random() - 0.5) * 7, '#ef4444'));
 }
@@ -2821,7 +2978,14 @@ this.timer = 999;
 player.takeDamage(130);
 this.timer = 999;
 } else if (this.type === 'laser') {
-player.takeDamage(140);
+player.takeDamage(85);
+this.timer = 999;
+} else if (this.type === 'enemy_soplya') {
+player.takeDamage(120);
+player.frozenTimer = 0.8;
+this.timer = 999;
+} else if (this.type === 'enemy_eye' || this.type === 'enemy_pyramid' || this.type === 'enemy_vodka') {
+player.takeDamage(115);
 this.timer = 999;
 } else if (this.type === 'bed') {
 player.x += this.vx;
@@ -2904,31 +3068,31 @@ ctx.beginPath();
 ctx.arc(this.x, this.y, 4, 0, Math.PI*2);
 ctx.fill();
 } else if (this.type === 'pyramid_proj') {
-ctx.translate(this.x, this.y);
-ctx.rotate(this.timer * 4);
-ctx.fillStyle = '#ef4444';
-ctx.beginPath();
-ctx.moveTo(0, -20);
-ctx.lineTo(20, 20);
-ctx.lineTo(-20, 20);
-ctx.closePath();
-ctx.fill();
-ctx.strokeStyle = '#fff';
-ctx.stroke();
-} else if (this.type === 'laser_view') {
-ctx.strokeStyle = '#ef4444';
-ctx.lineWidth = 6;
-ctx.shadowColor = '#f87171';
-ctx.shadowBlur = 12;
-ctx.beginPath();
-ctx.moveTo(this.x - 30, this.y);
-ctx.lineTo(this.x + 30, this.y);
-ctx.stroke();
-} else if (this.type === 'soplya_drop') {
+} else if (this.type === 'soplya_drop' || this.type === 'enemy_soplya') {
 ctx.fillStyle = '#22c55e';
 ctx.beginPath();
-ctx.arc(this.x, this.y, 8, 0, Math.PI*2);
+ctx.arc(this.x, this.y, 9, 0, Math.PI*2);
 ctx.fill();
+} else if (this.type === 'enemy_eye') {
+ctx.fillStyle = '#ffffff';
+ctx.beginPath();
+ctx.arc(this.x, this.y, 10, 0, Math.PI*2);
+ctx.fill();
+ctx.fillStyle = '#ef4444';
+ctx.beginPath();
+ctx.arc(this.x, this.y, 4, 0, Math.PI*2);
+ctx.fill();
+} else if (this.type === 'enemy_pyramid') {
+ctx.fillStyle = '#ef4444';
+ctx.beginPath();
+ctx.moveTo(this.x, this.y - 14);
+ctx.lineTo(this.x + 14, this.y + 14);
+ctx.lineTo(this.x - 14, this.y + 14);
+ctx.closePath();
+ctx.fill();
+} else if (this.type === 'enemy_vodka') {
+ctx.fillStyle = '#f59e0b';
+ctx.fillRect(this.x - 8, this.y - 14, 16, 28);
 } else if (this.type === 'super_soplya_drop') {
 ctx.fillStyle = '#10b981';
 ctx.shadowColor = '#34d399';
@@ -3430,7 +3594,7 @@ battleState.enemies = [];
 transitionBattlePhase('fog_ending', 'FOG IS COMING');
 saveGameState();
 
-setTimeout(() => {
+startMurinoPuzzle('fuses', () => {
 if (!battleState.active) return;
 playSynthesizedSound(100, 2.5, 'sawtooth');
 battleState.murino2FinalRewardCoins = 3000;
@@ -3443,12 +3607,17 @@ gameState.completedLocations.push('Murino_2');
 updateUI();
 saveGameState();
 endBattleSequence(true);
-}, 3000);
+});
 }
 }
 function executeNormalAttack() {
 const player = battleState.player;
 if (player.attackCooldown > 0 || player.frozenTimer > 0) return;
+if (player.disarmedTimer > 0) {
+playSynthesizedSound(140, 0.12, 'sawtooth');
+showFloatingMessage("Патроны отобраны! Подождите окончания эффекта.");
+return;
+}
 player.attackCooldown = 15;
 let currentDmg = player.dmg;
 if (battleState.hyperActive) currentDmg *= 2;
@@ -3722,16 +3891,22 @@ battleState.particles.push(new Particle(x, y, Math.cos(angle) * spd, Math.sin(an
 }
 }
 let lastGameTickTime = 0;
+let stepAccumulator = 0;
+let activeBattleRafId = null;
 const FIXED_STEP_MS = 1000 / 60;
-function gameLoop(timestamp = 0) {
-if (!battleState.active) return;
-if (!lastGameTickTime) lastGameTickTime = timestamp;
-const elapsed = timestamp - lastGameTickTime;
-if (elapsed < FIXED_STEP_MS - 1) {
-requestAnimationFrame(gameLoop);
-return;
+function stopBattleLoop() {
+if (activeBattleRafId !== null) {
+cancelAnimationFrame(activeBattleRafId);
+activeBattleRafId = null;
 }
-lastGameTickTime = timestamp - (elapsed % FIXED_STEP_MS);
+lastGameTickTime = 0;
+stepAccumulator = 0;
+}
+function startBattleLoop() {
+stopBattleLoop();
+activeBattleRafId = requestAnimationFrame(gameLoop);
+}
+function runSingleBattleTick() {
 ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
 let bgImg = cachedImages.ArmyBg;
 if (gameState.currentLocation === 'Murino_1') {
@@ -4003,8 +4178,31 @@ ctx.font = 'bold 32px "Press Start 2P", monospace';
 ctx.textAlign = 'center';
 ctx.fillText("FOG IS COMING", V_WIDTH/2, V_HEIGHT/2);
 }
-
-requestAnimationFrame(gameLoop);
+}
+function gameLoop(timestamp = 0) {
+if (!battleState.active) {
+activeBattleRafId = null;
+return;
+}
+if (!lastGameTickTime) lastGameTickTime = timestamp;
+const frameDelta = Math.min(100, Math.max(0, timestamp - lastGameTickTime));
+lastGameTickTime = timestamp;
+if (battleState.pausedForPuzzle) {
+activeBattleRafId = requestAnimationFrame(gameLoop);
+return;
+}
+stepAccumulator += frameDelta;
+let subSteps = 0;
+while (stepAccumulator >= FIXED_STEP_MS && subSteps < 3) {
+runSingleBattleTick();
+stepAccumulator -= FIXED_STEP_MS;
+subSteps++;
+if (!battleState.active) {
+activeBattleRafId = null;
+return;
+}
+}
+activeBattleRafId = requestAnimationFrame(gameLoop);
 }
 function startFight() {
 if (typeof window.isMellstroAccountReady === 'function' && !window.isMellstroAccountReady()) {
@@ -4013,11 +4211,13 @@ showFloatingMessage("В бой можно только после входа в 
 if (typeof window.showAuthModal === 'function') window.showAuthModal();
 return;
 }
+stopBattleLoop();
 playSynthesizedSound(500, 0.3);
 document.getElementById('menuScene').classList.add('hidden');
 document.getElementById('battleScene').classList.remove('hidden');
 resizeCanvas();
 battleState.active = true;
+battleState.pausedForPuzzle = false;
 battleState.phase = 'helpers';
 battleState.countdown = 3;
 battleState.projectiles = [];
@@ -4135,7 +4335,7 @@ else if (gameState.currentLocation === 'Murino_2') {
 transitionBattlePhase('drun_intro', 'ПОИСК ВЫХОДА С ДРУНАМИ');
 setupDrunLootAndSceanrio();
 }
-requestAnimationFrame(gameLoop);
+startBattleLoop();
 }
 }, 1000);
 }
@@ -4293,6 +4493,9 @@ gameState.coins += 400;
 gameState.crystals += 2;
 updateUI();
 transitionBattlePhase('mimic_talk_1', 'ВСТРЕЧА С ДРУНОМ');
+const approachingDrun = new Enemy('drun', V_WIDTH - 130, 350);
+approachingDrun.facingLeft = true;
+battleState.enemies.push(approachingDrun);
 triggerBossDialogue("Привет, это я друн! Меня здесь держали в человейнике, но я выбрался!");
 setTimeout(() => {
 if (!battleState.active) return;
@@ -4304,9 +4507,12 @@ triggerBossDialogue("Нет, я не уйду! Мне здесь нравитс�
 setTimeout(() => {
 if (!battleState.active) return;
 transitionBattlePhase('mimic_fight', 'БИТВА С МИМИКОМ');
-const m = new Enemy('mimic', V_WIDTH - 200, 350);
-m.mimicHeroCopied = 'Mell';
+const m = new Enemy('mimic', approachingDrun.x, 350);
+m.mimicHeroCopied = battleState.player.heroInfo.id;
+m.mimicCopiedAttackType = battleState.player.heroInfo.attackType;
+battleState.enemies = battleState.enemies.filter(e => e.type !== 'drun');
 battleState.enemies.push(m);
+showFloatingMessage(`МИМИК СКОПИРОВАЛ ГЕРОЯ: ${battleState.player.heroInfo.name.toUpperCase()}!`);
 }, 2500);
 }, 2500);
 }, 2500);
@@ -4391,6 +4597,8 @@ if (battleState.survivalRound >= 4) {
 battleState.fogRadius = 9999;
 const mMur1 = document.getElementById('bgMusicMurino1');
 if (mMur1) mMur1.volume = 1.0;
+startMurinoPuzzle('keypad', () => {
+if (!battleState.active) return;
 transitionBattlePhase('drun_rescue', 'ДРУНЫ-СПАСАТЕЛИ');
 triggerBossDialogue("Быстрее, мы забираем тебя! Иди с нами!");
 const d1 = new Enemy('drun', 100, 350);
@@ -4398,6 +4606,7 @@ const d2 = new Enemy('drun', 200, 350);
 battleState.enemies.push(d1);
 battleState.enemies.push(d2);
 battleState.drunRescueTimer = 6.0;
+});
 } else {
 transitionBattlePhase('survival_countdown_5', `РАУНД ${battleState.survivalRound} ПРОЙДЕН!`);
 battleState.survivalTimer = 5.0;
@@ -4446,6 +4655,9 @@ endBattleSequence(true);
 }
 function endBattleSequence(isWin) {
 battleState.active = false;
+battleState.pausedForPuzzle = false;
+stopBattleLoop();
+document.getElementById('murinoPuzzleModal')?.classList.add('hidden');
 const mArmy = document.getElementById('bgMusicArmy');
 const mMur1 = document.getElementById('bgMusicMurino1');
 const mMur2 = document.getElementById('bgMusicMurino2');
@@ -4455,12 +4667,13 @@ mMur2.pause();
 document.getElementById('parryPromptContainer').classList.add('hidden');
 document.getElementById('battleLootHUD').classList.add('hidden');
 if (isWin) {
-let coinReward = 1500;
-let ptReward = 1200;
+const magnetMult = 1 + getRelicLevel('gold_magnet') * 0.15;
+let coinReward = Math.round(1500 * magnetMult);
+let ptReward = Math.round(1200 * magnetMult);
 let grantEndReward = true;
 if (gameState.currentLocation === 'Murino_2') {
-coinReward = battleState.murino2FinalRewardCoins || 3000;
-ptReward = battleState.murino2FinalRewardPoints || 5000;
+coinReward = Math.round((battleState.murino2FinalRewardCoins || 3000) * magnetMult);
+ptReward = Math.round((battleState.murino2FinalRewardPoints || 5000) * magnetMult);
 grantEndReward = false;
 }
 if (grantEndReward) {
@@ -4494,6 +4707,9 @@ gameState.hyperPrice = 5;
 updateUI();
 }
 function exitBattle(isWin) {
+battleState.active = false;
+battleState.pausedForPuzzle = false;
+stopBattleLoop();
 playSynthesizedSound(300, 0.1);
 document.getElementById('victoryOverlay').classList.add('hidden');
 document.getElementById('defeatOverlay').classList.add('hidden');
@@ -5611,15 +5827,30 @@ const m3OldStartFight = startFight;
 startFight = function() { if (gameState.currentLocation === 'Murino_3') m3StartFight(); else m3OldStartFight(); };
 const m3OldGameLoop = gameLoop;
 gameLoop = function(timestamp = 0) {
-if (!battleState.active) return;
+if (!battleState.active) {
+activeBattleRafId = null;
+return;
+}
 if (gameState.currentLocation === 'Murino_3') {
 if (!lastGameTickTime) lastGameTickTime = timestamp;
-const elapsed = timestamp - lastGameTickTime;
-if (elapsed >= FIXED_STEP_MS - 1) {
-lastGameTickTime = timestamp - (elapsed % FIXED_STEP_MS);
-m3Frame();
+const frameDelta = Math.min(100, Math.max(0, timestamp - lastGameTickTime));
+lastGameTickTime = timestamp;
+if (battleState.pausedForPuzzle) {
+activeBattleRafId = requestAnimationFrame(gameLoop);
+return;
 }
-requestAnimationFrame(gameLoop);
+stepAccumulator += frameDelta;
+let subSteps = 0;
+while (stepAccumulator >= FIXED_STEP_MS && subSteps < 3) {
+m3Frame();
+stepAccumulator -= FIXED_STEP_MS;
+subSteps++;
+if (!battleState.active) {
+activeBattleRafId = null;
+return;
+}
+}
+activeBattleRafId = requestAnimationFrame(gameLoop);
 return;
 }
 m3OldGameLoop(timestamp);
@@ -5696,6 +5927,106 @@ window.addEventListener('keydown', (e) => {
 });
 setTimeout(() => { m3UpdatePartButton(); updateUI(); }, 0);
 })();
+
+let activePuzzleInterval = null;
+function startMurinoPuzzle(mode, onComplete) {
+const modal = document.getElementById('murinoPuzzleModal');
+if (!modal) { onComplete?.(); return; }
+clearInterval(activePuzzleInterval);
+battleState.pausedForPuzzle = true;
+modal.classList.remove('hidden');
+const titleEl = document.getElementById('puzzleTitle');
+const descEl = document.getElementById('puzzleDesc');
+const displayEl = document.getElementById('puzzleDisplay');
+const controlsEl = document.getElementById('puzzleControls');
+const timerEl = document.getElementById('puzzleTimerText');
+const statusEl = document.getElementById('puzzleStatusText');
+let timeLeft = 14.0;
+const finishPuzzle = (success) => {
+clearInterval(activePuzzleInterval);
+modal.classList.add('hidden');
+battleState.pausedForPuzzle = false;
+lastGameTickTime = 0;
+stepAccumulator = 0;
+if (success) {
+ensureGameStateShape();
+gameState.questStats.puzzlesSolved = (gameState.questStats.puzzlesSolved || 0) + 1;
+gameState.coins += 350;
+playLevelUpSound();
+showFloatingMessage("Головоломка решена! +350 монет!");
+updateUI();
+onComplete?.();
+} else {
+battleState.player?.takeDamage(900);
+showFloatingMessage("Время вышло! Ловушка нанесла 900 урона, но дверь открылась.");
+onComplete?.();
+}
+};
+if (mode === 'keypad') {
+titleEl.innerText = 'КОДОВЫЙ ЗАМОК ЧЕЛОВЕЙНИКА';
+descEl.innerText = 'Запомните 4 символа и нажмите их в том же порядке!';
+const symbols = ['👁️', '⚡', '🔑', '💀', '🔥', '🌫️'];
+const code = Array.from({ length: 4 }, () => symbols[Math.floor(Math.random() * symbols.length)]);
+let input = [];
+let locked = true;
+displayEl.innerText = code.join(' ');
+statusEl.innerText = 'Запоминайте код...';
+controlsEl.innerHTML = symbols.map(s => `<button type="button" data-sym="${s}" class="bg-slate-800 hover:bg-amber-600 text-white py-3 rounded-xl text-xl border border-slate-700 transition">${s}</button>`).join('');
+setTimeout(() => {
+locked = false;
+displayEl.innerText = '_ _ _ _';
+statusEl.innerText = 'Вводите код!';
+}, 2200);
+controlsEl.querySelectorAll('button').forEach(btn => {
+btn.onclick = () => {
+if (locked) return;
+playTickSound();
+input.push(btn.dataset.sym);
+displayEl.innerText = input.concat(Array(4 - input.length).fill('_')).join(' ');
+const idx = input.length - 1;
+if (input[idx] !== code[idx]) {
+input = [];
+displayEl.innerText = 'ОШИБКА! _ _ _ _';
+playSynthesizedSound(150, 0.25, 'sawtooth');
+return;
+}
+if (input.length === code.length) finishPuzzle(true);
+};
+});
+} else {
+titleEl.innerText = 'ЩИТОК ПРЕДОХРАНИТЕЛЕЙ';
+descEl.innerText = 'Подберите сумму напряжения, равную целевому числу!';
+const values = [15, 25, 40, 10, 30, 50];
+const chosenIdx = [0, 2, 4];
+const targetSum = chosenIdx.reduce((acc, i) => acc + values[i], 0);
+const active = new Set();
+displayEl.innerText = `ЦЕЛЬ: ${targetSum}V | СЕЙЧАС: 0V`;
+statusEl.innerText = 'Переключайте тумблеры';
+controlsEl.innerHTML = values.map((v, i) => `<button type="button" data-idx="${i}" class="bg-slate-800 text-gray-200 py-3 rounded-xl gaming-font text-[10px] border border-slate-700 transition">+${v}V</button>`).join('');
+controlsEl.querySelectorAll('button').forEach(btn => {
+btn.onclick = () => {
+const idx = Number(btn.dataset.idx);
+playTickSound();
+if (active.has(idx)) {
+active.delete(idx);
+btn.className = 'bg-slate-800 text-gray-200 py-3 rounded-xl gaming-font text-[10px] border border-slate-700 transition';
+} else {
+active.add(idx);
+btn.className = 'bg-amber-600 text-black font-bold py-3 rounded-xl gaming-font text-[10px] border border-amber-300 transition';
+}
+const sum = [...active].reduce((acc, i) => acc + values[i], 0);
+displayEl.innerText = `ЦЕЛЬ: ${targetSum}V | СЕЙЧАС: ${sum}V`;
+if (sum === targetSum) finishPuzzle(true);
+};
+});
+}
+timerEl.innerText = `${timeLeft.toFixed(1)}с`;
+activePuzzleInterval = setInterval(() => {
+timeLeft -= 0.1;
+timerEl.innerText = `${Math.max(0, timeLeft).toFixed(1)}с`;
+if (timeLeft <= 0) finishPuzzle(false);
+}, 100);
+}
 
 function m3ForceHeroPlayable() {
   if (gameState.currentLocation !== 'Murino_3' || !battleState || !battleState.player) return;
