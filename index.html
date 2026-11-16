@@ -1565,12 +1565,12 @@ helper: 'https://s10.iimage.su/s/30/th_gYuXKdxxVePCgH7whlrLwbQMgak5jUzcl2G8Mz7BS
 commander: 'https://s10.iimage.su/s/30/th_gNjDNFWxdsGNNl8udIDUXlRbD8ZSkmmMJn1wdywph.png',
 general: 'https://s10.iimage.su/s/30/th_gIQwNyQxtiO2lpCyfdvt9Vh1OjlGcwpbRutAj1lGD.png',
 skromnik: 'https://i.ibb.co/n8fXG6c3/scromnik.png',
-mimic_true: 'https://i.pinimg.com/originals/d9/62/30/d96230c1b8282a419aaffd6109fb90f4.jpg?nii=t',
+mimic_true: 'https://placehold.co/120x150/450a0a/fca5a5?text=MIMIC',
 fog_creature: 'https://avatars.mds.yandex.net/i?id=503a24b487f8f83ff015f57a6f8a60ef2e3b9e7a-10150478-images-thumbs&n=13',
 drun: 'https://i.ibb.co/pD5wY3B/channels4-profile.jpg',
-corridor_monster: 'https://i.pinimg.com/1200x/04/22/22/042222bf7b945078bfb6a5bfbfe3b96d.jpg',
-skrut: 'https://i.pinimg.com/736x/c3/fe/8a/c3fe8a0d6bcbcdeeb4d310e4f5e598e4.jpg',
-red_beast: 'https://i.pinimg.com/originals/2f/ea/d2/2fead28a9cd651e86988518cb8de60bb.png',
+corridor_monster: 'https://placehold.co/120x150/1e1b4b/c7d2fe?text=MONSTER',
+skrut: 'https://placehold.co/120x150/0f172a/f87171?text=SKRUT',
+red_beast: 'https://placehold.co/120x150/7f1d1d/fecaca?text=BEAST',
 spring_monster: 'https://i.ibb.co/tThrkDCF/i.jpg',
 shadow_creature: 'https://i.ibb.co/5m1VNkJ/7188eedc53c4bde8686236bbafa539f2-no-bg-preview-carve-photos.png',
 trap_item: 'https://i.ibb.co/HT9trWzs/istockphoto-483767002-612x612-no-bg-preview-carve-photos.png',
@@ -3721,8 +3721,17 @@ const spd = 4 + Math.random() * 6;
 battleState.particles.push(new Particle(x, y, Math.cos(angle) * spd, Math.sin(angle) * spd, color));
 }
 }
-function gameLoop() {
+let lastGameTickTime = 0;
+const FIXED_STEP_MS = 1000 / 60;
+function gameLoop(timestamp = 0) {
 if (!battleState.active) return;
+if (!lastGameTickTime) lastGameTickTime = timestamp;
+const elapsed = timestamp - lastGameTickTime;
+if (elapsed < FIXED_STEP_MS - 1) {
+requestAnimationFrame(gameLoop);
+return;
+}
+lastGameTickTime = timestamp - (elapsed % FIXED_STEP_MS);
 ctx.clearRect(0, 0, V_WIDTH, V_HEIGHT);
 let bgImg = cachedImages.ArmyBg;
 if (gameState.currentLocation === 'Murino_1') {
@@ -5534,7 +5543,6 @@ function m3Frame() {
   m3DrawStatusBars();
   m3recordHistory();
   m3updateHud();
-  requestAnimationFrame(gameLoop);
 }
 
 function m3UpdatePartButton() {
@@ -5602,7 +5610,20 @@ updateLocationButtons = function() {
 const m3OldStartFight = startFight;
 startFight = function() { if (gameState.currentLocation === 'Murino_3') m3StartFight(); else m3OldStartFight(); };
 const m3OldGameLoop = gameLoop;
-gameLoop = function() { if (!battleState.active) return; if (gameState.currentLocation === 'Murino_3') { m3Frame(); return; } m3OldGameLoop(); };
+gameLoop = function(timestamp = 0) {
+if (!battleState.active) return;
+if (gameState.currentLocation === 'Murino_3') {
+if (!lastGameTickTime) lastGameTickTime = timestamp;
+const elapsed = timestamp - lastGameTickTime;
+if (elapsed >= FIXED_STEP_MS - 1) {
+lastGameTickTime = timestamp - (elapsed % FIXED_STEP_MS);
+m3Frame();
+}
+requestAnimationFrame(gameLoop);
+return;
+}
+m3OldGameLoop(timestamp);
+};
 const m3OldAttack = executeNormalAttack;
 executeNormalAttack = function() { if (battleState.active && gameState.currentLocation === 'Murino_3') { m3PlayerAttack(); return; } m3OldAttack(); };
 const m3OldEndBattle = endBattleSequence;
@@ -5855,13 +5876,17 @@ async function createProfileAfterVerification(user) {
   }
   const nick = user.displayName || localStorage.getItem(`MellstroFight_pendingNick_${user.uid}`) || 'Игрок';
   const nickKey = normalizeNick(nick);
-  if (!nickKey || await nicknameTaken(nickKey)) {
-    setAuthMessage('Этот никнейм уже занят. Зарегистрируйтесь заново с уникальным ником.', 'error');
+  if (!nickKey) {
+    setAuthMessage('Некорректный никнейм. Зарегистрируйтесь заново.', 'error');
     await signOut(auth);
     return;
   }
+  try {
+    await setDoc(doc(db, 'nicknames', nickKey), { uid: user.uid, nickname: nick, createdAt: serverTimestamp() });
+  } catch (nickErr) {
+    console.warn('Nicknames collection write skipped (check Firestore rules):', nickErr);
+  }
   const progress = window.getMellstroGameState?.() || {};
-  await setDoc(doc(db, 'nicknames', nickKey), { uid: user.uid, nickname: nick, createdAt: serverTimestamp() });
   await setDoc(userRef, {
     uid: user.uid,
     nickname: nick,
