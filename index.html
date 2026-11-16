@@ -115,7 +115,7 @@ CREDITS
 <div id="splashAuthStatus" class="text-[10px] text-gray-500 mt-2 min-h-[18px]">Войдите, чтобы начать игру</div>
 </div>
 </div>
-<div class="absolute bottom-4 text-xs text-gray-600">v3.10.0 - Мурино 3: ПЕРЕПИСАННАЯ ЛОГИКА</div>
+<div class="absolute bottom-4 text-xs text-gray-600">v3.10.1 - Мурино 3: ПЕРЕПИСАННАЯ ЛОГИКА</div>
 </div>
 <!-- Окно Credits -->
 <div id="creditsModal" class="hidden absolute inset-0 bg-black/85 flex items-center justify-center z-50 p-4">
@@ -147,20 +147,22 @@ CREDITS
 </button>
 <h2 class="gaming-font text-cyan-400 text-sm mb-5">АККАУНТ</h2>
 <div class="grid grid-cols-2 gap-2 mb-4">
-<button id="authLoginTab" onclick="setAuthMode('login')" class="bg-cyan-600 text-white py-2 rounded-lg gaming-font text-[9px]">ВХОД</button>
-<button id="authRegisterTab" onclick="setAuthMode('register')" class="bg-slate-800 text-gray-300 py-2 rounded-lg gaming-font text-[9px]">РЕГИСТРАЦИЯ</button>
+<button type="button" id="authLoginTab" onclick="setAuthMode('login')" class="bg-cyan-600 text-white py-2 rounded-lg gaming-font text-[9px]">ВХОД</button>
+<button type="button" id="authRegisterTab" onclick="setAuthMode('register')" class="bg-slate-800 text-gray-300 py-2 rounded-lg gaming-font text-[9px]">РЕГИСТРАЦИЯ</button>
 </div>
+<form onsubmit="event.preventDefault(); submitAuthForm();">
 <div id="authNicknameWrap" class="hidden mb-3">
-<input id="authNicknameInput" type="text" maxlength="18" placeholder="Никнейм" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm text-white outline-none focus:border-cyan-500">
+<input id="authNicknameInput" type="text" maxlength="18" autocomplete="nickname" placeholder="Никнейм" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm text-white outline-none focus:border-cyan-500">
 </div>
-<input id="authEmailInput" type="email" placeholder="Почта" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm text-white outline-none focus:border-cyan-500 mb-3">
-<input id="authPasswordInput" type="password" placeholder="Пароль" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm text-white outline-none focus:border-cyan-500 mb-4">
-<button id="authMainBtn" onclick="submitAuthForm()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl uppercase gaming-font text-[10px] transition">ВОЙТИ</button>
+<input id="authEmailInput" type="email" autocomplete="email" placeholder="Почта" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm text-white outline-none focus:border-cyan-500 mb-3">
+<input id="authPasswordInput" type="password" autocomplete="current-password" placeholder="Пароль" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm text-white outline-none focus:border-cyan-500 mb-4">
+<button id="authMainBtn" type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded-xl uppercase gaming-font text-[10px] transition">ВОЙТИ</button>
+</form>
 <div id="authMessage" class="text-[11px] text-gray-400 min-h-[36px] mt-4 leading-5"></div>
 <div id="authLoggedInfo" class="hidden bg-slate-950/80 border border-slate-800 rounded-xl p-3 mt-2 text-[10px] text-gray-300 leading-5">
 <div>Ник: <span id="authLoggedNick" class="text-cyan-400 font-bold">—</span></div>
 <div>Почта: <span id="authLoggedEmail" class="text-amber-400 font-bold">—</span></div>
-<button onclick="logoutAccount()" class="mt-3 w-full bg-red-700 hover:bg-red-600 text-white py-2 rounded-lg gaming-font text-[9px]">ВЫЙТИ</button>
+<button type="button" onclick="logoutAccount()" class="mt-3 w-full bg-red-700 hover:bg-red-600 text-white py-2 rounded-lg gaming-font text-[9px]">ВЫЙТИ</button>
 </div>
 </div>
 </div>
@@ -1163,7 +1165,6 @@ document.getElementById('detailHp').innerText = curHp;
 document.getElementById('damageNextLv').innerText = `След. уровень: +${hero.dmgPerLevel} Урона / +${hero.hpPerLevel} Здоровья`;
 document.getElementById('detailAttackDesc').innerText = hero.desc;
 
-// ОПТИМИЗИРОВАННОЕ УВЕЛИЧЕНИЕ ЦЕНЫ АПГРЕЙДА (минус 1500 монет на каждый уровень)
 const baseCost = Math.max(200, (lv * 1500) - 1500);
 const upgradeCost = Math.max(50, Math.floor(baseCost * 1.2));
 const upgradeHeroBtn = document.getElementById('upgradeHeroBtn');
@@ -1201,7 +1202,6 @@ playSynthesizedSound(150, 0.3, 'sawtooth');
 showFloatingMessage("Максимальный уровень (9) достигнут!");
 return;
 }
-// ОПТИМИЗИРОВАННОЕ УВЕЛИЧЕНИЕ ЦЕНЫ АПГРЕЙДА (минус 1500 монет на каждый уровень)
 const baseCost = Math.max(200, (lv * 1500) - 1500);
 const upgradeCost = Math.max(50, Math.floor(baseCost * 1.2));
 if (gameState.coins >= upgradeCost) {
@@ -1399,7 +1399,6 @@ revealIcon.className = "fas fa-boxes text-cyan-400 text-5xl animate-bounce";
 document.getElementById('rewardText').innerText = `3 ${labelMap[selectedType]}! СЕЙЧАС ОНИ БУДУТ ОТКРЫТЫ!`;
 document.getElementById('rewardModal').classList.remove('hidden');
 
-// Последовательное открытие полученных коробок по очереди
 setTimeout(() => { revealBoxReward(selectedType); }, 3000);
 setTimeout(() => { revealBoxReward(selectedType); }, 6500);
 setTimeout(() => { revealBoxReward(selectedType); }, 10000);
@@ -1688,7 +1687,6 @@ hyperCooldown: 0,
 hyperUsedThisGame: false,
 fogPhaseTimer: 0,
 shadowDotTimer: 1.0,
-// Новые таймеры и переменные для фаз
 lightningTimer: 2.0, 
 shadowSpawnTimer: 0,
 shadowPairTimer: 0,
@@ -1739,7 +1737,6 @@ this.x = 150;
 this.y = 400;
 this.vx = 0;
 this.vy = 0;
-// КРУПНЫЙ РАЗМЕР ИГРОКА (+15%)
 this.width = 86;
 this.height = 109;
 this.baseHeight = 109;
@@ -1771,7 +1768,6 @@ if (this.invulnTimer > 0) this.invulnTimer -= 0.016;
 if (this.frozenTimer > 0) {
 this.frozenTimer -= 0.016;
 this.vx = 0;
-// При заморозке гравитация и базовая физика все еще действуют на y, но движения по оси x нет
 this.vy += 0.8;
 this.y += this.vy;
 if (this.y + this.height >= 450) {
@@ -1781,7 +1777,6 @@ this.grounded = true;
 }
 return;
 }
-// Логика Черного Кружка (Автопилот к Скруту)
 if (this.blackCircleDebuff > 0) {
 this.blackCircleDebuff -= 0.016;
 if (this.blackCircleTarget && this.blackCircleTarget.hp > 0) {
@@ -1805,7 +1800,6 @@ this.y = 450 - this.height;
 this.vy = 0;
 this.grounded = true;
 }
-// Ограничение игрока у краев во время дебаффа
 if (this.x < 0) this.x = 0;
 if (this.x + this.width > V_WIDTH) this.x = V_WIDTH - this.width;
 return; 
@@ -1830,8 +1824,6 @@ if (this.fistExtension > 0) this.fistExtension -= 7;
 return;
 }
 const isCrouching = keys.ShiftLeft || keys.ShiftRight;
-// Реальный присед: уменьшаем физический хитбокс и держим ноги на полу.
-// Теперь снаряды, летящие на уровне стоящего персонажа, пролетают над присевшим героем.
 if (isCrouching) {
 if (Math.abs(this.height - this.baseHeight) < 0.01) {
 const newHeight = this.baseHeight * 0.55;
@@ -1959,7 +1951,6 @@ if (!isOnBed && battleState.toxicFloorActive) {
 this.takeDamage(1000 * 0.016);
 }
 }
-// ИСПРАВЛЕНИЕ: во время фазы спасения в Мурино 1 игроку РАЗРЕШЕНО уходить за правый край экрана
 if (battleState.phase !== 'drun_rescue') {
 if (this.x < 0) this.x = 0;
 if (this.x + this.width > V_WIDTH) this.x = V_WIDTH - this.width;
@@ -2089,11 +2080,8 @@ constructor(type, x = 1000, y = 350) {
 this.type = type;
 this.x = x;
 this.y = y;
-// УВЕЛИЧЕННЫЕ РАЗМЕРЫ ВРАГОВ НА CANVAS (+15%)
-const mult = 1.15;
 this.width = type === 'mine' ? 52 : (type === 'small_skrut' ? 54 : (type === 'skromnik' ? 92 : (type === 'shadow_creature' ? 80 : 98)));
 this.height = type === 'mine' ? 52 : (type === 'small_skrut' ? 67 : (type === 'skromnik' ? 138 : (type === 'shadow_creature' ? 109 : 121)));
-// БАЛАНС HP И УРОНА ДЛЯ МУРИНО 2
 let hpMap = {
 helper: 1500, commander: 2500, commander_rage: 1200, general: 4000, mine: 200,
 skromnik: 7000, mimic: 7000, mimic_rage: 4000, knife: 100, corridor_monster: 8000,
@@ -2122,7 +2110,6 @@ this.mimicHeroCopied = 'Mell';
 this.scruPauseTimer = 0;
 this.blindTimer = 0;
 this.trappedTimer = 0;
-// Таймеры для Скрутов
 this.blackCircleTimer = 3.0;
 this.trapPlaceTimer = 5.0 + Math.random() * 3.0;
 }
@@ -2204,7 +2191,6 @@ return;
 }
 if (this.type === 'shadow_creature') {
 this.facingLeft = player.x < this.x;
-// ЗАМЕДЛЕНЫ: скорость теней снижена с 4.0 до 1.8
 const shadowSpeed = 1.8;
 this.vx = player.x > this.x ? shadowSpeed : -shadowSpeed;
 this.x += this.vx;
@@ -2270,10 +2256,9 @@ playExplosionSound();
 createSlamImpact(this.x + this.width/2, 450, '#3b82f6');
 const dist = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
 if (dist < 120) {
-// ИСПРАВЛЕННЫЙ ХИТБОКС: Урон наносится только если игрок действительно пересекается по высоте
 const playerBottom = player.y + player.height;
 if (playerBottom >= 410) {
-player.takeDamage(2500); // УРОН ПРЫГАЮЩЕГО МОНСТРА: 2500
+player.takeDamage(2500);
 }
 }
 }
@@ -2285,15 +2270,12 @@ this.facingLeft = this.taranDirectionLeft;
 this.x += this.vx;
 const dist = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
 if (dist < 60) {
-// ИСПРАВЛЕННЫЙ ХИТБОКС: Таран прыгающего монстра проходит по высоте головы/тела (y от 330 до 450).
-// Если игрок нажал Shift и присел, его высота стала 60 вместо 109, а верхняя координата Y сдвинулась вниз.
-// Будем наносить урон только если Y игрока пересекается с высотой атаки тарана (с высоты 380 до 450)
 const attackMinY = 380;
 const attackMaxY = 450;
 const playerTop = player.y;
 const playerBottom = player.y + player.height;
 if (!(playerBottom < attackMinY || playerTop > attackMaxY)) {
-player.takeDamage(2500); // УРОН ПРЫГАЮЩЕГО МОНСТРА: 2500
+player.takeDamage(2500);
 player.vx = this.taranDirectionLeft ? -15 : 15; 
 }
 }
@@ -2323,7 +2305,6 @@ this.scruPauseTimer = Math.random() * 1.5 + 0.5;
 if (this.scruPauseTimer > 0) {
 this.vx = 0;
 } else {
-// Маленькие скруты идут в 2 раза быстрее большого скрута (было 1.8 -> стало 2.4, а у большого 1.2)
 const skrutSpeed = this.type === 'small_skrut' ? 2.4 : 1.2;
 this.vx = player.x > this.x ? skrutSpeed : -skrutSpeed;
 this.x += this.vx;
@@ -2342,7 +2323,6 @@ document.getElementById('parryPromptContainer').classList.remove('hidden');
 triggerBossDialogue("СЕЙЧАС ПОЛУЧИШЬ!");
 playSynthesizedSound(600, 0.2, 'sawtooth');
 }
-// МЕХАНИКА ЧЕРНОГО КРУЖКА (БОЛЬШОЙ СКРУТ)
 if (this.type === 'skrut') {
 this.blackCircleTimer -= 0.016;
 if (this.blackCircleTimer <= 0) {
@@ -2353,8 +2333,6 @@ const vy = Math.sin(angle) * 6;
 battleState.projectiles.push(new Projectile(this.x + this.width/2, this.y + this.height/2, vx, vy, 'black_circle', this));
 }
 }
-// ВНИМАНИЕ: Маленькие скруты больше ничем не стреляют (включая капканы), только идут вперед на игрока!
-
 const distToPlayer = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
 if (distToPlayer < 50 && Math.abs(player.y - this.y) < 85) {
 handleMimicContamination();
@@ -2382,7 +2360,7 @@ this.vy = 0;
 const pDist = Math.abs((player.x + player.width/2) - (this.x + this.width/2));
 const pDistY = Math.abs((player.y + player.height/2) - (this.y + this.height/2));
 if (pDist < 55 && pDistY < 60) {
-player.takeDamage(1000); // УРОН СКРОМНИКА: 1000
+player.takeDamage(1000);
 this.x += this.facingLeft ? 150 : -150;
 }
 return;
@@ -2796,15 +2774,11 @@ isSuper: (this.type === 'super_soplya_drop')
 return;
 }
 }
-// Логика Черного Кружка
 if (this.type === 'black_circle') {
 const pMidX = player.x + player.width/2;
 const pMidY = player.y + player.height/2;
 const dist = Math.sqrt(Math.pow(pMidX - this.x, 2) + Math.pow(pMidY - this.y, 2));
 if (dist < 40) {
-// ИСПРАВЛЕННЫЙ ХИТБОКС: Черный кружок летит на уровне головы/груди (высота ~380). 
-// Если игрок присел (Shift), то его хитбокс опускается вниз и верхняя грань (y) становится больше 400.
-// Проверим, пересекает ли кружок текущий Y игрока
 if (this.y >= player.y && this.y <= player.y + player.height) {
 player.blackCircleDebuff = 3.0; 
 player.blackCircleTarget = this.owner; 
@@ -2814,7 +2788,6 @@ playSynthesizedSound(150, 0.5, 'sawtooth');
 }
 }
 }
-// Логика Капкана Скрута
 if (this.type === 'skrut_trap') {
 const pMidX = player.x + player.width/2;
 const pMidY = player.y + player.height/2;
@@ -2832,12 +2805,8 @@ const pMidX = player.x + player.width/2;
 const pMidY = player.y + player.height/2;
 const dist = Math.sqrt(Math.pow(pMidX - this.x, 2) + Math.pow(pMidY - this.y, 2));
 if (dist < (player.width/2 + this.width/2)) {
-// ИСПРАВЛЕННЫЙ ХИТБОКС: Для летящих снарядов (палка, крышка, лазер) проверяем высоту Y игрока.
-// Если игрок присел, его Y смещен вниз, и снаряды, летящие выше, не должны его ранить.
 let hitPossible = true;
 if (this.type === 'stick' || this.type === 'cap_green' || this.type === 'laser') {
-// атаки летят на высоте ~370-390. Если игрок присел на Shift, его player.y становится ~415. 
-// Снаряд пролетает выше головы (его Y меньше player.y)
 if (this.y + this.height < player.y) {
 hitPossible = false;
 }
@@ -3312,19 +3281,15 @@ triggerBossDialogue("Я чувствую силу ваших вещей! Отд�
 return;
 }
 }
-// Фаза Большого Скрута окончена -> Спавн 2 Маленьких Скрутов (Они идут быстрее, стреляет молния)
 if (battleState.phase === 'skrut_fight' && !hasSkruts) {
-// Награда за большого скрута (начисляется позже за всю фазу скрутов)
 transitionBattlePhase('skrut_division', 'ФАЗА 2: РАЗДЕЛЕНИЕ');
 triggerBossDialogue("Думаешь, это конец? Мы разделимся!");
 battleState.enemies.push(new Enemy('small_skrut', 300, 350));
 battleState.enemies.push(new Enemy('small_skrut', 900, 350));
-battleState.lightningTimer = 1.5; // Сброс таймера молнии
+battleState.lightningTimer = 1.5;
 return;
 }
-// Фаза с маленькими скрутами закончилась -> Перерыв 3с с надписью "Когда же все это закончится..."
 if (battleState.phase === 'skrut_division' && !hasSkruts) {
-// НАГРАДА: Большой + маленькие скруты = 700 монет и 1500 поинтов
 gameState.coins += 700;
 gameState.points += 1500;
 updateUI();
@@ -3338,9 +3303,7 @@ triggerBossDialogue("ГРРРААААХ!");
 }, 3000);
 return;
 }
-// Скромник повержен -> Начинается прыгающий монстр
 if (battleState.phase === 'skromnik_fight' && activeCombatants.length === 0) {
-// НАГРАДА: Скромник = 100 монет и 300 поинтов
 gameState.coins += 100;
 gameState.points += 300;
 updateUI();
@@ -3350,16 +3313,14 @@ battleState.springState = 'idle';
 triggerBossDialogue("Я раздавлю тебя сверху!");
 return;
 }
-// Прыгающий монстр повержен -> Свет сужается (Радиус 260), Начинается фаза с тенями по бокам попарно
 if (battleState.phase === 'spring_boss_fight' && activeCombatants.length === 0) {
-// НАГРАДА: Прыгающий монстр = 500 монет и 2000 поинтов
 gameState.coins += 500;
 gameState.points += 2000;
 updateUI();
 transitionBattlePhase('shadows_invasion', 'ФАЗА ТЕНЕЙ: 20 СЕКУНД');
 battleState.fogRadius = 9999;
-battleState.shadowLightWall = 230; // Свет сужается по бокам слева и справа
-battleState.fogPhaseTimer = 20.0; // Общее время фазы теней — 20 секунд
+battleState.shadowLightWall = 230;
+battleState.fogPhaseTimer = 20.0;
 battleState.shadowsInsideCount = 0;
 battleState.superPressSequence = 0;
 battleState.shadowDotTimer = 1.0;
@@ -3376,16 +3337,14 @@ fogSnd.play().catch(e => {});
 }
 return;
 }
-// Завершение Фазы Теней по таймеру ровно через 20 сек -> передышка 5 сек и финальный фруктовый дождь
 if (battleState.phase === 'shadows_invasion' && battleState.fogPhaseTimer <= 0) {
-// НАГРАДА: Фаза с тенями = 1200 монет и 2300 поинтов
 gameState.coins += 1200;
 gameState.points += 2300;
 updateUI();
-battleState.fogRadius = 9999; // Возвращаем свет
+battleState.fogRadius = 9999;
 battleState.shadowLightWall = 0;
-battleState.shadowsInsideCount = 0; // Сбрасываем дебафф теней
-battleState.enemies = battleState.enemies.filter(e => e.type !== 'shadow_creature'); // Очищаем оставшиеся тени
+battleState.shadowsInsideCount = 0;
+battleState.enemies = battleState.enemies.filter(e => e.type !== 'shadow_creature');
 transitionBattlePhase('fruit_rain_active', 'ВКУСНОСТЬ ДОЖДЬ!');
 triggerBossDialogue("ПОПРОБУЙ УКЛОНИТЬСЯ ОТ ФРУКТОВЫХ КАПЕЛЬ!");
 battleState.keysCollected = 0;
@@ -3462,23 +3421,18 @@ showFloatingMessage(`Собран Золотой Ключ (${battleState.keysCol
 }
 });
 if (battleState.keysCollected >= 3) {
-// НАГРАДА: Фруктовый дождь = 800 монет и 2400 поинтов
 gameState.coins += 800;
 gameState.points += 2400;
 updateUI();
 
-// Завершаем локацию - запускаем финальные титры с надписями и черным экраном
 battleState.fallingFruits = [];
 battleState.enemies = [];
 transitionBattlePhase('fog_ending', 'FOG IS COMING');
 saveGameState();
 
-// Черный экран и титры в конце 2 части
 setTimeout(() => {
 if (!battleState.active) return;
 playSynthesizedSound(100, 2.5, 'sawtooth');
-// Финал - Нокаут и начисление финишного супербонуса
-// НАГРАДА: Финал = 3000 монет и 5000 поинтов за эту часть
 battleState.murino2FinalRewardCoins = 3000;
 battleState.murino2FinalRewardPoints = 5000;
 gameState.coins += battleState.murino2FinalRewardCoins;
@@ -3828,30 +3782,25 @@ break;
 }
 }
 if (gameState.currentLocation === 'Murino_2') {
-// Логика фазы Молний во время битвы с маленькими скрутами
 if (battleState.phase === 'skrut_division' && battleState.active) {
 battleState.lightningTimer -= 0.016;
 if (battleState.lightningTimer <= 0) {
-battleState.lightningTimer = 3.0 + Math.random() * 2.5; // Слуйчайная молния каждые 3-5.5 сек
+battleState.lightningTimer = 3.0 + Math.random() * 2.5;
 const strikeX = Math.random() * V_WIDTH;
-// Визуальный предупреждающий знак молнии
 createSlamImpact(strikeX, 450, '#60a5fa');
 setTimeout(() => {
 if (!battleState.active) return;
 playLaserSound();
-// Наносим урон и вешаем заморозку на 3 секунды
 const playerX = battleState.player.x + battleState.player.width / 2;
 if (Math.abs(playerX - strikeX) < 100) {
-battleState.player.frozenTimer = 3.0; // ЗАМОРОЗКА НА 3 СЕКУНДЫ
-battleState.player.takeDamage(1200); // Крупный урон от молнии
+battleState.player.frozenTimer = 3.0;
+battleState.player.takeDamage(1200);
 showFloatingMessage("ВАС УДАРИЛО МОЛНИЕЙ! Заморозка 3 сек! -1200 HP");
 }
 }, 600);
 }
 }
 
-// Новая логика фазы теней: каждые 7 секунд появляется пара по бокам.
-// Если игрок успел свести тени друг к другу раньше — следующая пара появляется сразу.
 if (battleState.phase === 'shadows_invasion' && battleState.active && battleState.fogPhaseTimer > 0) {
 battleState.shadowPairTimer -= 0.016;
 battleState.shadowSpawnTimer = battleState.shadowPairTimer;
@@ -4018,7 +3967,6 @@ if (battleState.playerRegenTimer > 0) {
 battleState.playerRegenTimer -= 0.016;
 battleState.player.hp = Math.min(battleState.player.maxHp, battleState.player.hp + 50 * 0.016); 
 }
-// В новой фазе теней тени не вселяются в игрока: убить их можно только столкновением друг с другом.
 if (battleState.phase === 'shadows_invasion') {
 battleState.fogPhaseTimer -= 0.016;
 }
@@ -4038,7 +3986,6 @@ document.getElementById('enemyHpText').innerText = "0 / 1500";
 document.getElementById('enemyHpBar').style.width = '0%';
 }
 
-// Рендеринг заставки черного экрана перед победными окнами во 2 части
 if (battleState.phase === 'fog_ending') {
 ctx.fillStyle = '#000';
 ctx.fillRect(0, 0, V_WIDTH, V_HEIGHT);
@@ -4465,7 +4412,6 @@ battleState.survivalGraceTimer = 0.5;
 playLevelUpSound();
 }
 }
-// ИСПРАВЛЕНИЕ: Беспрепятственный выход за экран игрока и друнов в финале Мурино 1
 if (battleState.phase === 'drun_rescue') {
 battleState.drunRescueTimer -= 0.016;
 battleState.player.facingLeft = false;
@@ -4502,11 +4448,8 @@ document.getElementById('battleLootHUD').classList.add('hidden');
 if (isWin) {
 let coinReward = 1500;
 let ptReward = 1200;
-// В зависимости от локации, финальные награды
 let grantEndReward = true;
 if (gameState.currentLocation === 'Murino_2') {
-// В Мурино 2 награды за фазы и финальный бонус уже начисляются во время боя.
-// Здесь только показываем финальный бонус в окне НОКАУТ, без повторного начисления.
 coinReward = battleState.murino2FinalRewardCoins || 3000;
 ptReward = battleState.murino2FinalRewardPoints || 5000;
 grantEndReward = false;
@@ -4518,7 +4461,6 @@ gameState.coins += coinReward;
 if (!gameState.completedLocations.includes(gameState.currentLocation)) {
 gameState.completedLocations.push(gameState.currentLocation);
 }
-// Выводим красивое окошко нокаута со всеми заработанными за локацию вещами
 document.getElementById('rewardCoinsText').innerText = `+${coinReward || 'ПОБЕДА'}`;
 document.getElementById('rewardPointsText').innerText = `+${ptReward || 'ПРОЙДЕНО'}`;
 playLevelUpSound();
@@ -4557,8 +4499,6 @@ loadGameState();
 
 /* =========================================================
    ОБНОВЛЕНИЕ: МУРИНО — ЧАСТЬ 3: THE FOG
-   Добавлено как отдельный режим поверх существующего canvas-движка,
-   чтобы не ломать Армию, Мурино 1 и Мурино 2.
    ========================================================= */
 ;(function installMurino3Update(){
 const M3_ASSETS = {
@@ -5028,7 +4968,6 @@ function m3AfterRabbitVictory() {
   m3.waveIndex = 0;
   m3.enemies = [];
   if (!gameState.unlockedHeroes.includes('Drun')) {
-    // Друн как помощник будет выдан в самом конце, но карточку уже можно отрендерить после победы.
     gameState.heroLevels.Drun = gameState.heroLevels.Drun || 1;
   }
   m3showMsg('Часы зайца разблокированы на этот бой! Нажимайте B для возврата на 2 секунды.', 4.0);
@@ -5598,7 +5537,6 @@ function m3Frame() {
   requestAnimationFrame(gameLoop);
 }
 
-// UI unlocks and wrappers
 function m3UpdatePartButton() {
   const modal = document.getElementById('murinoPartsModal');
   if (!modal || typeof gameState === 'undefined') return;
@@ -5738,9 +5676,6 @@ window.addEventListener('keydown', (e) => {
 setTimeout(() => { m3UpdatePartButton(); updateUI(); }, 0);
 })();
 
-
-
-// FIX v3.9.5: герой виден и управляется в боях Мурино 3
 function m3ForceHeroPlayable() {
   if (gameState.currentLocation !== 'Murino_3' || !battleState || !battleState.player) return;
   const m3 = (typeof m3ensure === 'function') ? m3ensure() : null;
@@ -5805,7 +5740,6 @@ function m3DrawHeroFallback() {
     };
   }
 })();
-
 </script>
 
 <script type="module">
@@ -5870,8 +5804,8 @@ window.setAuthMode = function(mode) {
   if (nickWrap) nickWrap.classList.toggle('hidden', authMode !== 'register');
   if (loginTab) loginTab.className = authMode === 'login' ? 'bg-cyan-600 text-white py-2 rounded-lg gaming-font text-[9px]' : 'bg-slate-800 text-gray-300 py-2 rounded-lg gaming-font text-[9px]';
   if (registerTab) registerTab.className = authMode === 'register' ? 'bg-cyan-600 text-white py-2 rounded-lg gaming-font text-[9px]' : 'bg-slate-800 text-gray-300 py-2 rounded-lg gaming-font text-[9px]';
-  if (mainBtn) mainBtn.innerText = authMode === 'login' ? 'ВОЙТИ' : 'ОТПРАВИТЬ ПИСЬМО';
-  setAuthMessage(authMode === 'login' ? 'Введите почту и пароль.' : 'Введите уникальный ник, почту и пароль. После письма аккаунт появится в базе только после подтверждения почты.');
+  if (mainBtn) mainBtn.innerText = authMode === 'login' ? 'ВОЙТИ' : 'ЗАРЕГИСТРИРОВАТЬСЯ';
+  setAuthMessage(authMode === 'login' ? 'Введите почту и пароль.' : 'Введите уникальный ник, почту и пароль. После регистрации подтвердите почту по ссылке из письма.');
 };
 window.showAuthModal = function() {
   document.getElementById('authModal')?.classList.remove('hidden');
@@ -5897,9 +5831,15 @@ window.logoutAccount = async function() {
 };
 
 async function nicknameTaken(nickKey) {
-  const snap = await getDoc(doc(db, 'nicknames', nickKey));
-  return snap.exists();
+  try {
+    const snap = await getDoc(doc(db, 'nicknames', nickKey));
+    return snap.exists();
+  } catch (e) {
+    console.warn('Nickname check skipped:', e);
+    return false;
+  }
 }
+
 async function createProfileAfterVerification(user) {
   const userRef = doc(db, 'users', user.uid);
   const userSnap = await getDoc(userRef);
@@ -5938,6 +5878,18 @@ async function createProfileAfterVerification(user) {
   setAuthMessage(`Почта подтверждена. Аккаунт ${nick} сохранен в базе.`, 'success');
 }
 
+function formatFirebaseError(e) {
+  const code = e?.code || '';
+  if (code === 'auth/email-already-in-use') return 'Эта почта уже зарегистрирована. Переключитесь на «ВХОД».';
+  if (code === 'auth/invalid-email') return 'Некорректный формат почты.';
+  if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') return 'Неверная почта или пароль.';
+  if (code === 'auth/weak-password') return 'Пароль слишком слабый (нужно минимум 6 символов).';
+  if (code === 'auth/operation-not-allowed') return 'Ошибка Firebase: в консоли Firebase не включен вход по Email/Password (Authentication -> Sign-in method).';
+  if (code === 'auth/unauthorized-domain') return `Ошибка Firebase: домен ${window.location.hostname} не добавлен в Authorized domains в Firebase Console.`;
+  if (code === 'auth/too-many-requests') return 'Слишком много попыток. Подождите пару минут.';
+  return `Ошибка (${code || 'unknown'}): ${e.message}`;
+}
+
 window.submitAuthForm = async function() {
   const email = document.getElementById('authEmailInput')?.value.trim();
   const password = document.getElementById('authPasswordInput')?.value;
@@ -5952,8 +5904,9 @@ window.submitAuthForm = async function() {
       const cred = await signInWithEmailAndPassword(auth, email, password);
       await cred.user.reload();
       if (!cred.user.emailVerified) {
+        await sendEmailVerification(cred.user).catch(() => {});
         await signOut(auth);
-        setAuthMessage('Почта не подтверждена. Проверьте письмо и перейдите по ссылке.', 'error');
+        setAuthMessage('Почта не подтверждена. Мы повторно отправили письмо — перейдите по ссылке из него и войдите снова.', 'error');
         return;
       }
       await createProfileAfterVerification(cred.user);
@@ -5964,24 +5917,23 @@ window.submitAuthForm = async function() {
         setAuthMessage('Никнейм должен быть минимум 3 символа.', 'error');
         return;
       }
+      setAuthMessage('Создаём аккаунт...');
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
       if (await nicknameTaken(nickKey)) {
-        setAuthMessage('Никнейм занят. Выберите уникальный ник, которого ни у кого нет.', 'error');
+        await cred.user.delete().catch(() => {});
+        setAuthMessage('Никнейм уже занят. Выберите другой ник.', 'error');
         return;
       }
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(cred.user, { displayName: nickname });
       localStorage.setItem(`MellstroFight_pendingNick_${cred.user.uid}`, nickname);
       await sendEmailVerification(cred.user);
       await signOut(auth);
-      setAuthMessage('Письмо отправлено. Аккаунт появится в базе только после подтверждения почты и входа.', 'success');
+      setAuthMessage('Письмо с подтверждением отправлено на почту! Перейдите по ссылке в письме, а затем войдите.', 'success');
       window.setAuthMode('login');
     }
   } catch (e) {
-    let msg = e.message;
-    if (e.code === 'auth/email-already-in-use') msg = 'Эта почта уже зарегистрирована. Используйте вход.';
-    if (e.code === 'auth/invalid-credential') msg = 'Неверная почта или пароль.';
-    if (e.code === 'auth/weak-password') msg = 'Пароль слишком слабый. Нужно минимум 6 символов.';
-    setAuthMessage(msg, 'error');
+    console.error('Auth error:', e);
+    setAuthMessage(formatFirebaseError(e), 'error');
   }
 };
 
@@ -6020,80 +5972,9 @@ onAuthStateChanged(auth, async (user) => {
 
 window.setAuthMode('login');
 window.updateMellstroAccountLabels?.();
-
-
-// FIX v3.9.5: герой виден и управляется в боях Мурино 3
-function m3ForceHeroPlayable() {
-  if (gameState.currentLocation !== 'Murino_3' || !battleState || !battleState.player) return;
-  const m3 = (typeof m3ensure === 'function') ? m3ensure() : null;
-  const freePhases = ['guard_fight','rabbit_fight','rabbit_orbs','black_drops','skromnik_waves','squeezer','red_crosshairs','fog_boss'];
-  if (m3 && freePhases.includes(m3.phase)) {
-    if (battleState.player.frozenTimer > 0) battleState.player.frozenTimer = 0;
-    battleState.player.blackCircleDebuff = 0;
-    battleState.player.blackCircleTarget = null;
-  }
-}
-function m3DrawHeroFallback() {
-  if (gameState.currentLocation !== 'Murino_3' || !battleState || !battleState.player) return;
-  const p = battleState.player;
-  const img = cachedImages[p.heroInfo && p.heroInfo.id] || cachedImages.Mell;
-  if (img && img.complete && img.naturalWidth) return;
-  ctx.save();
-  ctx.fillStyle = '#fbbf24';
-  ctx.fillRect(p.x, p.y, p.width, p.height);
-  ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 4;
-  ctx.strokeRect(p.x, p.y, p.width, p.height);
-  ctx.fillStyle = '#111827';
-  ctx.font = 'bold 12px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('HERO', p.x + p.width / 2, p.y + p.height / 2);
-  ctx.restore();
-}
-(function(){
-  const oldM3StartGuardFight = typeof m3StartGuardFight === 'function' ? m3StartGuardFight : null;
-  if (oldM3StartGuardFight) {
-    m3StartGuardFight = function() {
-      oldM3StartGuardFight.apply(this, arguments);
-      if (battleState.player) {
-        battleState.player.frozenTimer = 0;
-        battleState.player.vx = 0;
-        battleState.player.vy = 0;
-        battleState.player.grounded = true;
-      }
-    };
-  }
-  const oldM3StartRabbitFight = typeof m3StartRabbitFight === 'function' ? m3StartRabbitFight : null;
-  if (oldM3StartRabbitFight) {
-    m3StartRabbitFight = function() {
-      oldM3StartRabbitFight.apply(this, arguments);
-      if (battleState.player) {
-        battleState.player.frozenTimer = 0;
-        battleState.player.blackCircleDebuff = 0;
-        battleState.player.blackCircleTarget = null;
-        battleState.player.vx = 0;
-        battleState.player.vy = 0;
-        battleState.player.grounded = true;
-      }
-    };
-  }
-  const oldM3Frame = typeof m3Frame === 'function' ? m3Frame : null;
-  if (oldM3Frame) {
-    m3Frame = function() {
-      m3ForceHeroPlayable();
-      oldM3Frame.apply(this, arguments);
-      m3ForceHeroPlayable();
-      m3DrawHeroFallback();
-    };
-  }
-})();
-
 </script>
 
-
-
 <script>
-// v3.10.0: В Мурино 3 герой всегда может ходить/прыгать, но атаки и супер/гипер запрещены до реального боя.
 (function(){
   window.addEventListener('keydown', function(e){
     if (typeof battleState === 'undefined' || !battleState.active || typeof gameState === 'undefined' || gameState.currentLocation !== 'Murino_3') return;
