@@ -1549,6 +1549,42 @@ gameState.preBattleEquipment[slot] = itemId;
 return slot;
 }
 function buyRandomGear() {
+ensureGameStateShape();
+const filledSlots = countPreBattleEquipment();
+if (filledSlots >= 2) {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Обе ячейки снаряжения заполнены! Сначала потратьте предмет в бою.");
+return;
+}
+if (gameState.coins < 2500) {
+playSynthesizedSound(150, 0.3, 'sawtooth');
+showFloatingMessage("Недостаточно монет! Секретный куб стоит 2500 монет.");
+return;
+}
+gameState.coins -= 2500;
+const icon = document.getElementById('gearCubeIcon');
+if (icon) icon.classList.add('shake-element');
+playSynthesizedSound(180, 0.4, 'sawtooth');
+showFloatingMessage("Черный секретный куб растворяется...");
+setTimeout(() => {
+if (icon) icon.classList.remove('shake-element');
+const itemId = rollRandomEquipment();
+const slot = addPreBattleEquipment(itemId);
+const info = EQUIPMENT_DETAILS[itemId];
+if (!slot) {
+showFloatingMessage("Нет свободной ячейки для снаряжения!");
+return;
+}
+playLevelUpSound();
+const rewardIcon = document.getElementById('revealIcon');
+if (rewardIcon) rewardIcon.className = 'fas fa-cube animate-bounce text-violet-400';
+document.getElementById('rewardText').innerText = `${info.icon} ${info.name} → слот ${slot}`;
+document.getElementById('rewardModal').classList.remove('hidden');
+showFloatingMessage(`Выпало: ${info.name}. В начале боя будет в слоте ${slot}!`);
+updateUI();
+}, 1200);
+updateUI();
+}
 function grantRandomRelicOrBonus() {
 ensureGameStateShape();
 const ids = Object.keys(RELICS_DB);
